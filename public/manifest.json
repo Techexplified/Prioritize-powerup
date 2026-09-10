@@ -1,0 +1,12 @@
+{
+  "name": "Prioritize",
+  "short_name": "Prioritize",
+  "description": "Smart task prioritization, scoring, and workflow management for Trello boards.",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "64x64 128x128 256x256",
+      "type": "image/svg+xml"
+    }
+  ]
+}
