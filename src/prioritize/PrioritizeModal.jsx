@@ -151,14 +151,44 @@ export default function PrioritizeModal({ t, onClose }) {
   const [editConfidence, setEditConfidence] = useState(8);
   const [editEffort, setEditEffort] = useState(4);
 
-  // Load real cards from Trello if available
+  // Load real cards from Trello if available (excluding Cardlytics / utility cards)
   useEffect(() => {
     if (!t || typeof t.cards !== "function") return;
-    t.cards("id", "name", "idList")
-      .then((trelloCards) => {
+
+    const getLists = typeof t.lists === "function" ? t.lists("id", "name") : Promise.resolve([]);
+    const getCards = t.cards("id", "name", "idList");
+
+    Promise.all([getCards, getLists])
+      .then(([trelloCards, trelloLists]) => {
         if (trelloCards && trelloCards.length > 0) {
+          // Identify Cardlytics or system utility list IDs
+          const cardlyticsListIds = new Set(
+            (trelloLists || [])
+              .filter((l) => l.name && l.name.toLowerCase().includes("cardlytics"))
+              .map((l) => l.id)
+          );
+
+          // Filter out Cardlytics cards and pure emoji/number utility cards
+          const filteredCards = trelloCards.filter((card) => {
+            // 1. Exclude if belonging to Cardlytics list
+            if (card.idList && cardlyticsListIds.has(card.idList)) {
+              return false;
+            }
+            // 2. Exclude if the card name is only a single emoji symbol or a bare number (e.g. "📌", "⚠️", "🏷️", "6")
+            const name = (card.name || "").trim();
+            const isSingleEmoji = /^[\p{Emoji_Presentation}\p{Extended_Pictographic}\uFE0F\s]{1,3}$/u.test(name);
+            const isNumberOnly = /^[0-9]+$/.test(name);
+            if (isSingleEmoji || isNumberOnly) {
+              return false;
+            }
+            return true;
+          });
+
+          // Use filtered cards (or fallback to original if filter is too aggressive)
+          const finalCards = filteredCards.length > 0 ? filteredCards : trelloCards;
+
           setCards(
-            trelloCards.map((c, i) => ({
+            finalCards.map((c, i) => ({
               id: c.id,
               name: c.name,
               impact: 7,
