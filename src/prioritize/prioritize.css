@@ -1,130 +1,127 @@
-/* Prioritize Power-Up Theme & Styles - Optimized for Trello iframe Modal */
+/* Native Trello / Atlassian Dark Theme for Prioritize Power-Up */
 :root {
-  --prio-bg: #0d1424;
-  --prio-card-bg: #090e1b;
-  --prio-surface: #131b2e;
-  --prio-border: rgba(255, 255, 255, 0.08);
-  
-  --prio-text-main: #f8fafc;
-  --prio-text-muted: #94a3b8;
-  --prio-text-dim: #64748b;
-  
-  --prio-primary: #3b82f6;
-  --prio-primary-hover: #2563eb;
-  --prio-primary-light: #60a5fa;
-  
-  --prio-badge-bg: #15243f;
-  --prio-badge-border: rgba(96, 165, 250, 0.28);
-  --prio-badge-text: #60a5fa;
+  --ds-bg: #1D2125;
+  --ds-surface: #22272B;
+  --ds-surface-subtle: #161A1D;
+  --ds-surface-hovered: #2C333A;
+  --ds-surface-pressed: #333C44;
+  --ds-border: #333C44;
+  --ds-border-subtle: #2C333A;
+  --ds-border-focused: #579DFF;
 
-  --prio-btn-white-bg: #ffffff;
-  --prio-btn-white-text: #0b101d;
-  
-  --prio-danger-bg: #380d13;
-  --prio-danger-border: rgba(248, 113, 113, 0.25);
-  --prio-danger-text: #f87171;
-  --prio-danger-hover: #4a1119;
+  --ds-text: #F7F8F9;
+  --ds-text-subtle: #9FADBC;
+  --ds-text-dim: #738496;
+
+  --ds-link: #579DFF;
+  --ds-link-hover: #85B8FF;
+
+  --ds-primary: #579DFF;
+  --ds-primary-hover: #85B8FF;
+  --ds-primary-text: #091E42;
+
+  --ds-success: #4BCE97;
+  --ds-warning: #F5CD47;
+  --ds-danger: #F87168;
+  --ds-danger-bg: rgba(248, 113, 104, 0.12);
+  --ds-danger-border: rgba(248, 113, 104, 0.3);
+  --ds-danger-hover: rgba(248, 113, 104, 0.22);
 }
 
-/* Full iframe Container */
-.prio-modal-wrapper {
+/* Full iframe container */
+.prio-container {
   width: 100vw;
   height: 100vh;
-  max-width: 100%;
-  max-height: 100%;
   margin: 0;
   padding: 0;
-  background: var(--prio-bg);
-  color: var(--prio-text-main);
+  background-color: var(--ds-bg);
+  color: var(--ds-text);
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
   overflow: hidden;
-  position: relative;
-  user-select: none;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", sans-serif;
 }
 
-/* Header */
+/* Top Header */
 .prio-header {
-  padding: 18px 24px 14px;
+  padding: 16px 20px 12px;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-shrink: 0;
+  border-bottom: 1px solid var(--ds-border-subtle);
+  background-color: var(--ds-bg);
 }
 
-.prio-header-left {
+.prio-header-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
-.prio-logo-box {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+.prio-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  color: var(--ds-primary);
   flex-shrink: 0;
 }
 
-.prio-sparkle-icon {
-  width: 22px;
-  height: 22px;
-  color: #ffffff;
-}
-
-.prio-title-group {
+.prio-brand-titles {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
-.prio-title-row {
+.prio-title-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prio-title-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ds-text);
+  letter-spacing: -0.2px;
+}
+
+.prio-powerup-tag {
+  background: rgba(87, 157, 255, 0.14);
+  border: 1px solid rgba(87, 157, 255, 0.28);
+  color: var(--ds-link);
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.prio-subtitle-text {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--ds-text-subtle);
+}
+
+.prio-header-actions {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.prio-title {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: 0.8px;
-  color: #ffffff;
-  text-transform: uppercase;
-  line-height: 1.2;
-}
-
-.prio-powerup-badge {
-  background: var(--prio-badge-bg);
-  border: 1px solid var(--prio-badge-border);
-  color: var(--prio-badge-text);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.6px;
-  padding: 2.5px 8.5px;
-  border-radius: 9999px;
-  text-transform: uppercase;
-  display: inline-flex;
-  align-items: center;
-}
-
-.prio-subtitle {
-  margin: 0;
-  font-size: 13px;
-  color: var(--prio-text-muted);
-  line-height: 1.4;
-}
-
-.prio-close-btn {
+.prio-icon-btn {
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--ds-text-subtle);
   width: 30px;
   height: 30px;
   border-radius: 6px;
@@ -133,76 +130,106 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
-  flex-shrink: 0;
 }
 
-.prio-close-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+.prio-icon-btn:hover {
+  background: var(--ds-surface-hovered);
+  color: var(--ds-text);
 }
 
-/* Section Header (Cards to Prioritize & Quick Actions) */
-.prio-section-header {
-  padding: 0 24px 10px;
+/* Controls / Filter Bar */
+.prio-controls-bar {
+  padding: 12px 20px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
+  gap: 12px;
 }
 
-.prio-section-title {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #e2e8f0;
-  letter-spacing: 0.6px;
-  text-transform: uppercase;
+.prio-section-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.prio-heading-title {
   margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ds-text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.prio-action-links {
+.prio-count-badge {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border-subtle);
+  color: var(--ds-text);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.prio-controls-right {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
+  gap: 12px;
 }
 
-.prio-link-btn {
+.prio-quick-link {
   background: transparent;
   border: none;
-  padding: 2px 4px;
-  color: #60a5fa;
+  color: var(--ds-link);
+  font-size: 12.5px;
+  font-weight: 500;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 2px 4px;
   border-radius: 4px;
   transition: color 0.15s ease;
 }
 
-.prio-link-btn:hover {
-  color: #93c5fd;
+.prio-quick-link:hover {
+  color: var(--ds-link-hover);
   text-decoration: underline;
 }
 
-.prio-dot-separator {
-  color: #64748b;
-  font-size: 12px;
+.prio-dot-divider {
+  color: var(--ds-text-dim);
+  font-size: 11px;
 }
 
-/* Card List Box - Automatically fills remaining vertical height */
-.prio-card-list-box {
-  margin: 0 24px;
+.prio-set-selector {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  color: var(--ds-text);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  outline: none;
+}
+
+.prio-set-selector:focus {
+  border-color: var(--ds-border-focused);
+}
+
+/* Cards List Box */
+.prio-list-container {
+  margin: 0 20px;
   flex: 1;
   min-height: 0;
-  background: var(--prio-card-bg);
-  border: 1px solid var(--prio-border);
-  border-radius: 12px;
+  background: var(--ds-surface-subtle);
+  border: 1px solid var(--ds-border-subtle);
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.prio-card-list {
+.prio-card-scroll-area {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
@@ -210,52 +237,52 @@
   padding: 2px 0;
 }
 
-/* Custom Sleek Scrollbar */
-.prio-card-list::-webkit-scrollbar {
+/* Atlassian-style subtle scrollbar */
+.prio-card-scroll-area::-webkit-scrollbar {
   width: 6px;
 }
 
-.prio-card-list::-webkit-scrollbar-track {
+.prio-card-scroll-area::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.prio-card-list::-webkit-scrollbar-thumb {
-  background: #2a3449;
-  border-radius: 9999px;
+.prio-card-scroll-area::-webkit-scrollbar-thumb {
+  background: #333C44;
+  border-radius: 3px;
 }
 
-.prio-card-list::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+.prio-card-scroll-area::-webkit-scrollbar-thumb:hover {
+  background: #454F59;
 }
 
 /* Card Row */
-.prio-card-row {
+.prio-card-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 11px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+  padding: 9px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   transition: background 0.12s ease;
 }
 
-.prio-card-row:last-child {
+.prio-card-item:last-child {
   border-bottom: none;
 }
 
-.prio-card-row:hover {
-  background: rgba(255, 255, 255, 0.025);
+.prio-card-item:hover {
+  background: rgba(255, 255, 255, 0.03);
 }
 
-.prio-card-left {
+.prio-card-item-left {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 12px;
   flex: 1;
   min-width: 0;
 }
 
 /* Custom Checkbox */
-.prio-checkbox-wrap {
+.prio-checkbox-container {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -263,156 +290,175 @@
   user-select: none;
 }
 
-.prio-checkbox-input {
+.prio-native-checkbox {
   position: absolute;
   opacity: 0;
   width: 0;
   height: 0;
 }
 
-.prio-custom-checkbox {
-  width: 19px;
-  height: 19px;
-  border-radius: 5px;
-  border: 1.5px solid #475569;
-  background: rgba(255, 255, 255, 0.03);
+.prio-checkbox-box {
+  width: 17px;
+  height: 17px;
+  border-radius: 4px;
+  border: 1.5px solid #576574;
+  background: var(--ds-surface);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
   flex-shrink: 0;
 }
 
-.prio-checkbox-wrap:hover .prio-custom-checkbox {
-  border-color: #60a5fa;
+.prio-checkbox-container:hover .prio-checkbox-box {
+  border-color: var(--ds-link);
 }
 
-.prio-checkbox-input:checked + .prio-custom-checkbox {
-  background: #2563eb;
-  border-color: #3b82f6;
-  box-shadow: 0 0 8px rgba(37, 99, 235, 0.45);
+.prio-native-checkbox:checked + .prio-checkbox-box {
+  background: var(--ds-primary);
+  border-color: var(--ds-primary);
 }
 
-.prio-check-icon {
+.prio-check-svg {
   width: 12px;
   height: 12px;
-  color: #ffffff;
-  stroke-width: 2.8;
+  color: #091E42;
+  stroke-width: 3;
 }
 
-.prio-card-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: #f1f5f9;
+.prio-card-name-text {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ds-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: 0.1px;
+  letter-spacing: -0.1px;
 }
 
-.prio-card-row.unchecked .prio-card-title {
-  color: #64748b;
+.prio-card-item.deselected .prio-card-name-text {
+  color: var(--ds-text-dim);
 }
 
-.prio-card-right {
+.prio-card-item-right {
   display: flex;
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
 }
 
-.prio-score-chip {
-  background: rgba(59, 130, 246, 0.12);
-  border: 1px solid rgba(59, 130, 246, 0.28);
-  color: #93c5fd;
+.prio-rank-pill {
+  background: rgba(75, 206, 151, 0.12);
+  border: 1px solid rgba(75, 206, 151, 0.28);
+  color: var(--ds-success);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   padding: 2px 7px;
   border-radius: 4px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: monospace;
 }
 
-.prio-edit-scores-btn {
+.prio-score-link {
   background: transparent;
-  border: none;
-  color: #60a5fa;
-  font-size: 13px;
+  border: 1px solid transparent;
+  color: var(--ds-link);
+  font-size: 12.5px;
   font-weight: 500;
   cursor: pointer;
-  padding: 3px 6px;
+  padding: 3px 8px;
   border-radius: 4px;
-  transition: color 0.15s ease;
-  white-space: nowrap;
+  transition: all 0.12s ease;
 }
 
-.prio-edit-scores-btn:hover {
-  color: #93c5fd;
-  text-decoration: underline;
+.prio-score-link:hover {
+  background: rgba(87, 157, 255, 0.1);
+  color: var(--ds-link-hover);
+  border-color: rgba(87, 157, 255, 0.25);
 }
 
-/* Action Buttons below list */
-.prio-button-row {
-  padding: 14px 24px;
+/* Bottom Action Buttons */
+.prio-action-bar {
+  padding: 12px 20px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: space-between;
   flex-shrink: 0;
+  gap: 12px;
 }
 
-.prio-btn-add-set {
-  background: var(--prio-btn-white-bg);
-  color: var(--prio-btn-white-text);
-  border: none;
-  border-radius: 9999px;
-  padding: 9px 22px;
-  font-size: 13.5px;
-  font-weight: 700;
+.prio-action-group-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Secondary Button */
+.prio-btn-secondary {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  color: var(--ds-text);
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: transform 0.12s ease, box-shadow 0.15s ease, background 0.15s ease;
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+  transition: background 0.12s ease, border-color 0.12s ease;
 }
 
-.prio-btn-add-set:hover {
-  background: #f1f5f9;
-  transform: translateY(-1px);
+.prio-btn-secondary:hover {
+  background: var(--ds-surface-hovered);
+  border-color: #454F59;
 }
 
-.prio-btn-add-set:active {
-  transform: translateY(0);
+/* Danger Subtle Button */
+.prio-btn-danger-subtle {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--ds-danger);
+  border-radius: 6px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.12s ease;
 }
 
-.prio-btn-delete-set {
-  background: var(--prio-danger-bg);
-  color: var(--prio-danger-text);
-  border: 1px solid var(--prio-danger-border);
-  border-radius: 9999px;
-  padding: 9px 22px;
-  font-size: 13.5px;
+.prio-btn-danger-subtle:hover {
+  background: var(--ds-danger-bg);
+  border-color: var(--ds-danger-border);
+}
+
+/* Primary Button */
+.prio-btn-primary {
+  background: var(--ds-primary);
+  border: none;
+  color: var(--ds-primary-text);
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  transition: background 0.15s ease, transform 0.12s ease;
+  transition: background 0.12s ease;
 }
 
-.prio-btn-delete-set:hover {
-  background: var(--prio-danger-hover);
-  transform: translateY(-1px);
+.prio-btn-primary:hover {
+  background: var(--ds-primary-hover);
 }
 
-.prio-btn-delete-set:active {
-  transform: translateY(0);
-}
-
-/* Bottom Docked Footer */
-.prio-footer {
-  background: #080c16;
-  border-top: 1px solid var(--prio-border);
-  padding: 12px 24px;
+/* Docked Footer */
+.prio-footer-bar {
+  padding: 9px 20px;
+  background: var(--ds-surface-subtle);
+  border-top: 1px solid var(--ds-border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -420,201 +466,165 @@
   flex-shrink: 0;
 }
 
-.prio-tip-text {
-  font-size: 12px;
-  color: var(--prio-text-dim);
+.prio-footer-tip {
   margin: 0;
-  line-height: 1.4;
+  font-size: 11.5px;
+  color: var(--ds-text-subtle);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.prio-brand-text {
-  font-size: 12px;
+.prio-footer-brand {
+  font-size: 11.5px;
   font-weight: 600;
-  color: var(--prio-text-muted);
+  color: var(--ds-text-dim);
   white-space: nowrap;
 }
 
-/* Modal Overlay for Dialogs / Scoring */
-.prio-dialog-overlay {
+/* Dialog Overlay */
+.prio-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(5, 8, 17, 0.85);
-  backdrop-filter: blur(4px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-  z-index: 50;
+  z-index: 100;
 }
 
-.prio-dialog-card {
+.prio-dialog {
   width: 100%;
   max-width: 440px;
-  background: #0f1629;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 14px;
-  padding: 22px;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85);
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+.prio-dialog-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .prio-dialog-title {
   margin: 0;
-  font-size: 17px;
-  font-weight: 700;
-  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ds-text);
 }
 
 .prio-dialog-desc {
   margin: 0;
   font-size: 12.5px;
-  color: #94a3b8;
-  line-height: 1.5;
+  color: var(--ds-text-subtle);
+  line-height: 1.45;
 }
 
-.prio-score-grid {
+/* Scoring Controls */
+.prio-sliders {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
-.prio-slider-group {
+.prio-slider-item {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.prio-slider-label-row {
+.prio-slider-labels {
   display: flex;
   justify-content: space-between;
   align-items: center;
   font-size: 12px;
 }
 
-.prio-slider-title {
+.prio-slider-name {
   font-weight: 600;
-  color: #e2e8f0;
+  color: var(--ds-text);
 }
 
-.prio-slider-val {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 700;
-  color: #60a5fa;
-  background: rgba(59, 130, 246, 0.12);
-  padding: 2px 7px;
+.prio-slider-score-tag {
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--ds-link);
+  background: rgba(87, 157, 255, 0.12);
+  padding: 1px 6px;
   border-radius: 4px;
-  font-size: 11.5px;
+  font-size: 11px;
 }
 
-.prio-range-slider {
+.prio-range {
   -webkit-appearance: none;
   width: 100%;
-  height: 6px;
+  height: 5px;
   border-radius: 3px;
-  background: #1e293b;
+  background: #333C44;
   outline: none;
 }
 
-.prio-range-slider::-webkit-slider-thumb {
+.prio-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
-  background: #3b82f6;
+  background: var(--ds-primary);
   cursor: pointer;
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+  border: 2px solid var(--ds-surface);
+  transition: transform 0.1s ease;
 }
 
-.prio-score-summary-box {
-  background: #0a0f1d;
-  border: 1px solid rgba(59, 130, 246, 0.25);
-  border-radius: 8px;
-  padding: 12px;
+.prio-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.prio-score-result-box {
+  background: var(--ds-surface-subtle);
+  border: 1px solid var(--ds-border-subtle);
+  border-radius: 6px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.prio-score-summary-val {
-  font-size: 22px;
-  font-weight: 800;
-  color: #38bdf8;
-  font-family: 'JetBrains Mono', monospace;
+.prio-score-result-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ds-success);
+  font-family: monospace;
 }
 
-.prio-input-field {
+.prio-text-input {
   width: 100%;
-  background: #090e1b;
-  border: 1px solid #334155;
-  color: #f1f5f9;
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: 13.5px;
+  background: var(--ds-surface-subtle);
+  border: 1px solid var(--ds-border);
+  color: var(--ds-text);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
   outline: none;
   box-sizing: border-box;
 }
 
-.prio-input-field:focus {
-  border-color: #3b82f6;
+.prio-text-input:focus {
+  border-color: var(--ds-border-focused);
 }
 
-.prio-dialog-actions {
+.prio-dialog-foot {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 8px;
   margin-top: 4px;
-}
-
-.prio-btn-subtle {
-  background: transparent;
-  border: 1px solid #334155;
-  color: #94a3b8;
-  border-radius: 7px;
-  padding: 7px 14px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.prio-btn-subtle:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-}
-
-.prio-btn-dialog-primary {
-  background: #2563eb;
-  color: #ffffff;
-  border: none;
-  border-radius: 7px;
-  padding: 7px 16px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.prio-btn-dialog-primary:hover {
-  background: #1d4ed8;
-}
-
-.prio-btn-dialog-danger {
-  background: #dc2626;
-  color: #ffffff;
-  border: none;
-  border-radius: 7px;
-  padding: 7px 16px;
-  font-size: 12.5px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.prio-btn-dialog-danger:hover {
-  background: #b91c1c;
 }

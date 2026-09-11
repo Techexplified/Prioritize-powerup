@@ -1,17 +1,42 @@
 import React, { useState, useEffect } from "react";
 import "./prioritize.css";
 
-// Sparkle Star Icon matching the glowing logo in the reference
+// Sparkle/Prioritize Icon
 function SparkleIcon(props) {
   return (
     <svg
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
-      fill="currentColor"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       {...props}
     >
-      <path d="M12 2L13.8 8.2L20 10L13.8 11.8L12 18L10.2 11.8L4 10L10.2 8.2L12 2Z" />
-      <path d="M19 16L19.9 19.1L23 20L19.9 20.9L19 24L18.1 20.9L15 20L18.1 19.1L19 16Z" opacity="0.85" />
-      <path d="M5 2L5.6 4.4L8 5L5.6 5.6L5 8L4.4 5.6L2 5L4.4 4.4L5 2Z" opacity="0.75" />
+      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
+  );
+}
+
+// Chart/Rank Icon
+function RankIcon(props) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <line x1="18" y1="20" x2="18" y2="10" />
+      <line x1="12" y1="20" x2="12" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="14" />
     </svg>
   );
 }
@@ -20,8 +45,8 @@ function SparkleIcon(props) {
 function CloseIcon(props) {
   return (
     <svg
-      width="16"
-      height="16"
+      width="15"
+      height="15"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -52,6 +77,46 @@ function CheckIcon(props) {
   );
 }
 
+// Plus Icon
+function PlusIcon(props) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <line x1="12" y1="5" x2="12" y2="19" />
+      <line x1="5" y1="12" x2="19" y2="12" />
+    </svg>
+  );
+}
+
+// Trash Icon
+function TrashIcon(props) {
+  return (
+    <svg
+      width="13"
+      height="13"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </svg>
+  );
+}
+
 const DEFAULT_SAMPLE_CARDS = [
   { id: "c1", name: "New checkout", impact: 9, confidence: 9, effort: 4, score: 92, selected: true },
   { id: "c2", name: "Search improvement", impact: 8, confidence: 8, effort: 4, score: 84, selected: true },
@@ -65,28 +130,28 @@ const DEFAULT_SAMPLE_CARDS = [
 ];
 
 const INITIAL_SETS = [
-  { id: "set-1", name: "Main Product Roadmap" },
-  { id: "set-2", name: "Sprint 34 Fast-Tracks" },
+  { id: "set-1", name: "Product Roadmap" },
+  { id: "set-2", name: "Growth Initiatives" },
 ];
 
 export default function PrioritizeModal({ t, onClose }) {
   const [sets, setSets] = useState(INITIAL_SETS);
   const [activeSetId, setActiveSetId] = useState("set-1");
   const [cards, setCards] = useState(DEFAULT_SAMPLE_CARDS);
-  
-  // Dialogs state
+
+  // Dialogs
   const [scoringCard, setScoringCard] = useState(null);
   const [showAddSetDialog, setShowAddSetDialog] = useState(false);
   const [newSetName, setNewSetName] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSortedByRank, setIsSortedByRank] = useState(false);
 
-  // Temporary scores during edit modal
+  // Sliders for scoring
   const [editImpact, setEditImpact] = useState(8);
   const [editConfidence, setEditConfidence] = useState(8);
   const [editEffort, setEditEffort] = useState(4);
 
-  // Load cards from Trello if available
+  // Load real cards from Trello if available
   useEffect(() => {
     if (!t || typeof t.cards !== "function") return;
     t.cards("id", "name", "idList")
@@ -99,7 +164,7 @@ export default function PrioritizeModal({ t, onClose }) {
               impact: 7,
               confidence: 8,
               effort: 5,
-              score: Math.max(50, 95 - i * 5),
+              score: Math.max(50, 95 - i * 4),
               selected: true,
             }))
           );
@@ -110,7 +175,7 @@ export default function PrioritizeModal({ t, onClose }) {
       });
   }, [t]);
 
-  // Handle Select All / Clear
+  // Select all / clear
   function handleSelectAll() {
     setCards((prev) => prev.map((c) => ({ ...c, selected: true })));
   }
@@ -119,14 +184,14 @@ export default function PrioritizeModal({ t, onClose }) {
     setCards((prev) => prev.map((c) => ({ ...c, selected: false })));
   }
 
-  // Toggle individual card
+  // Toggle card
   function handleToggleCard(cardId) {
     setCards((prev) =>
       prev.map((c) => (c.id === cardId ? { ...c, selected: !c.selected } : c))
     );
   }
 
-  // Open Score Editor for card
+  // Open scoring modal
   function handleOpenScoreEditor(card) {
     setScoringCard(card);
     setEditImpact(card.impact || 8);
@@ -134,12 +199,12 @@ export default function PrioritizeModal({ t, onClose }) {
     setEditEffort(card.effort || 4);
   }
 
-  // Calculate live score (normalized 1 - 100)
+  // Live calculated score
   const computedScore = Math.round(
     Math.min(100, Math.max(10, ((editImpact * editConfidence) / Math.max(1, editEffort)) * 5))
   );
 
-  // Save updated scores
+  // Save scores
   function handleSaveScores() {
     if (!scoringCard) return;
     setCards((prev) =>
@@ -155,7 +220,7 @@ export default function PrioritizeModal({ t, onClose }) {
           : c
       )
     );
-    // If inside Trello, persist score data to card
+
     if (t && typeof t.set === "function") {
       t.set(scoringCard.id, "shared", "priority_score", {
         impact: editImpact,
@@ -167,7 +232,7 @@ export default function PrioritizeModal({ t, onClose }) {
     setScoringCard(null);
   }
 
-  // Add New Set
+  // Create new set
   function handleCreateSet(e) {
     e.preventDefault();
     if (!newSetName.trim()) return;
@@ -181,10 +246,10 @@ export default function PrioritizeModal({ t, onClose }) {
     setShowAddSetDialog(false);
   }
 
-  // Delete Set
+  // Delete set
   function handleDeleteSet() {
     if (sets.length <= 1) {
-      alert("At least one prioritization set must be retained.");
+      alert("At least one evaluation set must be retained.");
       setShowDeleteConfirm(false);
       return;
     }
@@ -194,10 +259,9 @@ export default function PrioritizeModal({ t, onClose }) {
     setShowDeleteConfirm(false);
   }
 
-  // Sort by priority rank
+  // Auto-Rank cards
   function handleToggleRank() {
     if (isSortedByRank) {
-      // Revert to original order
       setCards(DEFAULT_SAMPLE_CARDS);
       setIsSortedByRank(false);
     } else {
@@ -207,7 +271,7 @@ export default function PrioritizeModal({ t, onClose }) {
     }
   }
 
-  // Close handler
+  // Close modal
   function handleClose() {
     if (onClose) {
       onClose();
@@ -222,84 +286,114 @@ export default function PrioritizeModal({ t, onClose }) {
   const activeSet = sets.find((s) => s.id === activeSetId) || sets[0];
 
   return (
-    <div className="prio-modal-wrapper">
+    <div className="prio-container">
       {/* Header */}
       <header className="prio-header">
-        <div className="prio-header-left">
-          <div className="prio-logo-box">
-            <SparkleIcon className="prio-sparkle-icon" />
+        <div className="prio-header-brand">
+          <div className="prio-brand-icon">
+            <RankIcon />
           </div>
-          <div className="prio-title-group">
-            <div className="prio-title-row">
-              <h1 className="prio-title">Prioritize</h1>
-              <span className="prio-powerup-badge">Power-Up</span>
+          <div className="prio-brand-titles">
+            <div className="prio-title-line">
+              <h1 className="prio-title-text">Prioritize</h1>
+              <span className="prio-powerup-tag">Power-Up</span>
             </div>
-            <p className="prio-subtitle">
-              Score cards and automatically rank what your team should build first
+            <p className="prio-subtitle-text">
+              Score cards and automatically rank what your team should build first.
             </p>
           </div>
         </div>
-        <button
-          type="button"
-          className="prio-close-btn"
-          onClick={handleClose}
-          aria-label="Close"
-        >
-          <CloseIcon />
-        </button>
-      </header>
 
-      {/* Section Heading & Quick Actions */}
-      <div className="prio-section-header">
-        <h2 className="prio-section-title">
-          Cards to prioritize ({selectedCount}/{cards.length})
-        </h2>
-        <div className="prio-action-links">
+        <div className="prio-header-actions">
           <button
             type="button"
-            className="prio-link-btn"
+            className="prio-icon-btn"
+            onClick={handleClose}
+            aria-label="Close"
+            title="Close"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+      </header>
+
+      {/* Controls & Filter Bar */}
+      <div className="prio-controls-bar">
+        <div className="prio-section-heading">
+          <span className="prio-heading-title">Cards to prioritize</span>
+          <span className="prio-count-badge">
+            {selectedCount} of {cards.length}
+          </span>
+        </div>
+
+        <div className="prio-controls-right">
+          <button
+            type="button"
+            className="prio-quick-link"
             onClick={handleSelectAll}
           >
             Select all
           </button>
-          <span className="prio-dot-separator">·</span>
+          <span className="prio-dot-divider">·</span>
           <button
             type="button"
-            className="prio-link-btn"
+            className="prio-quick-link"
             onClick={handleClearAll}
           >
             Clear
           </button>
+
+          {sets.length > 1 && (
+            <>
+              <span className="prio-dot-divider">·</span>
+              <select
+                value={activeSetId}
+                onChange={(e) => setActiveSetId(e.target.value)}
+                className="prio-set-selector"
+              >
+                {sets.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Card List Box */}
-      <div className="prio-card-list-box">
-        <div className="prio-card-list">
-          {cards.map((card) => (
+      {/* Cards List Box */}
+      <div className="prio-list-container">
+        <div className="prio-card-scroll-area">
+          {cards.map((card, idx) => (
             <div
               key={card.id}
-              className={`prio-card-row ${card.selected ? "checked" : "unchecked"}`}
+              className={`prio-card-item ${card.selected ? "selected" : "deselected"}`}
             >
-              <div className="prio-card-left">
-                <label className="prio-checkbox-wrap">
+              <div className="prio-card-item-left">
+                <label className="prio-checkbox-container">
                   <input
                     type="checkbox"
-                    className="prio-checkbox-input"
+                    className="prio-native-checkbox"
                     checked={Boolean(card.selected)}
                     onChange={() => handleToggleCard(card.id)}
                   />
-                  <div className="prio-custom-checkbox">
-                    {card.selected && <CheckIcon className="prio-check-icon" />}
+                  <div className="prio-checkbox-box">
+                    {card.selected && <CheckIcon className="prio-check-svg" />}
                   </div>
                 </label>
-                <span className="prio-card-title">{card.name}</span>
+                <span className="prio-card-name-text">{card.name}</span>
               </div>
 
-              <div className="prio-card-right">
+              <div className="prio-card-item-right">
+                {card.score !== undefined && (
+                  <span className="prio-rank-pill" title="Calculated Priority Score">
+                    {isSortedByRank ? `#${idx + 1} · ` : ""}Score: {card.score}
+                  </span>
+                )}
                 <button
                   type="button"
-                  className="prio-edit-scores-btn"
+                  className="prio-score-link"
                   onClick={() => handleOpenScoreEditor(card)}
                 >
                   Edit scores
@@ -310,206 +404,220 @@ export default function PrioritizeModal({ t, onClose }) {
         </div>
       </div>
 
-      {/* Action Buttons below list */}
-      <div className="prio-button-row">
+      {/* Action Bar */}
+      <div className="prio-action-bar">
+        <div className="prio-action-group-left">
+          <button
+            type="button"
+            className="prio-btn-secondary"
+            onClick={() => setShowAddSetDialog(true)}
+          >
+            <PlusIcon />
+            Add New Set
+          </button>
+          <button
+            type="button"
+            className="prio-btn-danger-subtle"
+            onClick={() => setShowDeleteConfirm(true)}
+          >
+            <TrashIcon />
+            Delete Set
+          </button>
+        </div>
+
         <button
           type="button"
-          className="prio-btn-add-set"
-          onClick={() => setShowAddSetDialog(true)}
+          className="prio-btn-primary"
+          onClick={handleToggleRank}
         >
-          +Add New Set
-        </button>
-        <button
-          type="button"
-          className="prio-btn-delete-set"
-          onClick={() => setShowDeleteConfirm(true)}
-        >
-          Delete Set
+          <RankIcon />
+          {isSortedByRank ? "Reset Ranking" : "Auto-Rank Cards"}
         </button>
       </div>
 
       {/* Footer */}
-      <footer className="prio-footer">
-        <p className="prio-tip-text">
-          Tip: You can also score cards individually by clicking any card on the board.
+      <footer className="prio-footer-bar">
+        <p className="prio-footer-tip">
+          <span>💡</span> Tip: You can also score cards individually by clicking any card on the board.
         </p>
-        <span className="prio-brand-text">Task Prioritize Power-Up</span>
+        <span className="prio-footer-brand">Task Prioritize Power-Up</span>
       </footer>
 
-        {/* Edit Scores Dialog / Panel */}
-        {scoringCard && (
-          <div className="prio-dialog-overlay" onClick={() => setScoringCard(null)}>
-            <div className="prio-dialog-card" onClick={(e) => e.stopPropagation()}>
-              <div>
-                <h3 className="prio-dialog-title">Edit Scores: {scoringCard.name}</h3>
-                <p className="prio-dialog-desc">
-                  Adjust impact, confidence, and effort parameters to dynamically calculate the card's priority rank.
-                </p>
-              </div>
-
-              <div className="prio-score-grid">
-                {/* Impact */}
-                <div className="prio-slider-group">
-                  <div className="prio-slider-label-row">
-                    <span className="prio-slider-title">Impact (Business Value)</span>
-                    <span className="prio-slider-val">{editImpact} / 10</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={editImpact}
-                    onChange={(e) => setEditImpact(Number(e.target.value))}
-                    className="prio-range-slider"
-                  />
-                </div>
-
-                {/* Confidence */}
-                <div className="prio-slider-group">
-                  <div className="prio-slider-label-row">
-                    <span className="prio-slider-title">Confidence</span>
-                    <span className="prio-slider-val">{editConfidence} / 10</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={editConfidence}
-                    onChange={(e) => setEditConfidence(Number(e.target.value))}
-                    className="prio-range-slider"
-                  />
-                </div>
-
-                {/* Effort */}
-                <div className="prio-slider-group">
-                  <div className="prio-slider-label-row">
-                    <span className="prio-slider-title">Effort / Complexity</span>
-                    <span className="prio-slider-val">{editEffort} / 10</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={editEffort}
-                    onChange={(e) => setEditEffort(Number(e.target.value))}
-                    className="prio-range-slider"
-                  />
-                </div>
-
-                {/* Computed Score Preview */}
-                <div className="prio-score-summary-box">
-                  <div>
-                    <div style={{ fontSize: "12px", color: "#94a3b8", fontWeight: 600 }}>
-                      CALCULATED PRIORITY
-                    </div>
-                    <div style={{ fontSize: "11px", color: "#64748b" }}>
-                      Formula: (Impact × Confidence) ÷ Effort
-                    </div>
-                  </div>
-                  <div className="prio-score-summary-val">
-                    {computedScore} <span style={{ fontSize: "13px", color: "#94a3b8" }}>/ 100</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="prio-dialog-actions">
-                <button
-                  type="button"
-                  className="prio-btn-subtle"
-                  onClick={() => setScoringCard(null)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  className="prio-btn-dialog-primary"
-                  onClick={handleSaveScores}
-                >
-                  Save Scores
-                </button>
-              </div>
+      {/* Score Editing Dialog */}
+      {scoringCard && (
+        <div className="prio-overlay" onClick={() => setScoringCard(null)}>
+          <div className="prio-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="prio-dialog-head">
+              <h3 className="prio-dialog-title">Score: {scoringCard.name}</h3>
+              <p className="prio-dialog-desc">
+                Adjust criteria to calculate the card's priority rank for your team.
+              </p>
             </div>
-          </div>
-        )}
 
-        {/* Add New Set Dialog */}
-        {showAddSetDialog && (
-          <div className="prio-dialog-overlay" onClick={() => setShowAddSetDialog(false)}>
-            <form
-              className="prio-dialog-card"
-              onClick={(e) => e.stopPropagation()}
-              onSubmit={handleCreateSet}
-            >
-              <div>
-                <h3 className="prio-dialog-title">+ Add New Prioritization Set</h3>
-                <p className="prio-dialog-desc">
-                  Create a new evaluation group to organize and prioritize features for upcoming sprints or quarters.
-                </p>
-              </div>
-
-              <div>
+            <div className="prio-sliders">
+              {/* Impact */}
+              <div className="prio-slider-item">
+                <div className="prio-slider-labels">
+                  <span className="prio-slider-name">Impact (Value)</span>
+                  <span className="prio-slider-score-tag">{editImpact} / 10</span>
+                </div>
                 <input
-                  type="text"
-                  placeholder="e.g. Q4 Growth Sprint, Mobile v2 Backlog"
-                  className="prio-input-field"
-                  value={newSetName}
-                  onChange={(e) => setNewSetName(e.target.value)}
-                  autoFocus
-                  required
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={editImpact}
+                  onChange={(e) => setEditImpact(Number(e.target.value))}
+                  className="prio-range"
                 />
               </div>
 
-              <div className="prio-dialog-actions">
-                <button
-                  type="button"
-                  className="prio-btn-subtle"
-                  onClick={() => setShowAddSetDialog(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="prio-btn-dialog-primary"
-                >
-                  Create Set
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
-
-        {/* Delete Set Confirmation */}
-        {showDeleteConfirm && (
-          <div className="prio-dialog-overlay" onClick={() => setShowDeleteConfirm(false)}>
-            <div className="prio-dialog-card" onClick={(e) => e.stopPropagation()}>
-              <div>
-                <h3 className="prio-dialog-title" style={{ color: "#f87171" }}>
-                  Delete Set: {activeSet?.name}?
-                </h3>
-                <p className="prio-dialog-desc">
-                  Are you sure you want to remove this prioritization set? Individual cards on the Trello board will not be deleted.
-                </p>
+              {/* Confidence */}
+              <div className="prio-slider-item">
+                <div className="prio-slider-labels">
+                  <span className="prio-slider-name">Confidence</span>
+                  <span className="prio-slider-score-tag">{editConfidence} / 10</span>
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={editConfidence}
+                  onChange={(e) => setEditConfidence(Number(e.target.value))}
+                  className="prio-range"
+                />
               </div>
 
-              <div className="prio-dialog-actions">
-                <button
-                  type="button"
-                  className="prio-btn-subtle"
-                  onClick={() => setShowDeleteConfirm(false)}
-                >
-                  Keep Set
-                </button>
-                <button
-                  type="button"
-                  className="prio-btn-dialog-danger"
-                  onClick={handleDeleteSet}
-                >
-                  Confirm Delete
-                </button>
+              {/* Effort */}
+              <div className="prio-slider-item">
+                <div className="prio-slider-labels">
+                  <span className="prio-slider-name">Effort / Complexity</span>
+                  <span className="prio-slider-score-tag">{editEffort} / 10</span>
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max="10"
+                  value={editEffort}
+                  onChange={(e) => setEditEffort(Number(e.target.value))}
+                  className="prio-range"
+                />
+              </div>
+
+              {/* Score result */}
+              <div className="prio-score-result-box">
+                <div>
+                  <div style={{ fontSize: "11px", color: "#9FADBC", fontWeight: 600, textTransform: "uppercase" }}>
+                    Priority Score
+                  </div>
+                  <div style={{ fontSize: "11px", color: "#738496" }}>
+                    Formula: (Impact × Confidence) ÷ Effort
+                  </div>
+                </div>
+                <div className="prio-score-result-val">
+                  {computedScore} <span style={{ fontSize: "12px", color: "#9FADBC" }}>/ 100</span>
+                </div>
               </div>
             </div>
+
+            <div className="prio-dialog-foot">
+              <button
+                type="button"
+                className="prio-btn-secondary"
+                onClick={() => setScoringCard(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="prio-btn-primary"
+                onClick={handleSaveScores}
+              >
+                Save Score
+              </button>
+            </div>
           </div>
-        )}
+        </div>
+      )}
+
+      {/* Add New Set Dialog */}
+      {showAddSetDialog && (
+        <div className="prio-overlay" onClick={() => setShowAddSetDialog(false)}>
+          <form
+            className="prio-dialog"
+            onClick={(e) => e.stopPropagation()}
+            onSubmit={handleCreateSet}
+          >
+            <div className="prio-dialog-head">
+              <h3 className="prio-dialog-title">New Evaluation Set</h3>
+              <p className="prio-dialog-desc">
+                Organize cards into evaluation groups for upcoming sprints or quarters.
+              </p>
+            </div>
+
+            <div>
+              <input
+                type="text"
+                placeholder="e.g. Q4 Sprint, Growth Backlog"
+                className="prio-text-input"
+                value={newSetName}
+                onChange={(e) => setNewSetName(e.target.value)}
+                autoFocus
+                required
+              />
+            </div>
+
+            <div className="prio-dialog-foot">
+              <button
+                type="button"
+                className="prio-btn-secondary"
+                onClick={() => setShowAddSetDialog(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="prio-btn-primary"
+              >
+                Create Set
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Delete Set Confirmation */}
+      {showDeleteConfirm && (
+        <div className="prio-overlay" onClick={() => setShowDeleteConfirm(false)}>
+          <div className="prio-dialog" onClick={(e) => e.stopPropagation()}>
+            <div className="prio-dialog-head">
+              <h3 className="prio-dialog-title" style={{ color: "#F87168" }}>
+                Delete Set: {activeSet?.name}?
+              </h3>
+              <p className="prio-dialog-desc">
+                Are you sure you want to remove this evaluation set? Cards on your Trello board will not be deleted.
+              </p>
+            </div>
+
+            <div className="prio-dialog-foot">
+              <button
+                type="button"
+                className="prio-btn-secondary"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="prio-btn-danger-subtle"
+                style={{ background: "rgba(248, 113, 104, 0.15)", border: "1px solid rgba(248, 113, 104, 0.4)" }}
+                onClick={handleDeleteSet}
+              >
+                Delete Set
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
