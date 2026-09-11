@@ -30,26 +30,27 @@
 
 /* Full iframe container */
 .prio-container {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--ds-bg);
   color: var(--ds-text);
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: hidden !important;
   box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", sans-serif;
 }
 
 /* Top Header */
 .prio-header {
-  padding: 16px 20px 12px;
+  padding: 10px 18px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   flex-shrink: 0;
   border-bottom: 1px solid var(--ds-border-subtle);
   background-color: var(--ds-bg);
@@ -58,13 +59,13 @@
 .prio-header-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .prio-brand-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   background: var(--ds-surface);
   border: 1px solid var(--ds-border);
   display: flex;
@@ -77,7 +78,7 @@
 .prio-brand-titles {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .prio-title-line {
@@ -88,7 +89,7 @@
 
 .prio-title-text {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--ds-text);
   letter-spacing: -0.2px;
@@ -98,9 +99,9 @@
   background: rgba(87, 157, 255, 0.14);
   border: 1px solid rgba(87, 157, 255, 0.28);
   color: var(--ds-link);
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 600;
-  padding: 1px 7px;
+  padding: 1px 6px;
   border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -108,54 +109,29 @@
 
 .prio-subtitle-text {
   margin: 0;
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--ds-text-subtle);
-}
-
-.prio-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.prio-icon-btn {
-  background: transparent;
-  border: none;
-  color: var(--ds-text-subtle);
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.prio-icon-btn:hover {
-  background: var(--ds-surface-hovered);
-  color: var(--ds-text);
 }
 
 /* Controls / Filter Bar */
 .prio-controls-bar {
-  padding: 12px 20px 8px;
+  padding: 8px 18px 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  gap: 12px;
+  gap: 10px;
 }
 
 .prio-section-heading {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 6px;
 }
 
 .prio-heading-title {
   margin: 0;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   color: var(--ds-text-subtle);
   text-transform: uppercase;
@@ -175,14 +151,14 @@
 .prio-controls-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .prio-quick-link {
   background: transparent;
   border: none;
   color: var(--ds-link);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   padding: 2px 4px;
@@ -204,9 +180,9 @@
   background: var(--ds-surface);
   border: 1px solid var(--ds-border);
   color: var(--ds-text);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
-  padding: 4px 8px;
+  padding: 3px 6px;
   border-radius: 4px;
   cursor: pointer;
   outline: none;
@@ -216,14 +192,14 @@
   border-color: var(--ds-border-focused);
 }
 
-/* Cards List Box */
+/* Cards List Box - Flex to take remaining height */
 .prio-list-container {
-  margin: 0 20px;
+  margin: 0 18px;
   flex: 1;
   min-height: 0;
   background: var(--ds-surface-subtle);
   border: 1px solid var(--ds-border-subtle);
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -260,7 +236,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 9px 14px;
+  padding: 7px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   transition: background 0.12s ease;
 }
@@ -276,7 +252,7 @@
 .prio-card-item-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   flex: 1;
   min-width: 0;
 }
@@ -298,9 +274,9 @@
 }
 
 .prio-checkbox-box {
-  width: 17px;
-  height: 17px;
-  border-radius: 4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 3.5px;
   border: 1.5px solid #576574;
   background: var(--ds-surface);
   display: flex;
@@ -320,20 +296,19 @@
 }
 
 .prio-check-svg {
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   color: #091E42;
   stroke-width: 3;
 }
 
 .prio-card-name-text {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 500;
   color: var(--ds-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: -0.1px;
 }
 
 .prio-card-item.deselected .prio-card-name-text {
@@ -343,7 +318,7 @@
 .prio-card-item-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -351,9 +326,9 @@
   background: rgba(75, 206, 151, 0.12);
   border: 1px solid rgba(75, 206, 151, 0.28);
   color: var(--ds-success);
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 600;
-  padding: 2px 7px;
+  padding: 1px 6px;
   border-radius: 4px;
   font-family: monospace;
 }
@@ -362,10 +337,10 @@
   background: transparent;
   border: 1px solid transparent;
   color: var(--ds-link);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  padding: 3px 8px;
+  padding: 2px 6px;
   border-radius: 4px;
   transition: all 0.12s ease;
 }
@@ -378,12 +353,12 @@
 
 /* Bottom Action Buttons */
 .prio-action-bar {
-  padding: 12px 20px;
+  padding: 8px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  gap: 12px;
+  gap: 10px;
 }
 
 .prio-action-group-left {
@@ -397,14 +372,14 @@
   background: var(--ds-surface);
   border: 1px solid var(--ds-border);
   color: var(--ds-text);
-  border-radius: 6px;
-  padding: 7px 14px;
-  font-size: 12.5px;
+  border-radius: 5px;
+  padding: 5px 12px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   transition: background 0.12s ease, border-color 0.12s ease;
 }
 
@@ -418,14 +393,14 @@
   background: transparent;
   border: 1px solid transparent;
   color: var(--ds-danger);
-  border-radius: 6px;
-  padding: 7px 12px;
-  font-size: 12.5px;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   transition: all 0.12s ease;
 }
 
@@ -439,14 +414,14 @@
   background: var(--ds-primary);
   border: none;
   color: var(--ds-primary-text);
-  border-radius: 6px;
-  padding: 7px 16px;
-  font-size: 12.5px;
+  border-radius: 5px;
+  padding: 5px 14px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   transition: background 0.12s ease;
 }
 
@@ -456,27 +431,27 @@
 
 /* Docked Footer */
 .prio-footer-bar {
-  padding: 9px 20px;
+  padding: 6px 18px;
   background: var(--ds-surface-subtle);
   border-top: 1px solid var(--ds-border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 12px;
   flex-shrink: 0;
 }
 
 .prio-footer-tip {
   margin: 0;
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--ds-text-subtle);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .prio-footer-brand {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--ds-text-dim);
   white-space: nowrap;
@@ -491,61 +466,61 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 16px;
   z-index: 100;
 }
 
 .prio-dialog {
   width: 100%;
-  max-width: 440px;
+  max-width: 420px;
   background: var(--ds-surface);
   border: 1px solid var(--ds-border);
-  border-radius: 10px;
-  padding: 20px;
+  border-radius: 8px;
+  padding: 18px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
 .prio-dialog-head {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .prio-dialog-title {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--ds-text);
 }
 
 .prio-dialog-desc {
   margin: 0;
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--ds-text-subtle);
-  line-height: 1.45;
+  line-height: 1.4;
 }
 
 /* Scoring Controls */
 .prio-sliders {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .prio-slider-item {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 .prio-slider-labels {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
+  font-size: 11.5px;
 }
 
 .prio-slider-name {
@@ -558,16 +533,16 @@
   font-weight: 600;
   color: var(--ds-link);
   background: rgba(87, 157, 255, 0.12);
-  padding: 1px 6px;
-  border-radius: 4px;
-  font-size: 11px;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 10.5px;
 }
 
 .prio-range {
   -webkit-appearance: none;
   width: 100%;
-  height: 5px;
-  border-radius: 3px;
+  height: 4px;
+  border-radius: 2px;
   background: #333C44;
   outline: none;
 }
@@ -575,31 +550,26 @@
 .prio-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: var(--ds-primary);
   cursor: pointer;
   border: 2px solid var(--ds-surface);
-  transition: transform 0.1s ease;
-}
-
-.prio-range::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
 }
 
 .prio-score-result-box {
   background: var(--ds-surface-subtle);
   border: 1px solid var(--ds-border-subtle);
-  border-radius: 6px;
-  padding: 10px 14px;
+  border-radius: 5px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .prio-score-result-val {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--ds-success);
   font-family: monospace;
@@ -610,9 +580,9 @@
   background: var(--ds-surface-subtle);
   border: 1px solid var(--ds-border);
   color: var(--ds-text);
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 13px;
+  border-radius: 5px;
+  padding: 7px 10px;
+  font-size: 12.5px;
   outline: none;
   box-sizing: border-box;
 }
@@ -626,5 +596,5 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 2px;
 }

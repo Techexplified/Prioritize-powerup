@@ -57,7 +57,7 @@ TrelloPowerUp.initialize({
             title: "Prioritize",
             url: "./prioritize.html",
             accentColor: "#1D2125",
-            height: 720,
+            height: 480,
             fullscreen: false,
           });
         },
@@ -84,7 +84,7 @@ TrelloPowerUp.initialize({
             title: "Prioritize",
             url: "./prioritize.html",
             accentColor: "#1D2125",
-            height: 720,
+            height: 480,
             fullscreen: false,
           });
         },
