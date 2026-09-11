@@ -53,10 +53,11 @@ TrelloPowerUp.initialize({
               height: 260,
             });
           }
-          return t.popup({
-            title: "Prioritize Settings",
-            url: "./settings.html",
-            height: 260,
+          return t.modal({
+            title: "Prioritize Cards",
+            url: "./prioritize.html",
+            accentColor: "#3B82F6",
+            fullscreen: false,
           });
         },
       },
@@ -78,10 +79,11 @@ TrelloPowerUp.initialize({
               height: 260,
             });
           }
-          return t.popup({
-            title: "Prioritize Settings",
-            url: "./settings.html",
-            height: 260,
+          return t.modal({
+            title: "Prioritize Card",
+            url: "./prioritize.html",
+            accentColor: "#3B82F6",
+            fullscreen: false,
           });
         },
       },

@@ -18,6 +18,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
+        prioritize: resolve(__dirname, "prioritize.html"),
         powerup: resolve(__dirname, "powerup.html"),
         auth: resolve(__dirname, "auth.html"),
         settings: resolve(__dirname, "settings.html"),

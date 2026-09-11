@@ -4,7 +4,7 @@ import { APP_KEY, APP_NAME, getToken, clearToken } from "./lib/auth.js";
 
 function App() {
   const [token, setToken] = useState(null);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("prioritize-preview");
 
   useEffect(() => {
     getToken().then(setToken);
@@ -75,6 +75,7 @@ function App() {
       {/* Navigation Tabs */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
         {[
+          { id: "prioritize-preview", label: "✨ Board Prioritize UI (Reference)" },
           { id: "overview", label: "Overview & Endpoints" },
           { id: "auth-preview", label: "Preview Auth Popup" },
           { id: "settings-preview", label: "Preview Settings Popup" },
@@ -100,6 +101,29 @@ function App() {
       </div>
 
       {/* Tab Content */}
+      {activeTab === "prioritize-preview" && (
+        <div style={{ background: "#1D2125", border: "1px solid #333C44", borderRadius: "10px", padding: "24px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <div>
+              <h2 style={{ fontSize: "16px", margin: 0, color: "#F7F8F9" }}>Prioritize Board Modal Preview (/prioritize.html)</h2>
+              <p style={{ margin: "4px 0 0", color: "#9FADBC", fontSize: "13px" }}>
+                Interactive live preview of the Prioritize Power-Up modal requested in reference.
+              </p>
+            </div>
+            <a href="/prioritize.html" target="_blank" rel="noreferrer" style={{ color: "#579DFF", fontSize: "13px", fontWeight: 600, textDecoration: "none" }}>
+              Open Full Screen ↗
+            </a>
+          </div>
+          <div style={{ display: "flex", justifyContent: "center", background: "#070A14", padding: "24px", borderRadius: "12px", border: "1px solid #22272B" }}>
+            <iframe
+              src="/prioritize.html"
+              title="Prioritize Modal Preview"
+              style={{ width: "100%", maxWidth: "720px", height: "620px", border: "none", borderRadius: "14px" }}
+            />
+          </div>
+        </div>
+      )}
+
       {activeTab === "overview" && (
         <div style={{ background: "#1D2125", border: "1px solid #333C44", borderRadius: "10px", padding: "24px" }}>
           <h2 style={{ fontSize: "17px", marginTop: 0, color: "#F7F8F9" }}>Power-Up Endpoints for Trello Admin</h2>
@@ -116,6 +140,11 @@ function App() {
               </tr>
             </thead>
             <tbody>
+              <tr style={{ borderBottom: "1px solid #22272B" }}>
+                <td style={{ padding: "12px 8px", fontWeight: 600, color: "#F7F8F9" }}>Board Prioritize Modal</td>
+                <td style={{ padding: "12px 8px", fontFamily: "monospace", color: "#579DFF" }}>/prioritize.html</td>
+                <td style={{ padding: "12px 8px", color: "#9FADBC" }}>Main modal for scoring and prioritizing board cards</td>
+              </tr>
               <tr style={{ borderBottom: "1px solid #22272B" }}>
                 <td style={{ padding: "12px 8px", fontWeight: 600, color: "#F7F8F9" }}>Connector URL (iframe)</td>
                 <td style={{ padding: "12px 8px", fontFamily: "monospace", color: "#579DFF" }}>/powerup.html</td>
