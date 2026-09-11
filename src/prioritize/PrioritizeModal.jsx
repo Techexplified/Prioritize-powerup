@@ -222,158 +222,119 @@ export default function PrioritizeModal({ t, onClose }) {
   const activeSet = sets.find((s) => s.id === activeSetId) || sets[0];
 
   return (
-    <div className="prio-app-container">
-      <div className="prio-modal">
-        {/* Header */}
-        <header className="prio-header">
-          <div className="prio-header-left">
-            <div className="prio-logo-box">
-              <SparkleIcon className="prio-sparkle-icon" />
-            </div>
-            <div className="prio-title-group">
-              <div className="prio-title-row">
-                <h1 className="prio-title">Prioritize</h1>
-                <span className="prio-powerup-badge">Power-Up</span>
-              </div>
-              <p className="prio-subtitle">
-                Score cards and automatically rank what your team should build first
-              </p>
-            </div>
+    <div className="prio-modal-wrapper">
+      {/* Header */}
+      <header className="prio-header">
+        <div className="prio-header-left">
+          <div className="prio-logo-box">
+            <SparkleIcon className="prio-sparkle-icon" />
           </div>
-          <button
-            type="button"
-            className="prio-close-btn"
-            onClick={handleClose}
-            aria-label="Close"
-          >
-            <CloseIcon />
-          </button>
-        </header>
-
-        {/* Main Body */}
-        <div className="prio-body">
-          {/* Active Set Switcher */}
-          <div className="prio-set-bar">
-            <div className="prio-active-set-label">
-              <span>Active Set:</span>
-              <strong style={{ color: "#f1f5f9" }}>{activeSet?.name}</strong>
+          <div className="prio-title-group">
+            <div className="prio-title-row">
+              <h1 className="prio-title">Prioritize</h1>
+              <span className="prio-powerup-badge">Power-Up</span>
             </div>
-            {sets.length > 1 && (
-              <select
-                value={activeSetId}
-                onChange={(e) => setActiveSetId(e.target.value)}
-                className="prio-set-dropdown-btn"
-                style={{ background: "#182238", color: "#60a5fa", border: "1px solid #2a3d66" }}
-              >
-                {sets.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-          {/* Section Heading & Quick Actions */}
-          <div className="prio-section-header">
-            <h2 className="prio-section-title">
-              Cards to prioritize ({selectedCount}/{cards.length})
-            </h2>
-            <div className="prio-action-links">
-              <button
-                type="button"
-                className="prio-link-btn"
-                onClick={handleSelectAll}
-              >
-                Select all
-              </button>
-              <span className="prio-dot-separator">·</span>
-              <button
-                type="button"
-                className="prio-link-btn"
-                onClick={handleClearAll}
-              >
-                Clear
-              </button>
-            </div>
-          </div>
-
-          {/* Card List Box */}
-          <div className="prio-card-list-box">
-            <div className="prio-card-list">
-              {cards.map((card, idx) => (
-                <div
-                  key={card.id}
-                  className={`prio-card-row ${card.selected ? "checked" : "unchecked"}`}
-                >
-                  <div className="prio-card-left">
-                    <label className="prio-checkbox-wrap">
-                      <input
-                        type="checkbox"
-                        className="prio-checkbox-input"
-                        checked={Boolean(card.selected)}
-                        onChange={() => handleToggleCard(card.id)}
-                      />
-                      <div className="prio-custom-checkbox">
-                        {card.selected && <CheckIcon className="prio-check-icon" />}
-                      </div>
-                    </label>
-                    <span className="prio-card-title">{card.name}</span>
-                  </div>
-
-                  <div className="prio-card-right">
-                    {card.score !== undefined && (
-                      <span className="prio-score-chip" title="Calculated Priority Score">
-                        {isSortedByRank ? `#${idx + 1} · ` : ""}Score: {card.score}
-                      </span>
-                    )}
-                    <button
-                      type="button"
-                      className="prio-edit-scores-btn"
-                      onClick={() => handleOpenScoreEditor(card)}
-                    >
-                      Edit scores
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Action Buttons below list */}
-          <div className="prio-button-row">
-            <button
-              type="button"
-              className="prio-btn-add-set"
-              onClick={() => setShowAddSetDialog(true)}
-            >
-              +Add New Set
-            </button>
-            <button
-              type="button"
-              className="prio-btn-delete-set"
-              onClick={() => setShowDeleteConfirm(true)}
-            >
-              Delete Set
-            </button>
-            <button
-              type="button"
-              className="prio-btn-rank"
-              onClick={handleToggleRank}
-              title="Automatically rank cards by priority score"
-            >
-              {isSortedByRank ? "↺ Reset Order" : "⚡ Auto-Rank Cards"}
-            </button>
+            <p className="prio-subtitle">
+              Score cards and automatically rank what your team should build first
+            </p>
           </div>
         </div>
+        <button
+          type="button"
+          className="prio-close-btn"
+          onClick={handleClose}
+          aria-label="Close"
+        >
+          <CloseIcon />
+        </button>
+      </header>
 
-        {/* Footer */}
-        <footer className="prio-footer">
-          <p className="prio-tip-text">
-            Tip: You can also score cards individually by clicking any card on the board.
-          </p>
-          <span className="prio-brand-text">Task Prioritize Power-Up</span>
-        </footer>
+      {/* Section Heading & Quick Actions */}
+      <div className="prio-section-header">
+        <h2 className="prio-section-title">
+          Cards to prioritize ({selectedCount}/{cards.length})
+        </h2>
+        <div className="prio-action-links">
+          <button
+            type="button"
+            className="prio-link-btn"
+            onClick={handleSelectAll}
+          >
+            Select all
+          </button>
+          <span className="prio-dot-separator">·</span>
+          <button
+            type="button"
+            className="prio-link-btn"
+            onClick={handleClearAll}
+          >
+            Clear
+          </button>
+        </div>
+      </div>
+
+      {/* Card List Box */}
+      <div className="prio-card-list-box">
+        <div className="prio-card-list">
+          {cards.map((card) => (
+            <div
+              key={card.id}
+              className={`prio-card-row ${card.selected ? "checked" : "unchecked"}`}
+            >
+              <div className="prio-card-left">
+                <label className="prio-checkbox-wrap">
+                  <input
+                    type="checkbox"
+                    className="prio-checkbox-input"
+                    checked={Boolean(card.selected)}
+                    onChange={() => handleToggleCard(card.id)}
+                  />
+                  <div className="prio-custom-checkbox">
+                    {card.selected && <CheckIcon className="prio-check-icon" />}
+                  </div>
+                </label>
+                <span className="prio-card-title">{card.name}</span>
+              </div>
+
+              <div className="prio-card-right">
+                <button
+                  type="button"
+                  className="prio-edit-scores-btn"
+                  onClick={() => handleOpenScoreEditor(card)}
+                >
+                  Edit scores
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Action Buttons below list */}
+      <div className="prio-button-row">
+        <button
+          type="button"
+          className="prio-btn-add-set"
+          onClick={() => setShowAddSetDialog(true)}
+        >
+          +Add New Set
+        </button>
+        <button
+          type="button"
+          className="prio-btn-delete-set"
+          onClick={() => setShowDeleteConfirm(true)}
+        >
+          Delete Set
+        </button>
+      </div>
+
+      {/* Footer */}
+      <footer className="prio-footer">
+        <p className="prio-tip-text">
+          Tip: You can also score cards individually by clicking any card on the board.
+        </p>
+        <span className="prio-brand-text">Task Prioritize Power-Up</span>
+      </footer>
 
         {/* Edit Scores Dialog / Panel */}
         {scoringCard && (
@@ -549,7 +510,6 @@ export default function PrioritizeModal({ t, onClose }) {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

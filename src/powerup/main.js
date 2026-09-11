@@ -54,9 +54,9 @@ TrelloPowerUp.initialize({
             });
           }
           return t.modal({
-            title: "Prioritize Cards",
+            title: "Prioritize",
             url: "./prioritize.html",
-            accentColor: "#3B82F6",
+            accentColor: "#000000",
             fullscreen: false,
           });
         },
@@ -80,9 +80,9 @@ TrelloPowerUp.initialize({
             });
           }
           return t.modal({
-            title: "Prioritize Card",
+            title: "Prioritize",
             url: "./prioritize.html",
-            accentColor: "#3B82F6",
+            accentColor: "#000000",
             fullscreen: false,
           });
         },

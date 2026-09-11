@@ -114,11 +114,11 @@ function App() {
               Open Full Screen ↗
             </a>
           </div>
-          <div style={{ display: "flex", justifyContent: "center", background: "#070A14", padding: "24px", borderRadius: "12px", border: "1px solid #22272B" }}>
+          <div style={{ display: "flex", justifyContent: "center", background: "#060a14", padding: "20px", borderRadius: "12px", border: "1px solid #22272B" }}>
             <iframe
               src="/prioritize.html"
               title="Prioritize Modal Preview"
-              style={{ width: "100%", maxWidth: "720px", height: "620px", border: "none", borderRadius: "14px" }}
+              style={{ width: "100%", maxWidth: "680px", height: "580px", border: "1px solid #25334d", borderRadius: "12px", background: "#0d1424" }}
             />
           </div>
         </div>
