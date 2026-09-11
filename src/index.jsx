@@ -118,7 +118,7 @@ function App() {
             <iframe
               src="/prioritize.html"
               title="Prioritize Modal Preview"
-              style={{ width: "100%", maxWidth: "680px", height: "580px", border: "1px solid #25334d", borderRadius: "12px", background: "#0d1424" }}
+              style={{ width: "100%", maxWidth: "680px", height: "720px", border: "1px solid #333C44", borderRadius: "10px", background: "#1D2125" }}
             />
           </div>
         </div>

@@ -303,18 +303,6 @@ export default function PrioritizeModal({ t, onClose }) {
             </p>
           </div>
         </div>
-
-        <div className="prio-header-actions">
-          <button
-            type="button"
-            className="prio-icon-btn"
-            onClick={handleClose}
-            aria-label="Close"
-            title="Close"
-          >
-            <CloseIcon />
-          </button>
-        </div>
       </header>
 
       {/* Controls & Filter Bar */}
