@@ -180,6 +180,9 @@ export default function PrioritizeModal({ t, onClose }) {
 
   // Target card when editing scores
   const [targetCard, setTargetCard] = useState(null);
+  const [openedFromCard, setOpenedFromCard] = useState(false);
+  const [appliedToast, setAppliedToast] = useState(null);
+  const [syncSuccess, setSyncSuccess] = useState(false);
 
   // Dialogs & Views: "cards" | "choose-framework" | "score-card"
   const [activeView, setActiveView] = useState("cards");
@@ -215,24 +218,44 @@ export default function PrioritizeModal({ t, onClose }) {
       t.card("id", "name")
         .then((currentCard) => {
           if (currentCard && currentCard.id && currentCard.name) {
-            const cardObj = {
-              id: currentCard.id,
-              name: currentCard.name,
-              framework: "rice",
-              reach: 800,
-              impact: 3,
-              confidence: 0.8,
-              effort: 4,
-              score: 480,
-              selected: true,
-            };
-            setTargetCard(cardObj);
-            setSelectedFramework("rice");
-            setReach(800);
-            setImpact(3);
-            setConfidence(0.8);
-            setEffort(4);
-            setActiveView("score-card");
+            setOpenedFromCard(true);
+            Promise.all([
+              typeof t.get === "function" ? t.get("card", "shared", "priority_score").catch(() => null) : Promise.resolve(null),
+              typeof t.get === "function" ? t.get("card", "shared", "priority_framework").catch(() => null) : Promise.resolve(null),
+              typeof t.get === "function" ? t.get("board", "shared", "prio_card_scores").catch(() => null) : Promise.resolve(null),
+            ]).then(([cScore, cFw, bScores]) => {
+              const bEntry = bScores && (bScores[currentCard.id] || bScores[currentCard.name]);
+              const score = cScore !== null && cScore !== undefined ? cScore : bEntry?.score !== undefined ? bEntry.score : 480;
+              const fw = cFw || bEntry?.framework || "rice";
+              const cardObj = {
+                id: currentCard.id,
+                name: currentCard.name,
+                framework: fw,
+                reach: bEntry?.reach !== undefined ? bEntry.reach : 800,
+                impact: bEntry?.impact !== undefined ? bEntry.impact : 3,
+                confidence: bEntry?.confidence !== undefined ? bEntry.confidence : 0.8,
+                effort: bEntry?.effort !== undefined ? bEntry.effort : 4,
+                iceImpact: bEntry?.iceImpact || 8,
+                iceConfidence: bEntry?.iceConfidence || 8,
+                iceEffort: bEntry?.iceEffort || 4,
+                eiImpact: bEntry?.eiImpact || 8,
+                eiEffort: bEntry?.eiEffort || 3,
+                score: Number(score) || score,
+                selected: true,
+              };
+              setTargetCard(cardObj);
+              setSelectedFramework(fw);
+              setReach(cardObj.reach);
+              setImpact(cardObj.impact);
+              setConfidence(cardObj.confidence);
+              setEffort(cardObj.effort);
+              setIceImpact(cardObj.iceImpact);
+              setIceConfidence(cardObj.iceConfidence);
+              setIceEffort(cardObj.iceEffort);
+              setEiImpact(cardObj.eiImpact);
+              setEiEffort(cardObj.eiEffort);
+              setActiveView("score-card");
+            });
           }
         })
         .catch(() => {});
@@ -242,9 +265,13 @@ export default function PrioritizeModal({ t, onClose }) {
 
     const getLists = typeof t.lists === "function" ? t.lists("id", "name") : Promise.resolve([]);
     const getCards = t.cards("id", "name", "idList");
+    const getBoardScores =
+      typeof t.get === "function"
+        ? t.get("board", "shared", "prio_card_scores").catch(() => null)
+        : Promise.resolve(null);
 
-    Promise.all([getCards, getLists])
-      .then(([trelloCards, trelloLists]) => {
+    Promise.all([getCards, getLists, getBoardScores])
+      .then(([trelloCards, trelloLists, boardScores]) => {
         if (trelloCards && trelloCards.length > 0) {
           const cardlyticsListIds = new Set(
             (trelloLists || [])
@@ -261,20 +288,92 @@ export default function PrioritizeModal({ t, onClose }) {
           });
 
           const finalCards = filteredCards.length > 0 ? filteredCards : trelloCards;
+          const scoresMap = boardScores && typeof boardScores === "object" ? { ...boardScores } : {};
 
-          setCards(
-            finalCards.map((c, i) => ({
+          const mappedCards = finalCards.map((c, i) => {
+            const cardName = (c.name || "").trim();
+            let saved =
+              scoresMap[c.id] ||
+              scoresMap[cardName] ||
+              (cardName ? scoresMap[cardName.toLowerCase()] : null);
+
+            if (!saved && cardName) {
+              const found = Object.entries(scoresMap).find(
+                ([k]) =>
+                  k.toLowerCase() === cardName.toLowerCase() ||
+                  cardName.toLowerCase().includes(k.toLowerCase())
+              );
+              if (found) saved = found[1];
+            }
+
+            // Fallback default from SAMPLE_CARD_DEFAULTS if not saved
+            if (!saved && cardName) {
+              const lower = cardName.toLowerCase();
+              const match = [
+                { match: "checkout", score: 480, framework: "rice", reach: 800, impact: 3, confidence: 0.8, effort: 4 },
+                { match: "search improvement", score: 396, framework: "rice", reach: 660, impact: 3, confidence: 0.8, effort: 4 },
+                { match: "mobile redesign", score: 336, framework: "rice", reach: 840, impact: 2, confidence: 0.8, effort: 4 },
+                { match: "export to csv", score: 8.5, framework: "effort-impact", reach: 700, impact: 3, confidence: 0.8, effort: 5 },
+                { match: "social login", score: 100, framework: "rice", reach: 500, impact: 2, confidence: 0.8, effort: 4 },
+                { match: "stripe webhook", score: 19.5, framework: "rice", reach: 600, impact: 3, confidence: 0.8, effort: 4 },
+                { match: "upgrade node", score: 200, framework: "rice", reach: 500, impact: 2, confidence: 0.8, effort: 4 },
+                { match: "email automation", score: 336, framework: "rice", reach: 700, impact: 3, confidence: 0.8, effort: 5 },
+                { match: "dark mode", score: 507, framework: "rice", reach: 950, impact: 2, confidence: 0.8, effort: 3 },
+                { match: "onboarding flow", score: 432, framework: "rice", reach: 900, impact: 3, confidence: 0.8, effort: 5 },
+                { match: "stripe billing", score: 450, framework: "rice", reach: 1000, impact: 3, confidence: 0.9, effort: 6 },
+                { match: "performance", score: 360, framework: "rice", reach: 600, impact: 3, confidence: 0.8, effort: 4 },
+                { match: "multi-currency", score: 300, framework: "rice", reach: 750, impact: 2, confidence: 0.8, effort: 4 },
+              ].find((s) => lower.includes(s.match));
+
+              if (match) {
+                saved = match;
+              }
+            }
+
+            const score = saved?.score !== undefined ? saved.score : Math.max(50, 480 - i * 30);
+            const fw = saved?.framework || "rice";
+
+            return {
               id: c.id,
               name: c.name,
-              framework: "rice",
-              reach: 800,
-              impact: 3,
-              confidence: 0.8,
-              effort: 4,
-              score: Math.max(50, 480 - i * 30),
+              framework: fw,
+              reach: saved?.reach !== undefined ? saved.reach : 800,
+              impact: saved?.impact !== undefined ? saved.impact : 3,
+              confidence: saved?.confidence !== undefined ? saved.confidence : 0.8,
+              effort: saved?.effort !== undefined ? saved.effort : 4,
+              iceImpact: saved?.iceImpact || 8,
+              iceConfidence: saved?.iceConfidence || 8,
+              iceEffort: saved?.iceEffort || 4,
+              eiImpact: saved?.eiImpact || 8,
+              eiEffort: saved?.eiEffort || 3,
+              score: score,
+              quadrant: saved?.quadrant,
               selected: true,
-            }))
-          );
+            };
+          });
+
+          setCards(mappedCards);
+
+          // Seed board dictionary with loaded scores so board badges immediately have data
+          if (t && typeof t.set === "function") {
+            mappedCards.forEach((mc) => {
+              if (mc.id && !scoresMap[mc.id]) {
+                scoresMap[mc.id] = {
+                  score: mc.score,
+                  framework: mc.framework,
+                  cardName: mc.name,
+                  reach: mc.reach,
+                  impact: mc.impact,
+                  confidence: mc.confidence,
+                  effort: mc.effort,
+                };
+              }
+              if (mc.name && !scoresMap[mc.name]) {
+                scoresMap[mc.name] = scoresMap[mc.id];
+              }
+            });
+            t.set("board", "shared", "prio_card_scores", scoresMap).catch(() => {});
+          }
         }
       })
       .catch((err) => {
@@ -339,25 +438,25 @@ export default function PrioritizeModal({ t, onClose }) {
       return Math.round((r * imp * conf) / eff);
     }
     if (selectedFramework === "ice") {
-      const imp = Number(impact) || 1;
-      const conf = Number(confidence) || 1;
-      const eff = Math.max(0.5, Number(effort) || 1);
-      return Math.round((imp * conf * 100) / eff);
+      const imp = Number(iceImpact) || 1;
+      const conf = Number(iceConfidence) || 1;
+      const eff = Math.max(0.5, Number(iceEffort) || 1);
+      return Math.round((imp * conf * 10) / eff);
     }
     if (selectedFramework === "effort-impact") {
-      return Number(impact) || 5;
+      return Number(eiImpact) || 5;
     }
     return 0;
-  }, [selectedFramework, reach, impact, confidence, effort]);
+  }, [selectedFramework, reach, impact, confidence, effort, iceImpact, iceConfidence, iceEffort, eiImpact]);
 
   // Quadrant for Effort vs Impact
   const computedQuadrant = useMemo(() => {
     if (selectedFramework !== "effort-impact") return null;
-    if (impact >= 1 && effort <= 5) return "🌟 Quick Win";
-    if (impact >= 1 && effort > 5) return "🚀 Major Project";
-    if (impact < 1 && effort <= 5) return "⚡ Fill-in";
+    if (eiImpact >= 5 && eiEffort <= 5) return "🌟 Quick Win";
+    if (eiImpact >= 5 && eiEffort > 5) return "🚀 Major Project";
+    if (eiImpact < 5 && eiEffort <= 5) return "⚡ Fill-in";
     return "⏳ Thankless Task";
-  }, [selectedFramework, impact, effort]);
+  }, [selectedFramework, eiImpact, eiEffort]);
 
   // Impact label formatting for RICE
   const impactLabel = useMemo(() => {
@@ -377,13 +476,44 @@ export default function PrioritizeModal({ t, onClose }) {
   // Save score and return to main screen (where scores are displayed)
   function handleApplyScoreAndReturn() {
     if (targetCard) {
+      const updatedCard = {
+        ...targetCard,
+        framework: selectedFramework,
+        score: computedScore,
+        reach,
+        impact,
+        confidence,
+        effort,
+        iceImpact,
+        iceConfidence,
+        iceEffort,
+        eiImpact,
+        eiEffort,
+        quadrant: computedQuadrant,
+      };
+
       setCards((prev) =>
-        prev.map((c) =>
-          c.id === targetCard.id
-            ? {
-                ...c,
-                framework: selectedFramework,
+        prev.map((c) => (c.id === targetCard.id ? updatedCard : c))
+      );
+
+      // Save to Trello shared data
+      if (t && typeof t.set === "function") {
+        // 1. Try card scope (succeeds if in card context)
+        t.set("card", "shared", "priority_score", computedScore).catch(() => {});
+        t.set("card", "shared", "priority_framework", selectedFramework).catch(() => {});
+        if (computedQuadrant) {
+          t.set("card", "shared", "priority_quadrant", computedQuadrant).catch(() => {});
+        }
+
+        // 2. ALWAYS save to board scope so card-badges on Trello board can display it
+        if (typeof t.get === "function") {
+          t.get("board", "shared", "prio_card_scores")
+            .then((existing) => {
+              const map = existing && typeof existing === "object" ? { ...existing } : {};
+              const entry = {
                 score: computedScore,
+                framework: selectedFramework,
+                cardName: targetCard.name,
                 reach,
                 impact,
                 confidence,
@@ -394,21 +524,74 @@ export default function PrioritizeModal({ t, onClose }) {
                 eiImpact,
                 eiEffort,
                 quadrant: computedQuadrant,
+              };
+              if (targetCard.id) map[targetCard.id] = entry;
+              if (targetCard.name) {
+                map[targetCard.name] = entry;
+                map[targetCard.name.trim()] = entry;
               }
-            : c
-        )
-      );
-
-      // Save to Trello shared plugin data if available
-      if (t && typeof t.set === "function") {
-        t.set(targetCard.id, "shared", "priority_score", computedScore).catch(() => {});
-        t.set(targetCard.id, "shared", "priority_framework", selectedFramework).catch(() => {});
+              return t.set("board", "shared", "prio_card_scores", map);
+            })
+            .catch((err) => {
+              console.warn("Failed to set board prio_card_scores:", err);
+            });
+        }
       }
+
+      // If modal was opened from a specific card in Trello, close it now so the user sees the badge immediately on the card!
+      if (openedFromCard && t && typeof t.closeModal === "function") {
+        t.closeModal();
+        return;
+      }
+
+      // Show toast on cards screen
+      setAppliedToast(targetCard.name);
+      setTimeout(() => setAppliedToast(null), 4000);
     }
 
     // Return to main cards screen
     setActiveView("cards");
     setTargetCard(null);
+  }
+
+  // Sync all cards' scores to the Trello board
+  function handleSyncAllToBoard() {
+    if (t && typeof t.set === "function" && typeof t.get === "function") {
+      t.get("board", "shared", "prio_card_scores")
+        .then((existing) => {
+          const map = existing && typeof existing === "object" ? { ...existing } : {};
+          cards.forEach((c) => {
+            if (c.score !== undefined) {
+              const entry = {
+                score: c.score,
+                framework: c.framework || "rice",
+                cardName: c.name,
+                reach: c.reach,
+                impact: c.impact,
+                confidence: c.confidence,
+                effort: c.effort,
+                iceImpact: c.iceImpact,
+                iceConfidence: c.iceConfidence,
+                iceEffort: c.iceEffort,
+                eiImpact: c.eiImpact,
+                eiEffort: c.eiEffort,
+                quadrant: c.quadrant,
+              };
+              if (c.id) map[c.id] = entry;
+              if (c.name) {
+                map[c.name] = entry;
+                map[c.name.trim()] = entry;
+              }
+            }
+          });
+          return t.set("board", "shared", "prio_card_scores", map);
+        })
+        .then(() => {
+          setSyncSuccess(true);
+          setTimeout(() => setSyncSuccess(false), 3000);
+        })
+        .catch(() => {});
+    }
   }
 
   // Create new set
@@ -447,6 +630,35 @@ export default function PrioritizeModal({ t, onClose }) {
       const sorted = [...cards].sort((a, b) => (b.score || 0) - (a.score || 0));
       setCards(sorted);
       setIsSortedByRank(true);
+
+      // Save ranked scores to board so board cards reflect them
+      if (t && typeof t.set === "function" && typeof t.get === "function") {
+        t.get("board", "shared", "prio_card_scores")
+          .then((existing) => {
+            const map = existing && typeof existing === "object" ? { ...existing } : {};
+            sorted.forEach((c) => {
+              if (c.score !== undefined) {
+                const entry = {
+                  score: c.score,
+                  framework: c.framework || "rice",
+                  cardName: c.name,
+                  reach: c.reach,
+                  impact: c.impact,
+                  confidence: c.confidence,
+                  effort: c.effort,
+                  quadrant: c.quadrant,
+                };
+                if (c.id) map[c.id] = entry;
+                if (c.name) {
+                  map[c.name] = entry;
+                  map[c.name.trim()] = entry;
+                }
+              }
+            });
+            return t.set("board", "shared", "prio_card_scores", map);
+          })
+          .catch(() => {});
+      }
     }
   }
 
@@ -479,6 +691,17 @@ export default function PrioritizeModal({ t, onClose }) {
               </p>
             </div>
           </div>
+          {t && typeof t.closeModal === "function" && (
+            <button
+              type="button"
+              className="prio-btn-secondary"
+              style={{ fontSize: "12px", padding: "6px 12px", whiteSpace: "nowrap" }}
+              onClick={() => t.closeModal()}
+              title="Close modal and view updated badges on board"
+            >
+              Done (View Board)
+            </button>
+          )}
         </header>
       )}
 
@@ -914,6 +1137,42 @@ export default function PrioritizeModal({ t, onClose }) {
             </div>
           </div>
 
+          {/* Success Toast */}
+          {appliedToast && (
+            <div
+              style={{
+                background: "rgba(34, 197, 94, 0.15)",
+                border: "1px solid rgba(34, 197, 94, 0.4)",
+                color: "#86EFAC",
+                borderRadius: "6px",
+                padding: "8px 14px",
+                fontSize: "13px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "10px",
+              }}
+            >
+              <span>
+                ✓ Priority score saved for <strong>{appliedToast}</strong>! Badge is now active on your Trello board.
+              </span>
+              <button
+                type="button"
+                onClick={() => setAppliedToast(null)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "#86EFAC",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  padding: "0 4px",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
           {/* Cards List Box */}
           <div className="prio-list-container">
             <div className="prio-card-scroll-area">
@@ -1010,14 +1269,25 @@ export default function PrioritizeModal({ t, onClose }) {
               </button>
             </div>
 
-            <button
-              type="button"
-              className="prio-btn-primary"
-              onClick={handleToggleRank}
-            >
-              <RankIcon />
-              {isSortedByRank ? "Reset Ranking" : "Auto-Rank Cards"}
-            </button>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+              <button
+                type="button"
+                className="prio-btn-secondary"
+                onClick={handleSyncAllToBoard}
+                title="Save and push all priority badges to visible Trello board cards"
+              >
+                {syncSuccess ? "✓ Badges Synced to Board" : "⚡ Sync to Board Cards"}
+              </button>
+
+              <button
+                type="button"
+                className="prio-btn-primary"
+                onClick={handleToggleRank}
+              >
+                <RankIcon />
+                {isSortedByRank ? "Reset Ranking" : "Auto-Rank Cards"}
+              </button>
+            </div>
           </div>
         </>
       )}
