@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./prioritize.css";
 
 // Sparkle/Prioritize Icon
@@ -20,6 +20,41 @@ function SparkleIcon(props) {
   );
 }
 
+// Glowing Sparkle Star Icon for Screen 1 Header
+function SparkleStarIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M12 2C12 7.5 7.5 12 2 12C7.5 12 12 16.5 12 22C12 16.5 16.5 12 22 12C16.5 12 12 7.5 12 2Z"
+        fill="#FFFFFF"
+      />
+      <circle cx="19" cy="5" r="1.5" fill="#93C5FD" />
+      <circle cx="5" cy="19" r="1" fill="#93C5FD" />
+    </svg>
+  );
+}
+
+// Floppy Disk / Save Icon matching Screen 1 Button
+function FloppyDiskIcon(props) {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+      <polyline points="17 21 17 13 7 13 7 21" />
+      <polyline points="7 3 7 8 15 8" />
+    </svg>
+  );
+}
+
 // Chart/Rank Icon
 function RankIcon(props) {
   return (
@@ -37,26 +72,6 @@ function RankIcon(props) {
       <line x1="18" y1="20" x2="18" y2="10" />
       <line x1="12" y1="20" x2="12" y2="4" />
       <line x1="6" y1="20" x2="6" y2="14" />
-    </svg>
-  );
-}
-
-// Close Cross Icon
-function CloseIcon(props) {
-  return (
-    <svg
-      width="15"
-      height="15"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <line x1="18" y1="6" x2="6" y2="18" />
-      <line x1="6" y1="6" x2="18" y2="18" />
     </svg>
   );
 }
@@ -142,13 +157,13 @@ const FRAMEWORKS = [
 ];
 
 const DEFAULT_SAMPLE_CARDS = [
-  { id: "c1", name: "New checkout", framework: "rice", reach: 9, impact: 9, confidence: 9, effort: 4, score: 92, selected: true },
-  { id: "c2", name: "Search improvement", framework: "rice", reach: 8, impact: 8, confidence: 8, effort: 4, score: 84, selected: true },
-  { id: "c3", name: "Mobile redesign", framework: "rice", reach: 8, impact: 9, confidence: 7, effort: 6, score: 78, selected: true },
+  { id: "c1", name: "New checkout", framework: "rice", reach: 800, impact: 3, confidence: 0.8, effort: 4, score: 480, selected: true },
+  { id: "c2", name: "Search improvement", framework: "rice", reach: 660, impact: 3, confidence: 0.8, effort: 4, score: 396, selected: true },
+  { id: "c3", name: "Mobile redesign", framework: "rice", reach: 840, impact: 2, confidence: 0.8, effort: 4, score: 336, selected: true },
   { id: "c4", name: "Email automation", framework: "ice", impact: 7, confidence: 8, effort: 5, score: 71, selected: true },
-  { id: "c5", name: "Dark mode theme", framework: "effort-impact", impact: 6, effort: 4, score: 65, quadrant: "🌟 Quick Win", selected: true },
-  { id: "c6", name: "Onboarding flow", framework: "rice", reach: 9, impact: 9, confidence: 8, effort: 5, score: 86, selected: true },
-  { id: "c7", name: "Stripe billing upgrade", framework: "rice", reach: 10, impact: 10, confidence: 9, effort: 6, score: 95, selected: true },
+  { id: "c5", name: "Dark mode theme", framework: "effort-impact", impact: 8, effort: 3, score: 65, quadrant: "🌟 Quick Win", selected: true },
+  { id: "c6", name: "Onboarding flow", framework: "rice", reach: 900, impact: 3, confidence: 0.8, effort: 5, score: 432, selected: true },
+  { id: "c7", name: "Stripe billing upgrade", framework: "rice", reach: 1000, impact: 3, confidence: 0.9, effort: 6, score: 450, selected: true },
   { id: "c8", name: "Performance optimization", framework: "ice", impact: 8, confidence: 7, effort: 4, score: 80, selected: true },
   { id: "c9", name: "Multi-currency support", framework: "effort-impact", impact: 7, effort: 6, score: 68, quadrant: "🚀 Major Project", selected: true },
 ];
@@ -163,20 +178,35 @@ export default function PrioritizeModal({ t, onClose }) {
   const [activeSetId, setActiveSetId] = useState("set-1");
   const [cards, setCards] = useState(DEFAULT_SAMPLE_CARDS);
 
-  // Target card when selecting framework
+  // Target card when editing scores
   const [targetCard, setTargetCard] = useState(null);
 
-  // Dialogs
+  // Dialogs & Views: "cards" | "choose-framework" | "score-card"
+  const [activeView, setActiveView] = useState("cards");
   const [showAddSetDialog, setShowAddSetDialog] = useState(false);
   const [newSetName, setNewSetName] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSortedByRank, setIsSortedByRank] = useState(false);
-  const [activeView, setActiveView] = useState("cards"); // "cards" | "choose-framework"
 
   // Active selected framework
   const [selectedFramework, setSelectedFramework] = useState("rice");
 
-  // Load real cards from Trello if available (excluding Cardlytics / utility cards)
+  // RICE factor states
+  const [reach, setReach] = useState(800);
+  const [impact, setImpact] = useState(3);
+  const [confidence, setConfidence] = useState(0.8);
+  const [effort, setEffort] = useState(4);
+
+  // ICE factor states
+  const [iceImpact, setIceImpact] = useState(8);
+  const [iceConfidence, setIceConfidence] = useState(8);
+  const [iceEffort, setIceEffort] = useState(4);
+
+  // Effort vs Impact factor states
+  const [eiImpact, setEiImpact] = useState(8);
+  const [eiEffort, setEiEffort] = useState(3);
+
+  // Load real cards from Trello if available
   useEffect(() => {
     if (!t || typeof t.cards !== "function") return;
 
@@ -186,30 +216,20 @@ export default function PrioritizeModal({ t, onClose }) {
     Promise.all([getCards, getLists])
       .then(([trelloCards, trelloLists]) => {
         if (trelloCards && trelloCards.length > 0) {
-          // Identify Cardlytics or system utility list IDs
           const cardlyticsListIds = new Set(
             (trelloLists || [])
               .filter((l) => l.name && l.name.toLowerCase().includes("cardlytics"))
               .map((l) => l.id)
           );
 
-          // Filter out Cardlytics cards and pure emoji/number utility cards
           const filteredCards = trelloCards.filter((card) => {
-            // 1. Exclude if belonging to Cardlytics list
-            if (card.idList && cardlyticsListIds.has(card.idList)) {
-              return false;
-            }
-            // 2. Exclude if the card name is only a single emoji symbol or a bare number (e.g. "📌", "⚠️", "🏷️", "6")
+            if (card.idList && cardlyticsListIds.has(card.idList)) return false;
             const name = (card.name || "").trim();
             const isSingleEmoji = /^[\p{Emoji_Presentation}\p{Extended_Pictographic}\uFE0F\s]{1,3}$/u.test(name);
             const isNumberOnly = /^[0-9]+$/.test(name);
-            if (isSingleEmoji || isNumberOnly) {
-              return false;
-            }
-            return true;
+            return !(isSingleEmoji || isNumberOnly);
           });
 
-          // Use filtered cards (or fallback to original if filter is too aggressive)
           const finalCards = filteredCards.length > 0 ? filteredCards : trelloCards;
 
           setCards(
@@ -217,11 +237,11 @@ export default function PrioritizeModal({ t, onClose }) {
               id: c.id,
               name: c.name,
               framework: "rice",
-              reach: 8,
-              impact: 7,
-              confidence: 8,
-              effort: 5,
-              score: Math.max(50, 95 - i * 4),
+              reach: 800,
+              impact: 3,
+              confidence: 0.8,
+              effort: 4,
+              score: Math.max(50, 480 - i * 30),
               selected: true,
             }))
           );
@@ -248,34 +268,115 @@ export default function PrioritizeModal({ t, onClose }) {
     );
   }
 
-  // Open framework selection screen
+  // Open framework selection screen when user clicks "Edit scores"
   function handleOpenFrameworkSelect(card) {
     setTargetCard(card);
-    setSelectedFramework(card?.framework || "rice");
+    const fw = card?.framework || "rice";
+    setSelectedFramework(fw);
+
+    // Initialize factor states from card
+    setReach(card?.reach !== undefined ? card.reach : 800);
+    setImpact(card?.impact !== undefined ? card.impact : 3);
+    setConfidence(card?.confidence !== undefined ? card.confidence : 0.8);
+    setEffort(card?.effort !== undefined ? card.effort : 4);
+    setIceImpact(card?.iceImpact || 8);
+    setIceConfidence(card?.iceConfidence || 8);
+    setIceEffort(card?.iceEffort || 4);
+    setEiImpact(card?.eiImpact || 8);
+    setEiEffort(card?.eiEffort || 3);
+
     setActiveView("choose-framework");
   }
 
-  // Save framework choice and return to cards view
-  function handleSelectFrameworkAndReturn() {
-    if (targetCard) {
-      setCards((prev) =>
-        prev.map((c) =>
-          c.id === targetCard.id
-            ? { ...c, framework: selectedFramework }
-            : c
-        )
-      );
+  // Proceed from framework selection to score editing screen (Screen 1)
+  function handleProceedToScore() {
+    setActiveView("score-card");
+  }
 
-      if (t && typeof t.set === "function") {
-        t.set(targetCard.id, "shared", "priority_framework", selectedFramework).catch(() => {});
-      }
-    }
+  // Cancel back to cards list
+  function handleCancelToCards() {
     setActiveView("cards");
     setTargetCard(null);
   }
 
-  // Cancel framework selection and return to cards view
-  function handleCancelFrameworkSelect() {
+  // Live score calculation
+  const computedScore = useMemo(() => {
+    if (selectedFramework === "rice") {
+      const r = Number(reach) || 0;
+      const imp = Number(impact) || 1;
+      const conf = Number(confidence) || 1;
+      const eff = Math.max(0.5, Number(effort) || 1);
+      return Math.round((r * imp * conf) / eff);
+    }
+    if (selectedFramework === "ice") {
+      const imp = Number(iceImpact) || 1;
+      const conf = Number(iceConfidence) || 1;
+      const eff = Math.max(1, Number(iceEffort) || 1);
+      return Math.round((imp * conf * 10) / eff);
+    }
+    if (selectedFramework === "effort-impact") {
+      return Number(eiImpact) || 5;
+    }
+    return 0;
+  }, [selectedFramework, reach, impact, confidence, effort, iceImpact, iceConfidence, iceEffort, eiImpact]);
+
+  // Quadrant for Effort vs Impact
+  const computedQuadrant = useMemo(() => {
+    if (selectedFramework !== "effort-impact") return null;
+    if (eiImpact >= 5 && eiEffort <= 5) return "🌟 Quick Win";
+    if (eiImpact >= 5 && eiEffort > 5) return "🚀 Major Project";
+    if (eiImpact < 5 && eiEffort <= 5) return "⚡ Fill-in";
+    return "⏳ Thankless Task";
+  }, [selectedFramework, eiImpact, eiEffort]);
+
+  // Impact label formatting for RICE
+  const impactLabel = useMemo(() => {
+    if (impact === 0.25) return "0.25 (Min)";
+    if (impact === 0.5) return "0.5 (Low)";
+    if (impact === 1) return "1 (Med)";
+    if (impact === 2) return "2 (High)";
+    if (impact === 3) return "3 (Massive)";
+    return `${impact}`;
+  }, [impact]);
+
+  // Confidence label formatting for RICE
+  const confidenceLabel = useMemo(() => {
+    return `${Math.round(confidence * 100)}%`;
+  }, [confidence]);
+
+  // Save score and return to main screen (where scores are displayed)
+  function handleApplyScoreAndReturn() {
+    if (targetCard) {
+      setCards((prev) =>
+        prev.map((c) =>
+          c.id === targetCard.id
+            ? {
+                ...c,
+                framework: selectedFramework,
+                score: computedScore,
+                reach,
+                impact,
+                confidence,
+                effort,
+                iceImpact,
+                iceConfidence,
+                iceEffort,
+                eiImpact,
+                eiEffort,
+                quadrant: computedQuadrant,
+              }
+            : c
+        )
+      );
+
+      // Save to Trello shared plugin data if available
+      if (t && typeof t.set === "function") {
+        t.set(targetCard.id, "shared", "priority_score", computedScore).catch(() => {});
+        t.set(targetCard.id, "shared", "priority_framework", selectedFramework).catch(() => {});
+      }
+    }
+
+    // Return to main cards screen
     setActiveView("cards");
     setTargetCard(null);
   }
@@ -319,23 +420,19 @@ export default function PrioritizeModal({ t, onClose }) {
     }
   }
 
-  // Close modal
-  function handleClose() {
-    if (onClose) {
-      onClose();
-    } else if (t && typeof t.closeModal === "function") {
-      t.closeModal();
-    } else if (t && typeof t.closePopup === "function") {
-      t.closePopup();
-    }
-  }
-
   const selectedCount = cards.filter((c) => c.selected).length;
   const activeSet = sets.find((s) => s.id === activeSetId) || sets[0];
+  const currentFw = FRAMEWORKS.find((f) => f.id === selectedFramework) || FRAMEWORKS[0];
+
+  // Dynamic slider percentages
+  const reachPercent = Math.min(100, Math.max(0, (reach / 2000) * 100));
+  const effortPercent = Math.min(100, Math.max(0, ((effort - 1) / 9) * 100));
+  const eiImpactPercent = Math.min(100, Math.max(0, (eiImpact / 10) * 100));
+  const eiEffortPercent = Math.min(100, Math.max(0, ((eiEffort - 1) / 9) * 100));
 
   return (
     <div className="prio-container">
-      {/* Header */}
+      {/* Top Header */}
       <header className="prio-header">
         <div className="prio-header-brand">
           <div className="prio-brand-icon">
@@ -353,8 +450,10 @@ export default function PrioritizeModal({ t, onClose }) {
         </div>
       </header>
 
-      {/* View 1: Choose Framework Screen */}
-      {activeView === "choose-framework" ? (
+      {/* ========================================================= */}
+      {/* VIEW 1: CHOOSE FRAMEWORK SCREEN                           */}
+      {/* ========================================================= */}
+      {activeView === "choose-framework" && (
         <>
           <div className="prio-framework-view">
             <div className="prio-framework-header-info">
@@ -370,7 +469,7 @@ export default function PrioritizeModal({ t, onClose }) {
               </p>
             </div>
 
-            {/* Main Framework Dropdown matching user reference */}
+            {/* Main Framework Dropdown */}
             <select
               className="prio-framework-main-dropdown"
               value={selectedFramework}
@@ -383,7 +482,7 @@ export default function PrioritizeModal({ t, onClose }) {
               ))}
             </select>
 
-            {/* Framework Details List matching user annotations */}
+            {/* Framework Details List */}
             <div className="prio-framework-cards-container">
               {FRAMEWORKS.map((f) => {
                 const isSelected = f.id === selectedFramework;
@@ -415,26 +514,307 @@ export default function PrioritizeModal({ t, onClose }) {
             </div>
           </div>
 
-          {/* Action Row for Framework View */}
+          {/* Action Row: Advance to Score Card */}
           <div className="prio-framework-action-row">
             <button
               type="button"
               className="prio-btn-secondary"
-              onClick={handleCancelFrameworkSelect}
+              onClick={handleCancelToCards}
             >
               ← Back to Cards
             </button>
             <button
               type="button"
               className="prio-btn-primary"
-              onClick={handleSelectFrameworkAndReturn}
+              onClick={handleProceedToScore}
             >
-              Select Framework & Return
+              Continue to Edit Scores →
             </button>
           </div>
         </>
-      ) : (
-        /* View 2: Cards To Prioritize Screen */
+      )}
+
+      {/* ========================================================= */}
+      {/* VIEW 2: SCORE CARD SCREEN (MATCHING USER REFERENCE IMAGE) */}
+      {/* ========================================================= */}
+      {activeView === "score-card" && (
+        <>
+          <div className="prio-scoring-screen">
+            {/* Header matching image */}
+            <div className="prio-scoring-header">
+              <div className="prio-scoring-header-left">
+                <div className="prio-scoring-icon-box">
+                  <SparkleStarIcon />
+                </div>
+                <div className="prio-scoring-titles">
+                  <h2 className="prio-scoring-title-text">PRIORITIZE</h2>
+                  <p className="prio-scoring-subtitle">
+                    Power-Up on this card
+                    {targetCard && (
+                      <span className="prio-scoring-target-tag">
+                        · {targetCard.name}
+                      </span>
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {/* Framework Dropdown */}
+              <div className="prio-scoring-fw-wrap">
+                <span className="prio-scoring-fw-label">Framework:</span>
+                <select
+                  className="prio-scoring-fw-dropdown"
+                  value={selectedFramework}
+                  onChange={(e) => setSelectedFramework(e.target.value)}
+                >
+                  {FRAMEWORKS.map((f) => (
+                    <option key={f.id} value={f.id}>
+                      {f.short}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Factor Controls */}
+            <div className="prio-scoring-body">
+              {/* RICE SCORING (IMAGE EXACT) */}
+              {selectedFramework === "rice" && (
+                <>
+                  {/* Reach */}
+                  <div className="prio-scoring-factor-item">
+                    <div className="prio-scoring-factor-head">
+                      <span className="prio-scoring-factor-name">Reach (users/month impacted)</span>
+                      <span className="prio-scoring-val-blue">{reach}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="2000"
+                      step="50"
+                      value={reach}
+                      onChange={(e) => setReach(Number(e.target.value))}
+                      className="prio-range-slider prio-slider-blue"
+                      style={{
+                        background: `linear-gradient(to right, #2563EB 0%, #2563EB ${reachPercent}%, #333C44 ${reachPercent}%, #333C44 100%)`,
+                      }}
+                    />
+                  </div>
+
+                  {/* Impact */}
+                  <div className="prio-scoring-factor-item">
+                    <div className="prio-scoring-factor-head">
+                      <span className="prio-scoring-factor-name">Impact (per user)</span>
+                      <span className="prio-scoring-val-white">{impactLabel}</span>
+                    </div>
+                    <div className="prio-pills-row">
+                      {[
+                        { val: 0.25, label: "0.25 Min" },
+                        { val: 0.5, label: "0.5 Low" },
+                        { val: 1, label: "1 Med" },
+                        { val: 2, label: "2 High" },
+                        { val: 3, label: "3 Massive" },
+                      ].map((item) => (
+                        <button
+                          key={item.val}
+                          type="button"
+                          className={`prio-pill-button ${impact === item.val ? "active" : ""}`}
+                          onClick={() => setImpact(item.val)}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Confidence */}
+                  <div className="prio-scoring-factor-item">
+                    <div className="prio-scoring-factor-head">
+                      <span className="prio-scoring-factor-name">Confidence</span>
+                      <span className="prio-scoring-val-white">{confidenceLabel}</span>
+                    </div>
+                    <div className="prio-pills-row">
+                      {[
+                        { val: 0.5, label: "50% (Low)" },
+                        { val: 0.8, label: "80% (Medium)" },
+                        { val: 1.0, label: "100% (High)" },
+                      ].map((item) => (
+                        <button
+                          key={item.val}
+                          type="button"
+                          className={`prio-pill-button ${confidence === item.val ? "active" : ""}`}
+                          onClick={() => setConfidence(item.val)}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Effort */}
+                  <div className="prio-scoring-factor-item">
+                    <div className="prio-scoring-factor-head">
+                      <span className="prio-scoring-factor-name">Effort (person-months or sprints)</span>
+                      <span className="prio-scoring-val-orange">{effort}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      step="1"
+                      value={effort}
+                      onChange={(e) => setEffort(Number(e.target.value))}
+                      className="prio-range-slider prio-slider-orange"
+                      style={{
+                        background: `linear-gradient(to right, #EA580C 0%, #EA580C ${effortPercent}%, #333C44 ${effortPercent}%, #333C44 100%)`,
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* ICE SCORING */}
+              {selectedFramework === "ice" && (
+                <>
+                  <div className="prio-scoring-factor-item">
+                    <div className="prio-scoring-factor-head">
+                      <span className="prio-scoring-factor-name">Impact (1 to 10)</span>
+                      <span className="prio-scoring-val-blue">{iceImpact}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={iceImpact}
+                      onChange={(e) => setIceImpact(Number(e.target.value))}
+                      className="prio-range-slider prio-slider-blue"
+                    />
+                  </div>
+
+                  <div className="prio-scoring-factor-item">
+                    <div className="prio-scoring-factor-head">
+                      <span className="prio-scoring-factor-name">Confidence (1 to 10)</span>
+                      <span className="prio-scoring-val-blue">{iceConfidence}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={iceConfidence}
+                      onChange={(e) => setIceConfidence(Number(e.target.value))}
+                      className="prio-range-slider prio-slider-blue"
+                    />
+                  </div>
+
+                  <div className="prio-scoring-factor-item">
+                    <div className="prio-scoring-factor-head">
+                      <span className="prio-scoring-factor-name">Effort / Ease (1 to 10)</span>
+                      <span className="prio-scoring-val-orange">{iceEffort}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={iceEffort}
+                      onChange={(e) => setIceEffort(Number(e.target.value))}
+                      className="prio-range-slider prio-slider-orange"
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* EFFORT VS IMPACT SCORING */}
+              {selectedFramework === "effort-impact" && (
+                <>
+                  <div className="prio-scoring-factor-item">
+                    <div className="prio-scoring-factor-head">
+                      <span className="prio-scoring-factor-name">Impact (1 to 10)</span>
+                      <span className="prio-scoring-val-blue">{eiImpact}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={eiImpact}
+                      onChange={(e) => setEiImpact(Number(e.target.value))}
+                      className="prio-range-slider prio-slider-blue"
+                      style={{
+                        background: `linear-gradient(to right, #2563EB 0%, #2563EB ${eiImpactPercent}%, #333C44 ${eiImpactPercent}%, #333C44 100%)`,
+                      }}
+                    />
+                  </div>
+
+                  <div className="prio-scoring-factor-item">
+                    <div className="prio-scoring-factor-head">
+                      <span className="prio-scoring-factor-name">Effort (1 to 10)</span>
+                      <span className="prio-scoring-val-orange">{eiEffort}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="1"
+                      max="10"
+                      value={eiEffort}
+                      onChange={(e) => setEiEffort(Number(e.target.value))}
+                      className="prio-range-slider prio-slider-orange"
+                      style={{
+                        background: `linear-gradient(to right, #EA580C 0%, #EA580C ${eiEffortPercent}%, #333C44 ${eiEffortPercent}%, #333C44 100%)`,
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+
+              {/* Result Score Card */}
+              <div className="prio-score-result-card">
+                <span className="prio-score-result-label">
+                  {currentFw.short} SCORE
+                </span>
+                <span className="prio-score-result-value">
+                  {computedQuadrant ? computedQuadrant : computedScore}
+                </span>
+                <span className="prio-score-result-formula">
+                  {selectedFramework === "rice"
+                    ? `Formula: (${reach} × ${impact} × ${confidenceLabel}) ÷ ${effort} = ${computedScore}`
+                    : `Formula: ${currentFw.formulaText}`}
+                </span>
+              </div>
+
+              {/* Primary Action Button */}
+              <button
+                type="button"
+                className="prio-btn-apply"
+                onClick={handleApplyScoreAndReturn}
+              >
+                <FloppyDiskIcon />
+                <span>Apply {currentFw.short} Badge to Card</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Bottom Back Row */}
+          <div className="prio-scoring-footer-bar">
+            <button
+              type="button"
+              className="prio-btn-secondary"
+              onClick={() => setActiveView("choose-framework")}
+            >
+              ← Back to Framework Selection
+            </button>
+            <button
+              type="button"
+              className="prio-quick-link"
+              onClick={handleCancelToCards}
+            >
+              Cancel
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* ========================================================= */}
+      {/* VIEW 3: MAIN CARDS LIST (WHERE SCORES ARE DISPLAYED)      */}
+      {/* ========================================================= */}
+      {activeView === "cards" && (
         <>
           {/* Controls & Filter Bar */}
           <div className="prio-controls-bar">
@@ -484,42 +864,69 @@ export default function PrioritizeModal({ t, onClose }) {
           {/* Cards List Box */}
           <div className="prio-list-container">
             <div className="prio-card-scroll-area">
-              {cards.map((card, idx) => (
-                <div
-                  key={card.id}
-                  className={`prio-card-item ${card.selected ? "selected" : "deselected"}`}
-                >
-                  <div className="prio-card-item-left">
-                    <label className="prio-checkbox-container">
-                      <input
-                        type="checkbox"
-                        className="prio-native-checkbox"
-                        checked={Boolean(card.selected)}
-                        onChange={() => handleToggleCard(card.id)}
-                      />
-                      <div className="prio-checkbox-box">
-                        {card.selected && <CheckIcon className="prio-check-svg" />}
-                      </div>
-                    </label>
-                    <span className="prio-card-name-text">{card.name}</span>
-                  </div>
+              {cards.map((card, idx) => {
+                const isRICE = (card.framework || "rice").toLowerCase() === "rice";
+                const isHighPriority = card.score >= 350;
 
-                  <div className="prio-card-item-right">
-                    {card.score !== undefined && (
-                      <span className="prio-rank-pill" title={`Scored with ${card.framework?.toUpperCase() || "RICE"}`}>
-                        {isSortedByRank ? `#${idx + 1} · ` : ""}{card.quadrant ? card.quadrant : `Score: ${card.score}`}
-                      </span>
-                    )}
-                    <button
-                      type="button"
-                      className="prio-score-link"
-                      onClick={() => handleOpenFrameworkSelect(card)}
-                    >
-                      Edit scores
-                    </button>
+                return (
+                  <div
+                    key={card.id}
+                    className={`prio-card-item ${card.selected ? "selected" : "deselected"}`}
+                  >
+                    <div className="prio-card-item-left">
+                      <label className="prio-checkbox-container">
+                        <input
+                          type="checkbox"
+                          className="prio-native-checkbox"
+                          checked={Boolean(card.selected)}
+                          onChange={() => handleToggleCard(card.id)}
+                        />
+                        <div className="prio-checkbox-box">
+                          {card.selected && <CheckIcon className="prio-check-svg" />}
+                        </div>
+                      </label>
+                      <span className="prio-card-name-text">{card.name}</span>
+                    </div>
+
+                    <div className="prio-card-item-right">
+                      {card.score !== undefined && (
+                        <span
+                          className="prio-rank-pill"
+                          title={`Prioritization Score (${(card.framework || "RICE").toUpperCase()})`}
+                          style={
+                            isHighPriority
+                              ? {
+                                  background: "rgba(248, 113, 104, 0.16)",
+                                  borderColor: "rgba(248, 113, 104, 0.4)",
+                                  color: "#FCA5A5",
+                                }
+                              : card.score >= 100
+                              ? {
+                                  background: "rgba(87, 157, 255, 0.14)",
+                                  borderColor: "rgba(87, 157, 255, 0.35)",
+                                  color: "#579DFF",
+                                }
+                              : {}
+                          }
+                        >
+                          {isSortedByRank ? `#${idx + 1} · ` : ""}
+                          {card.quadrant
+                            ? card.quadrant
+                            : `🏆 ${card.score} ${(card.framework || "RICE").toUpperCase()}`}
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        className="prio-score-link"
+                        onClick={() => handleOpenFrameworkSelect(card)}
+                      >
+                        Edit scores
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
@@ -556,10 +963,10 @@ export default function PrioritizeModal({ t, onClose }) {
         </>
       )}
 
-      {/* Footer */}
+      {/* Docked Footer */}
       <footer className="prio-footer-bar">
         <p className="prio-footer-tip">
-          <span>💡</span> Tip: You can also score cards individually by clicking any card on the board.
+          <span>💡</span> Tip: You can also score cards individually by clicking Edit scores on any card.
         </p>
         <span className="prio-footer-brand">Task Prioritize Power-Up</span>
       </footer>

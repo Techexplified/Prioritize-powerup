@@ -668,3 +668,300 @@
   margin-top: 2px;
 }
 
+/* ========================================================= */
+/* Card Scoring Screen View (Exact Match to User Reference) */
+/* ========================================================= */
+
+.prio-scoring-screen {
+  margin: 2px 18px 0 18px;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 8px;
+}
+
+.prio-scoring-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--ds-border-subtle);
+  flex-shrink: 0;
+}
+
+.prio-scoring-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prio-scoring-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.prio-scoring-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.prio-scoring-title-text {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: var(--ds-text);
+  text-transform: uppercase;
+}
+
+.prio-scoring-subtitle {
+  margin: 0;
+  font-size: 11px;
+  color: var(--ds-text-subtle);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.prio-scoring-target-tag {
+  color: var(--ds-link);
+  font-weight: 600;
+}
+
+.prio-scoring-fw-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.prio-scoring-fw-label {
+  font-size: 11.5px;
+  color: var(--ds-text-subtle);
+  font-weight: 500;
+}
+
+.prio-scoring-fw-dropdown {
+  background: transparent;
+  border: none;
+  color: var(--ds-text);
+  font-size: 12px;
+  font-weight: 700;
+  outline: none;
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.prio-scoring-fw-dropdown option {
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+
+.prio-scoring-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prio-scoring-factor-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prio-scoring-factor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.prio-scoring-factor-name {
+  color: var(--ds-text);
+  font-weight: 600;
+}
+
+.prio-scoring-val-blue {
+  color: #579DFF;
+  font-weight: 700;
+  font-size: 13.5px;
+  font-family: monospace;
+}
+
+.prio-scoring-val-orange {
+  color: #F59E0B;
+  font-weight: 700;
+  font-size: 13.5px;
+  font-family: monospace;
+}
+
+.prio-scoring-val-white {
+  color: var(--ds-text);
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Custom Dual-color Sliders */
+.prio-range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  background: #333C44;
+}
+
+.prio-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid #1D2125;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+  transition: transform 0.1s ease;
+}
+
+.prio-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.prio-slider-blue::-webkit-slider-thumb {
+  background: #579DFF;
+  box-shadow: 0 0 8px rgba(87, 157, 255, 0.6);
+}
+
+.prio-slider-orange::-webkit-slider-thumb {
+  background: #F59E0B;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+/* Segmented Pill Buttons */
+.prio-pills-row {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+}
+
+.prio-pill-button {
+  flex: 1;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  color: var(--ds-text-subtle);
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 6px 3px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+}
+
+.prio-pill-button:hover {
+  background: var(--ds-surface-hovered);
+  color: var(--ds-text);
+  border-color: #579DFF;
+}
+
+.prio-pill-button.active {
+  background: #2563EB;
+  border-color: #3B82F6;
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+}
+
+/* Score Box matching user image */
+.prio-score-result-card {
+  background: var(--ds-surface-subtle);
+  border: 1px solid var(--ds-border-subtle);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.prio-score-result-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--ds-text-subtle);
+}
+
+.prio-score-result-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.prio-score-result-formula {
+  font-size: 10.5px;
+  color: var(--ds-text-dim);
+  margin-top: 2px;
+}
+
+/* Full width primary action button */
+.prio-btn-apply {
+  width: 100%;
+  background: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%);
+  border: 1px solid #3B82F6;
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 11px 16px;
+  border-radius: 7px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+  box-shadow: 0 3px 12px rgba(37, 99, 235, 0.35);
+}
+
+.prio-btn-apply:hover {
+  background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
+  box-shadow: 0 5px 16px rgba(37, 99, 235, 0.45);
+  transform: translateY(-1px);
+}
+
+.prio-btn-apply:active {
+  transform: translateY(0);
+}
+
+.prio-scoring-footer-bar {
+  padding: 6px 18px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+
