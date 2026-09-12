@@ -38,6 +38,40 @@ TrelloPowerUp.initialize({
     });
   },
 
+  // Card front badges showing priority score
+  "card-badges": async function (t) {
+    const cardData = await t.get("card", "shared", "priority_data");
+    if (!cardData || cardData.score === undefined) return [];
+    const icon = cardData.badge?.icon || (cardData.score >= 350 ? "🏆" : cardData.score >= 200 ? "🎯" : "🔴");
+    const label = cardData.badge?.text || `${cardData.score} ${cardData.framework || "RICE"}`;
+    return [
+      {
+        text: `${icon} ${label}`,
+        color: cardData.score >= 350 ? "red" : cardData.score >= 200 ? "blue" : "orange",
+      },
+    ];
+  },
+
+  // Card detail badges (inside the card modal in Trello)
+  "card-detail-badges": async function (t) {
+    const cardData = await t.get("card", "shared", "priority_data");
+    const scoreText = cardData?.score !== undefined ? `${cardData.badge?.icon || "🏆"} ${cardData.score} ${cardData.framework || "RICE"}` : "Score Card";
+    return [
+      {
+        title: "Prioritize Score",
+        text: scoreText,
+        color: cardData?.score >= 350 ? "red" : cardData?.score >= 200 ? "blue" : "orange",
+        callback: function (t) {
+          return t.popup({
+            title: "Prioritize Card",
+            url: "./prioritize.html?view=card",
+            height: 580,
+          });
+        },
+      },
+    ];
+  },
+
   // Board button in Trello header
   "board-buttons": function (t) {
     return [
@@ -54,11 +88,11 @@ TrelloPowerUp.initialize({
             });
           }
           return t.modal({
-            title: "Prioritize",
-            url: "./prioritize.html",
-            accentColor: "#1D2125",
-            height: 480,
-            fullscreen: false,
+            title: "Prioritize Board",
+            url: "./prioritize.html?view=board",
+            accentColor: "#0D1424",
+            height: 680,
+            fullscreen: true,
           });
         },
       },
@@ -80,12 +114,10 @@ TrelloPowerUp.initialize({
               height: 260,
             });
           }
-          return t.modal({
+          return t.popup({
             title: "Prioritize",
-            url: "./prioritize.html",
-            accentColor: "#1D2125",
-            height: 480,
-            fullscreen: false,
+            url: "./prioritize.html?view=card",
+            height: 580,
           });
         },
       },
