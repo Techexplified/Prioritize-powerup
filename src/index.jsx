@@ -2,6 +2,11 @@ import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { APP_KEY, APP_NAME, getToken, clearToken } from "./lib/auth.js";
 
+// If loaded inside an iframe by Trello as the Power-Up connector URL:
+if (window.self !== window.top) {
+  import("./powerup/main.js");
+}
+
 function App() {
   const [token, setToken] = useState(null);
   const [activeTab, setActiveTab] = useState("prioritize-preview");

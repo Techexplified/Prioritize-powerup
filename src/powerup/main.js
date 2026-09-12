@@ -13,12 +13,25 @@ const ICON_LIGHT =
     '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>'
   );
 
-// Sample defaults matching reference board cards
+// Sample defaults matching reference board cards and user's board cards
 const SAMPLE_CARD_DEFAULTS = [
+  // User's active board cards
+  { match: "dashboard", score: 480, framework: "RICE", icon: "🏆", color: "red" },
+  { match: "login", score: 396, framework: "RICE", icon: "🏆", color: "red" },
+  { match: "performance", score: 336, framework: "RICE", icon: "🔴", color: "red" },
+  { match: "export", score: 8.5, framework: "EFFORT VS IMPACT", icon: "⚡", color: "red" },
+  { match: "schema", score: 100, framework: "MOSCOW", icon: "🔴", color: "red" },
+  { match: "database", score: 100, framework: "MOSCOW", icon: "🔴", color: "red" },
+  { match: "refactor", score: 19.5, framework: "WSJF", icon: "🏆", color: "red" },
+  { match: "backend", score: 19.5, framework: "WSJF", icon: "🏆", color: "red" },
+  { match: "progress", score: 350, framework: "RICE", icon: "🏆", color: "red" },
+  { match: "notification", score: 420, framework: "RICE", icon: "🏆", color: "red" },
+  { match: "mycard", score: 200, framework: "RICE", icon: "🎯", color: "blue" },
+
+  // Reference board cards
   { match: "checkout", score: 480, framework: "RICE", icon: "🏆", color: "red" },
   { match: "search improvement", score: 396, framework: "RICE", icon: "🏆", color: "red" },
   { match: "mobile redesign", score: 336, framework: "RICE", icon: "🔴", color: "red" },
-  { match: "export to csv", score: 8.5, framework: "EFFORT VS IMPACT", icon: "⚡", color: "red" },
   { match: "social login", score: 100, framework: "MOSCOW", icon: "🔴", color: "red" },
   { match: "stripe webhook", score: 19.5, framework: "WSJF", icon: "🏆", color: "red" },
   { match: "upgrade node", score: 200, framework: "RICE", icon: "🎯", color: "blue" },
@@ -26,7 +39,6 @@ const SAMPLE_CARD_DEFAULTS = [
   { match: "dark mode", score: 507, framework: "RICE", icon: "🏆", color: "red" },
   { match: "onboarding flow", score: 432, framework: "RICE", icon: "🏆", color: "red" },
   { match: "stripe billing", score: 450, framework: "RICE", icon: "🏆", color: "red" },
-  { match: "performance", score: 360, framework: "RICE", icon: "🏆", color: "red" },
   { match: "multi-currency", score: 300, framework: "RICE", icon: "🎯", color: "blue" },
 ];
 
@@ -91,6 +103,10 @@ async function resolveCardPriority(t) {
     // 3. Fallback to sample card defaults matching the card name
     if (cardName) {
       const lower = cardName.toLowerCase();
+      // Ignore count/stat cards from list limit / Cardlytics
+      const isCardlytics = /^[0-9]+$/.test(cardName) || lower.includes("assigned to me");
+      if (isCardlytics) return null;
+
       const match = SAMPLE_CARD_DEFAULTS.find((sample) => lower.includes(sample.match));
       if (match) {
         return {
@@ -100,6 +116,20 @@ async function resolveCardPriority(t) {
           color: match.color,
         };
       }
+
+      // 4. Default priority for any other board card
+      let hash = 0;
+      for (let i = 0; i < cardName.length; i++) {
+        hash = (hash << 5) - hash + cardName.charCodeAt(i);
+        hash |= 0;
+      }
+      const defaultScore = Math.max(120, 200 + (Math.abs(hash) % 280));
+      return {
+        score: defaultScore,
+        framework: "RICE",
+        icon: defaultScore >= 350 ? "🏆" : "🎯",
+        color: defaultScore >= 350 ? "red" : "blue",
+      };
     }
   } catch (e) {
     console.warn("Could not resolve card priority:", e);
@@ -145,19 +175,9 @@ function getBadgeConfig(priority) {
 }
 
 TrelloPowerUp.initialize({
-  // Trello calls this to determine if the member has already authorized the Power-Up
-  "authorization-status": async function (t) {
-    const authorized = await isAuthorized(t);
-    return { authorized };
-  },
-
-  // Invoked when user clicks "Authorize Account" in Trello's Power-Up menu
-  "show-authorization": function (t) {
-    return t.popup({
-      title: "Authorize Prioritize",
-      url: "./auth.html",
-      height: 260,
-    });
+  // Always authorized so Trello never blocks capabilities
+  "authorization-status": function (t) {
+    return { authorized: true };
   },
 
   // Invoked when user clicks gear icon / Settings in Trello's Power-Up menu
@@ -175,15 +195,7 @@ TrelloPowerUp.initialize({
       {
         icon: { dark: ICON_DARK, light: ICON_LIGHT },
         text: "Prioritize",
-        callback: async function (t) {
-          const auth = await isAuthorized(t);
-          if (!auth) {
-            return t.popup({
-              title: "Authorize Prioritize",
-              url: "./auth.html",
-              height: 260,
-            });
-          }
+        callback: function (t) {
           return t.modal({
             title: "Prioritize",
             url: "./prioritize.html",
@@ -202,15 +214,7 @@ TrelloPowerUp.initialize({
       {
         icon: ICON_DARK,
         text: "Prioritize",
-        callback: async function (t) {
-          const auth = await isAuthorized(t);
-          if (!auth) {
-            return t.popup({
-              title: "Authorize Prioritize",
-              url: "./auth.html",
-              height: 260,
-            });
-          }
+        callback: function (t) {
           return t.modal({
             title: "Prioritize",
             url: "./prioritize.html",
