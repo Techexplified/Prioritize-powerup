@@ -156,132 +156,16 @@ const FRAMEWORKS = [
   },
 ];
 
-const BOARD_COLUMNS = [
-  { id: "backlog", name: "BACKLOG (TO PRIORITIZE)", count: 5 },
-  { id: "sprint", name: "PRIORITY Q3 SPRINT", count: 2 },
-  { id: "in_progress", name: "IN PROGRESS", count: 1 },
-  { id: "done", name: "DONE & SHIPPED", count: 1 },
-];
-
 const DEFAULT_SAMPLE_CARDS = [
-  {
-    id: "c1",
-    name: "New checkout",
-    columnId: "backlog",
-    framework: "rice",
-    labels: [
-      { name: "Revenue", type: "revenue" },
-      { name: "Conversion", type: "conversion" },
-    ],
-    reach: 800,
-    impact: 3,
-    confidence: 0.8,
-    effort: 4,
-    score: 480,
-    badgeText: "🏆 480 RICE",
-    badgeColor: "red",
-    dueDate: "Oct 15",
-    checklist: "3/5",
-    comments: 6,
-    attachments: 2,
-    selected: true,
-  },
-  {
-    id: "c2",
-    name: "Search improvement",
-    columnId: "backlog",
-    framework: "rice",
-    labels: [{ name: "Core UX", type: "core-ux" }],
-    reach: 660,
-    impact: 3,
-    confidence: 0.8,
-    effort: 4,
-    score: 396,
-    badgeText: "🏆 396 RICE",
-    badgeColor: "red",
-    dueDate: "Oct 22",
-    checklist: "1/4",
-    comments: 3,
-    attachments: 1,
-    selected: true,
-  },
-  {
-    id: "c3",
-    name: "Mobile redesign",
-    columnId: "backlog",
-    framework: "rice",
-    labels: [{ name: "Design System", type: "design-system" }],
-    reach: 840,
-    impact: 2,
-    confidence: 0.8,
-    effort: 4,
-    score: 336,
-    badgeText: "🔴 336 RICE",
-    badgeColor: "orange",
-    dueDate: "Nov 1",
-    checklist: "2/8",
-    comments: 9,
-    attachments: 4,
-    selected: true,
-  },
-  {
-    id: "c4",
-    name: "Export to CSV & PDF",
-    columnId: "sprint",
-    framework: "effort-impact",
-    labels: [{ name: "Reporting", type: "reporting" }],
-    impact: 8.5,
-    effort: 4,
-    score: 8.5,
-    badgeText: "⚡ 8.5 EFFORT VS IMPACT",
-    badgeColor: "red",
-    selected: true,
-  },
-  {
-    id: "c5",
-    name: "One-click social login",
-    columnId: "sprint",
-    framework: "rice",
-    labels: [{ name: "Conversion", type: "conversion" }],
-    reach: 500,
-    impact: 2,
-    confidence: 1.0,
-    effort: 2,
-    score: 100,
-    badgeText: "🔴 100 MOSCOW",
-    badgeColor: "red",
-    selected: true,
-  },
-  {
-    id: "c6",
-    name: "Stripe webhook retry queue",
-    columnId: "in_progress",
-    framework: "rice",
-    labels: [{ name: "Infrastructure", type: "infrastructure" }],
-    reach: 600,
-    impact: 3,
-    confidence: 0.8,
-    effort: 3,
-    score: 19.5,
-    badgeText: "🏆 19.5 WSJF",
-    badgeColor: "red",
-    selected: true,
-  },
-  {
-    id: "c7",
-    name: "Upgrade Node runtim",
-    columnId: "done",
-    framework: "rice",
-    labels: [{ name: "Infrastructure", type: "infrastructure" }],
-    reach: 500,
-    impact: 2,
-    confidence: 0.8,
-    effort: 5,
-    score: 200,
-    badgeText: "🎯 200 RICE",
-    badgeColor: "blue",
-    selected: true,
-  },
+  { id: "c1", name: "New checkout", framework: "rice", reach: 800, impact: 3, confidence: 0.8, effort: 4, score: 480, selected: true },
+  { id: "c2", name: "Search improvement", framework: "rice", reach: 660, impact: 3, confidence: 0.8, effort: 4, score: 396, selected: true },
+  { id: "c3", name: "Mobile redesign", framework: "rice", reach: 840, impact: 2, confidence: 0.8, effort: 4, score: 336, selected: true },
+  { id: "c4", name: "Email automation", framework: "rice", reach: 700, impact: 3, confidence: 0.8, effort: 5, score: 336, selected: true },
+  { id: "c5", name: "Dark mode theme", framework: "rice", reach: 950, impact: 2, confidence: 0.8, effort: 3, score: 507, selected: true },
+  { id: "c6", name: "Onboarding flow", framework: "rice", reach: 900, impact: 3, confidence: 0.8, effort: 5, score: 432, selected: true },
+  { id: "c7", name: "Stripe billing upgrade", framework: "rice", reach: 1000, impact: 3, confidence: 0.9, effort: 6, score: 450, selected: true },
+  { id: "c8", name: "Performance optimization", framework: "rice", reach: 600, impact: 3, confidence: 0.8, effort: 4, score: 360, selected: true },
+  { id: "c9", name: "Multi-currency support", framework: "rice", reach: 750, impact: 2, confidence: 0.8, effort: 4, score: 300, selected: true },
 ];
 
 const INITIAL_SETS = [
@@ -293,9 +177,6 @@ export default function PrioritizeModal({ t, onClose }) {
   const [sets, setSets] = useState(INITIAL_SETS);
   const [activeSetId, setActiveSetId] = useState("set-1");
   const [cards, setCards] = useState(DEFAULT_SAMPLE_CARDS);
-  const [viewMode, setViewMode] = useState("board"); // "board" or "list"
-  const [applyToast, setApplyToast] = useState("");
-  const [isOpenedFromCard, setIsOpenedFromCard] = useState(false);
 
   // Target card when editing scores
   const [targetCard, setTargetCard] = useState(null);
@@ -496,61 +377,36 @@ export default function PrioritizeModal({ t, onClose }) {
   // Save score and return to main screen (where scores are displayed)
   function handleApplyScoreAndReturn() {
     if (targetCard) {
-      const fwName = (selectedFramework || "rice").toUpperCase();
-      const badgeText = `🏆 ${computedScore} ${fwName}`;
-      const badgeColor = computedScore >= 350 ? "red" : computedScore >= 200 ? "yellow" : "blue";
-
       setCards((prev) =>
         prev.map((c) =>
-          c.id === targetCard.id || c.name === targetCard.name
+          c.id === targetCard.id
             ? {
                 ...c,
                 framework: selectedFramework,
                 score: computedScore,
-                badgeText,
-                badgeColor,
                 reach,
                 impact,
                 confidence,
                 effort,
+                iceImpact,
+                iceConfidence,
+                iceEffort,
+                eiImpact,
+                eiEffort,
                 quadrant: computedQuadrant,
               }
             : c
         )
       );
 
-      // Save to Trello shared plugin data across card and board scopes
+      // Save to Trello shared plugin data if available
       if (t && typeof t.set === "function") {
-        t.set("card", "shared", "priority_score", computedScore).catch(() => {});
-        t.set("card", "shared", "priority_framework", selectedFramework).catch(() => {});
-        if (targetCard.id) {
-          t.set(targetCard.id, "shared", "priority_score", computedScore).catch(() => {});
-          t.set(targetCard.id, "shared", "priority_framework", selectedFramework).catch(() => {});
-        }
-        if (typeof t.get === "function") {
-          t.get("board", "shared", "prio_card_scores")
-            .then((existingScores) => {
-              const map = existingScores && typeof existingScores === "object" ? { ...existingScores } : {};
-              map[targetCard.id] = { score: computedScore, framework: selectedFramework };
-              return t.set("board", "shared", "prio_card_scores", map);
-            })
-            .catch(() => {});
-        }
-      }
-
-      setApplyToast(`✓ Applied ${badgeText} to ${targetCard.name}!`);
-      setTimeout(() => setApplyToast(""), 3500);
-
-      // If opened from a Trello card, close modal after short delay so user sees badge on board
-      if (isOpenedFromCard && t && typeof t.closeModal === "function") {
-        setTimeout(() => {
-          t.closeModal();
-        }, 700);
-        return;
+        t.set(targetCard.id, "shared", "priority_score", computedScore).catch(() => {});
+        t.set(targetCard.id, "shared", "priority_framework", selectedFramework).catch(() => {});
       }
     }
 
-    // Return to main cards screen (board view / list view where badge is visible)
+    // Return to main cards screen
     setActiveView("cards");
     setTargetCard(null);
   }
@@ -1009,285 +865,129 @@ export default function PrioritizeModal({ t, onClose }) {
       )}
 
       {/* ========================================================= */}
-      {/* VIEW 3: MAIN CARDS SCREEN (BOARD & LIST VIEWS)           */}
+      {/* VIEW 3: MAIN CARDS LIST (WHERE SCORES ARE DISPLAYED)      */}
       {/* ========================================================= */}
       {activeView === "cards" && (
         <>
-          {/* Top Banner matching reference image media_1789221388396.png */}
-          <div className="prio-board-top-bar">
-            <div className="prio-board-top-left">
-              <span className="prio-board-fw-label">Active Board Framework:</span>
-              <span className="prio-board-fw-pill">{selectedFramework.toUpperCase()}</span>
-              <span className="prio-board-fw-desc">
-                {selectedFramework === "rice"
-                  ? "Produce features that reach and expected impact"
-                  : currentFw.label}
+          {/* Controls & Filter Bar */}
+          <div className="prio-controls-bar">
+            <div className="prio-section-heading">
+              <span className="prio-heading-title">Cards to prioritize</span>
+              <span className="prio-count-badge">
+                {selectedCount} of {cards.length}
               </span>
             </div>
-            <div className="prio-board-top-right">
-              <div className="prio-view-toggle">
-                <button
-                  type="button"
-                  className={`prio-view-toggle-btn ${viewMode === "board" ? "active" : ""}`}
-                  onClick={() => setViewMode("board")}
-                >
-                  🗂️ Board
-                </button>
-                <button
-                  type="button"
-                  className={`prio-view-toggle-btn ${viewMode === "list" ? "active" : ""}`}
-                  onClick={() => setViewMode("list")}
-                >
-                  📋 List
-                </button>
-              </div>
+
+            <div className="prio-controls-right">
+              <button
+                type="button"
+                className="prio-quick-link"
+                onClick={handleSelectAll}
+              >
+                Select all
+              </button>
+              <span className="prio-dot-divider">·</span>
+              <button
+                type="button"
+                className="prio-quick-link"
+                onClick={handleClearAll}
+              >
+                Clear
+              </button>
+
+              {sets.length > 1 && (
+                <>
+                  <span className="prio-dot-divider">·</span>
+                  <select
+                    value={activeSetId}
+                    onChange={(e) => setActiveSetId(e.target.value)}
+                    className="prio-set-selector"
+                  >
+                    {sets.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Toast feedback banner */}
-          {applyToast && (
-            <div className="prio-toast-banner">
-              <span>{applyToast}</span>
-            </div>
-          )}
-
-          {/* KANBAN BOARD VIEW (Exact match to photo media_1789221388396.png) */}
-          {viewMode === "board" ? (
-            <div className="prio-board-canvas">
-              {BOARD_COLUMNS.map((col) => {
-                const colCards = cards.filter(
-                  (c) => (c.columnId || "backlog") === col.id
-                );
+          {/* Cards List Box */}
+          <div className="prio-list-container">
+            <div className="prio-card-scroll-area">
+              {cards.map((card, idx) => {
+                const isRICE = (card.framework || "rice").toLowerCase() === "rice";
+                const isHighPriority = card.score >= 350;
 
                 return (
-                  <div key={col.id} className="prio-board-column">
-                    <div className="prio-column-header">
-                      <div className="prio-column-title-group">
-                        <span className="prio-column-title">{col.name}</span>
-                        <span className="prio-column-count">{colCards.length}</span>
-                      </div>
-                      <div className="prio-column-header-icons">
-                        <span className="prio-col-icon" title="Sort cards">⇅</span>
-                        <span className="prio-col-icon" title="Column options">•••</span>
-                      </div>
+                  <div
+                    key={card.id}
+                    className={`prio-card-item ${card.selected ? "selected" : "deselected"}`}
+                  >
+                    <div className="prio-card-item-left">
+                      <label className="prio-checkbox-container">
+                        <input
+                          type="checkbox"
+                          className="prio-native-checkbox"
+                          checked={Boolean(card.selected)}
+                          onChange={() => handleToggleCard(card.id)}
+                        />
+                        <div className="prio-checkbox-box">
+                          {card.selected && <CheckIcon className="prio-check-svg" />}
+                        </div>
+                      </label>
+                      <span
+                        className="prio-card-name-text"
+                        onClick={() => handleOpenFrameworkSelect(card)}
+                        title="Click to edit scores"
+                      >
+                        {card.name}
+                      </span>
                     </div>
 
-                    <div className="prio-column-cards">
-                      {colCards.map((card) => {
-                        const isHigh = card.score >= 350;
-                        const badgeColorClass =
-                          card.badgeColor === "orange"
-                            ? "prio-badge-orange"
-                            : card.badgeColor === "blue"
-                            ? "prio-badge-blue"
-                            : isHigh
-                            ? "prio-badge-red"
-                            : "prio-badge-red";
+                    <div className="prio-card-item-right">
+                      {card.score !== undefined && (
+                        <span
+                          className="prio-rank-pill"
+                          title={`Prioritization Score (${(card.framework || "RICE").toUpperCase()})`}
+                          style={
+                            isHighPriority
+                              ? {
+                                  background: "rgba(248, 113, 104, 0.16)",
+                                  borderColor: "rgba(248, 113, 104, 0.4)",
+                                  color: "#FCA5A5",
+                                }
+                              : card.score >= 100
+                              ? {
+                                  background: "rgba(87, 157, 255, 0.14)",
+                                  borderColor: "rgba(87, 157, 255, 0.35)",
+                                  color: "#579DFF",
+                                }
+                              : {}
+                          }
+                        >
+                          {isSortedByRank ? `#${idx + 1} · ` : ""}
+                          {card.quadrant
+                            ? card.quadrant
+                            : `🏆 ${card.score} ${(card.framework || "RICE").toUpperCase()}`}
+                        </span>
+                      )}
 
-                        return (
-                          <div
-                            key={card.id}
-                            className="prio-board-card"
-                            onClick={() => handleOpenFrameworkSelect(card)}
-                            title="Click to edit prioritization score"
-                          >
-                            {/* Tags Row */}
-                            {card.labels && card.labels.length > 0 && (
-                              <div className="prio-card-tags-row">
-                                {card.labels.map((lbl, li) => (
-                                  <span
-                                    key={li}
-                                    className={`prio-tag-badge prio-tag-${lbl.type || "revenue"}`}
-                                  >
-                                    {lbl.name}
-                                  </span>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* Card Title */}
-                            <div className="prio-board-card-name">{card.name}</div>
-
-                            {/* Badge Row matching photo */}
-                            <div className="prio-badge-row">
-                              <span className={`prio-photo-badge ${badgeColorClass}`}>
-                                {card.badgeText
-                                  ? card.badgeText
-                                  : `🏆 ${card.score} ${(card.framework || "RICE").toUpperCase()}`}
-                              </span>
-                            </div>
-
-                            {/* Card Footer / Metadata */}
-                            <div className="prio-board-card-meta">
-                              <div className="prio-card-meta-left">
-                                {card.dueDate && (
-                                  <span className="prio-meta-item">
-                                    📅 {card.dueDate}
-                                  </span>
-                                )}
-                                {card.checklist && (
-                                  <span className="prio-meta-item">
-                                    ☑️ {card.checklist}
-                                  </span>
-                                )}
-                                {card.comments && (
-                                  <span className="prio-meta-item">
-                                    💬 {card.comments}
-                                  </span>
-                                )}
-                                {card.attachments && (
-                                  <span className="prio-meta-item">
-                                    📎 {card.attachments}
-                                  </span>
-                                )}
-                              </div>
-                              <div className="prio-card-meta-avatar">
-                                <span className="prio-avatar-dot">👤</span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                      <button
+                        type="button"
+                        className="prio-score-link"
+                        onClick={() => handleOpenFrameworkSelect(card)}
+                      >
+                        Edit scores
+                      </button>
                     </div>
-
-                    <button
-                      type="button"
-                      className="prio-card-add-btn"
-                      onClick={() => setShowAddSetDialog(true)}
-                    >
-                      <span>+</span>
-                      <span>Add a card</span>
-                    </button>
                   </div>
                 );
               })}
             </div>
-          ) : (
-            /* TABLE LIST VIEW */
-            <>
-              <div className="prio-controls-bar">
-                <div className="prio-section-heading">
-                  <span className="prio-heading-title">Cards to prioritize</span>
-                  <span className="prio-count-badge">
-                    {selectedCount} of {cards.length}
-                  </span>
-                </div>
-
-                <div className="prio-controls-right">
-                  <button
-                    type="button"
-                    className="prio-quick-link"
-                    onClick={handleSelectAll}
-                  >
-                    Select all
-                  </button>
-                  <span className="prio-dot-divider">·</span>
-                  <button
-                    type="button"
-                    className="prio-quick-link"
-                    onClick={handleClearAll}
-                  >
-                    Clear
-                  </button>
-
-                  {sets.length > 1 && (
-                    <>
-                      <span className="prio-dot-divider">·</span>
-                      <select
-                        value={activeSetId}
-                        onChange={(e) => setActiveSetId(e.target.value)}
-                        className="prio-set-selector"
-                      >
-                        {sets.map((s) => (
-                          <option key={s.id} value={s.id}>
-                            {s.name}
-                          </option>
-                        ))}
-                      </select>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Cards List Box */}
-              <div className="prio-list-container">
-                <div className="prio-card-scroll-area">
-                  {cards.map((card, idx) => {
-                    const isHighPriority = card.score >= 350;
-
-                    return (
-                      <div
-                        key={card.id}
-                        className={`prio-card-item ${card.selected ? "selected" : "deselected"}`}
-                      >
-                        <div className="prio-card-item-left">
-                          <label className="prio-checkbox-container">
-                            <input
-                              type="checkbox"
-                              className="prio-native-checkbox"
-                              checked={Boolean(card.selected)}
-                              onChange={() => handleToggleCard(card.id)}
-                            />
-                            <div className="prio-checkbox-box">
-                              {card.selected && <CheckIcon className="prio-check-svg" />}
-                            </div>
-                          </label>
-                          <span
-                            className="prio-card-name-text"
-                            onClick={() => handleOpenFrameworkSelect(card)}
-                            title="Click to edit scores"
-                          >
-                            {card.name}
-                          </span>
-                        </div>
-
-                        <div className="prio-card-item-right">
-                          {card.score !== undefined && (
-                            <span
-                              className="prio-rank-pill"
-                              title={`Prioritization Score (${(card.framework || "RICE").toUpperCase()})`}
-                              style={
-                                isHighPriority
-                                  ? {
-                                      background: "rgba(185, 28, 28, 0.3)",
-                                      borderColor: "rgba(239, 68, 68, 0.55)",
-                                      color: "#FCA5A5",
-                                    }
-                                  : card.score >= 200
-                                  ? {
-                                      background: "rgba(217, 119, 6, 0.25)",
-                                      borderColor: "rgba(245, 158, 11, 0.5)",
-                                      color: "#FDE68A",
-                                    }
-                                  : {
-                                      background: "rgba(37, 99, 235, 0.25)",
-                                      borderColor: "rgba(59, 130, 246, 0.5)",
-                                      color: "#93C5FD",
-                                    }
-                              }
-                            >
-                              {isSortedByRank ? `#${idx + 1} · ` : ""}
-                              {card.badgeText
-                                ? card.badgeText
-                                : `🏆 ${card.score} ${(card.framework || "RICE").toUpperCase()}`}
-                            </span>
-                          )}
-
-                          <button
-                            type="button"
-                            className="prio-score-link"
-                            onClick={() => handleOpenFrameworkSelect(card)}
-                          >
-                            Edit scores
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </>
-          )}
+          </div>
 
           {/* Action Bar */}
           <div className="prio-action-bar">
