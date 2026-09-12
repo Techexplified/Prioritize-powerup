@@ -924,7 +924,7 @@
   box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
 }
 
-/* Score Box matching reference image */
+/* Score Box */
 .prio-score-result-card {
   background: #111827;
   border: 1px solid #1f293d;
@@ -932,7 +932,7 @@
   padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
 }
 
 .prio-score-result-label {
@@ -943,19 +943,107 @@
   color: #94a3b8;
 }
 
-.prio-score-result-value {
-  font-size: 28px;
-  font-weight: 800;
-  color: #ffffff;
-  line-height: 1.1;
-  letter-spacing: -0.5px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+.prio-ei-result-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.prio-score-result-formula {
-  font-size: 10.5px;
-  color: #64748b;
-  margin-top: 1px;
+.prio-ei-result-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.prio-score-result-score-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #579dff;
+  background: rgba(87, 157, 255, 0.14);
+  border: 1px solid rgba(87, 157, 255, 0.3);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.prio-quadrant-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.prio-quadrant-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.prio-quadrant-pill.quad-quick-win {
+  background: rgba(34, 197, 94, 0.16);
+  border: 1px solid rgba(34, 197, 94, 0.45);
+  color: #4ade80;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.15);
+}
+
+.prio-quadrant-pill.quad-major-project {
+  background: rgba(59, 130, 246, 0.16);
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  color: #60a5fa;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.15);
+}
+
+.prio-quadrant-pill.quad-fill-in {
+  background: rgba(245, 158, 11, 0.16);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  color: #fbbf24;
+}
+
+.prio-quadrant-pill.quad-thankless {
+  background: rgba(244, 63, 94, 0.16);
+  border: 1px solid rgba(244, 63, 94, 0.45);
+  color: #fb7185;
+}
+
+.prio-quadrant-subtitle {
+  font-size: 11.5px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.prio-numeric-result-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.prio-numeric-result-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.prio-score-result-number {
+  font-size: 24px;
+  font-weight: 800;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1;
+}
+
+.prio-score-badge-preview {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #cbd5e1;
 }
 
 /* Full-width primary action button matching reference image */

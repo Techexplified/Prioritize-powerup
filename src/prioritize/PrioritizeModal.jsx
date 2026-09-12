@@ -438,25 +438,29 @@ export default function PrioritizeModal({ t, onClose }) {
       return Math.round((r * imp * conf) / eff);
     }
     if (selectedFramework === "ice") {
-      const imp = Number(iceImpact) || 1;
-      const conf = Number(iceConfidence) || 1;
-      const eff = Math.max(0.5, Number(iceEffort) || 1);
-      return Math.round((imp * conf * 10) / eff);
+      const imp = Number(impact) || 1;
+      const conf = Number(confidence) || 1;
+      const eff = Math.max(0.5, Number(effort) || 1);
+      return Math.round((imp * conf * 100) / eff);
     }
     if (selectedFramework === "effort-impact") {
-      return Number(eiImpact) || 5;
+      const imp = Number(impact) || 1;
+      const eff = Math.max(1, Number(effort) || 1);
+      return Math.round(((imp * 3.33) / eff * 3.5 + 2) * 10) / 10;
     }
     return 0;
-  }, [selectedFramework, reach, impact, confidence, effort, iceImpact, iceConfidence, iceEffort, eiImpact]);
+  }, [selectedFramework, reach, impact, confidence, effort]);
 
   // Quadrant for Effort vs Impact
   const computedQuadrant = useMemo(() => {
     if (selectedFramework !== "effort-impact") return null;
-    if (eiImpact >= 5 && eiEffort <= 5) return "🌟 Quick Win";
-    if (eiImpact >= 5 && eiEffort > 5) return "🚀 Major Project";
-    if (eiImpact < 5 && eiEffort <= 5) return "⚡ Fill-in";
+    const isHighImpact = Number(impact) >= 1.5; // High (2) or Massive (3)
+    const isLowEffort = Number(effort) <= 5;
+    if (isHighImpact && isLowEffort) return "🌟 Quick Win";
+    if (isHighImpact && !isLowEffort) return "🚀 Major Project";
+    if (!isHighImpact && isLowEffort) return "⚡ Fill-in";
     return "⏳ Thankless Task";
-  }, [selectedFramework, eiImpact, eiEffort]);
+  }, [selectedFramework, impact, effort]);
 
   // Impact label formatting for RICE
   const impactLabel = useMemo(() => {
@@ -1063,14 +1067,50 @@ export default function PrioritizeModal({ t, onClose }) {
                 </>
               )}
 
-              {/* Result Score Card matching reference photo */}
+              {/* Result Score Card */}
               <div className="prio-score-result-card">
-                <span className="prio-score-result-label">
-                  {currentFw.short} SCORE
-                </span>
-                <span className="prio-score-result-value">
-                  {computedQuadrant ? computedQuadrant : computedScore}
-                </span>
+                {selectedFramework === "effort-impact" ? (
+                  <div className="prio-ei-result-content">
+                    <div className="prio-ei-result-top">
+                      <span className="prio-score-result-label">EFFORT VS IMPACT MATRIX</span>
+                      <span className="prio-score-result-score-tag">Score: {computedScore}</span>
+                    </div>
+                    <div className="prio-quadrant-row">
+                      <div
+                        className={`prio-quadrant-pill ${
+                          computedQuadrant?.includes("Quick Win")
+                            ? "quad-quick-win"
+                            : computedQuadrant?.includes("Major Project")
+                            ? "quad-major-project"
+                            : computedQuadrant?.includes("Fill-in")
+                            ? "quad-fill-in"
+                            : "quad-thankless"
+                        }`}
+                      >
+                        {computedQuadrant}
+                      </div>
+                      <span className="prio-quadrant-subtitle">
+                        {computedQuadrant?.includes("Quick Win")
+                          ? "High Impact · Low Effort — Priority #1"
+                          : computedQuadrant?.includes("Major Project")
+                          ? "High Impact · High Effort — Strategic Bet"
+                          : computedQuadrant?.includes("Fill-in")
+                          ? "Low Impact · Low Effort — Secondary"
+                          : "Low Impact · High Effort — Deprioritize"}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="prio-numeric-result-content">
+                    <span className="prio-score-result-label">{currentFw.short} SCORE</span>
+                    <div className="prio-numeric-result-row">
+                      <span className="prio-score-result-number">{computedScore}</span>
+                      <span className="prio-score-badge-preview">
+                        {computedScore >= 350 ? "🏆 High Priority" : computedScore >= 200 ? "🎯 Medium Priority" : "⚡ Fill-in"}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Primary Action Button */}
