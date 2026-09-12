@@ -227,7 +227,7 @@ TrelloPowerUp.initialize({
           return t.modal({
             title: "Prioritize",
             url: "./prioritize.html",
-            accentColor: "#0079BF",
+            accentColor: "#1D2125",
             height: 600,
             fullscreen: false,
           });
@@ -246,7 +246,7 @@ TrelloPowerUp.initialize({
           return t.modal({
             title: "Prioritize",
             url: "./prioritize.html",
-            accentColor: "#0079BF",
+            accentColor: "#1D2125",
             height: 600,
             fullscreen: false,
           });
@@ -278,7 +278,7 @@ TrelloPowerUp.initialize({
           return t.modal({
             title: "Prioritize",
             url: "./prioritize.html",
-            accentColor: "#0079BF",
+            accentColor: "#1D2125",
             height: 600,
             fullscreen: false,
           });
