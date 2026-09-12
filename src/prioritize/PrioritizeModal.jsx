@@ -222,38 +222,72 @@ export default function PrioritizeModal({ t, onClose }) {
             Promise.all([
               typeof t.get === "function" ? t.get("card", "shared", "priority_score").catch(() => null) : Promise.resolve(null),
               typeof t.get === "function" ? t.get("card", "shared", "priority_framework").catch(() => null) : Promise.resolve(null),
+              typeof t.get === "function" ? t.get("card", "shared", "priority_reach").catch(() => null) : Promise.resolve(null),
+              typeof t.get === "function" ? t.get("card", "shared", "priority_impact").catch(() => null) : Promise.resolve(null),
+              typeof t.get === "function" ? t.get("card", "shared", "priority_confidence").catch(() => null) : Promise.resolve(null),
+              typeof t.get === "function" ? t.get("card", "shared", "priority_effort").catch(() => null) : Promise.resolve(null),
               typeof t.get === "function" ? t.get("board", "shared", "prio_card_scores").catch(() => null) : Promise.resolve(null),
-            ]).then(([cScore, cFw, bScores]) => {
-              const bEntry = bScores && (bScores[currentCard.id] || bScores[currentCard.name]);
-              const score = cScore !== null && cScore !== undefined ? cScore : bEntry?.score !== undefined ? bEntry.score : 480;
+            ]).then(([cScore, cFw, cReach, cImpact, cConf, cEffort, bScores]) => {
+              const bEntry =
+                bScores &&
+                (bScores[currentCard.id] ||
+                  bScores[currentCard.name] ||
+                  bScores[(currentCard.name || "").trim()]);
+
+              const score =
+                cScore !== null && cScore !== undefined
+                  ? cScore
+                  : bEntry?.score !== undefined
+                  ? bEntry.score
+                  : 480;
+
               const fw = cFw || bEntry?.framework || "rice";
+              const savedReach =
+                cReach !== null && cReach !== undefined
+                  ? Number(cReach)
+                  : bEntry?.reach !== undefined
+                  ? Number(bEntry.reach)
+                  : 800;
+
+              const savedImpact =
+                cImpact !== null && cImpact !== undefined
+                  ? Number(cImpact)
+                  : bEntry?.impact !== undefined
+                  ? Number(bEntry.impact)
+                  : 3;
+
+              const savedConf =
+                cConf !== null && cConf !== undefined
+                  ? Number(cConf)
+                  : bEntry?.confidence !== undefined
+                  ? Number(bEntry.confidence)
+                  : 0.8;
+
+              const savedEffort =
+                cEffort !== null && cEffort !== undefined
+                  ? Number(cEffort)
+                  : bEntry?.effort !== undefined
+                  ? Number(bEntry.effort)
+                  : 4;
+
               const cardObj = {
                 id: currentCard.id,
                 name: currentCard.name,
                 framework: fw,
-                reach: bEntry?.reach !== undefined ? bEntry.reach : 800,
-                impact: bEntry?.impact !== undefined ? bEntry.impact : 3,
-                confidence: bEntry?.confidence !== undefined ? bEntry.confidence : 0.8,
-                effort: bEntry?.effort !== undefined ? bEntry.effort : 4,
-                iceImpact: bEntry?.iceImpact || 8,
-                iceConfidence: bEntry?.iceConfidence || 8,
-                iceEffort: bEntry?.iceEffort || 4,
-                eiImpact: bEntry?.eiImpact || 8,
-                eiEffort: bEntry?.eiEffort || 3,
+                reach: savedReach,
+                impact: savedImpact,
+                confidence: savedConf,
+                effort: savedEffort,
                 score: Number(score) || score,
                 selected: true,
               };
+
               setTargetCard(cardObj);
               setSelectedFramework(fw);
-              setReach(cardObj.reach);
-              setImpact(cardObj.impact);
-              setConfidence(cardObj.confidence);
-              setEffort(cardObj.effort);
-              setIceImpact(cardObj.iceImpact);
-              setIceConfidence(cardObj.iceConfidence);
-              setIceEffort(cardObj.iceEffort);
-              setEiImpact(cardObj.eiImpact);
-              setEiEffort(cardObj.eiEffort);
+              setReach(savedReach);
+              setImpact(savedImpact);
+              setConfidence(savedConf);
+              setEffort(savedEffort);
               setActiveView("score-card");
             });
           }
@@ -478,7 +512,7 @@ export default function PrioritizeModal({ t, onClose }) {
   }, [confidence]);
 
   // Save score and return to main screen (where scores are displayed)
-  function handleApplyScoreAndReturn() {
+  async function handleApplyScoreAndReturn() {
     if (targetCard) {
       const updatedCard = {
         ...targetCard,
@@ -488,11 +522,6 @@ export default function PrioritizeModal({ t, onClose }) {
         impact,
         confidence,
         effort,
-        iceImpact,
-        iceConfidence,
-        iceEffort,
-        eiImpact,
-        eiEffort,
         quadrant: computedQuadrant,
       };
 
@@ -502,49 +531,55 @@ export default function PrioritizeModal({ t, onClose }) {
 
       // Save to Trello shared data
       if (t && typeof t.set === "function") {
-        // 1. Try card scope (succeeds if in card context)
-        t.set("card", "shared", "priority_score", computedScore).catch(() => {});
-        t.set("card", "shared", "priority_framework", selectedFramework).catch(() => {});
-        if (computedQuadrant) {
-          t.set("card", "shared", "priority_quadrant", computedQuadrant).catch(() => {});
-        }
+        try {
+          // 1. Save directly to card scope
+          await Promise.all([
+            t.set("card", "shared", "priority_score", computedScore).catch(() => {}),
+            t.set("card", "shared", "priority_framework", selectedFramework).catch(() => {}),
+            t.set("card", "shared", "priority_reach", reach).catch(() => {}),
+            t.set("card", "shared", "priority_impact", impact).catch(() => {}),
+            t.set("card", "shared", "priority_confidence", confidence).catch(() => {}),
+            t.set("card", "shared", "priority_effort", effort).catch(() => {}),
+            computedQuadrant
+              ? t.set("card", "shared", "priority_quadrant", computedQuadrant).catch(() => {})
+              : t.remove
+              ? t.remove("card", "shared", "priority_quadrant").catch(() => {})
+              : Promise.resolve(),
+          ]);
 
-        // 2. ALWAYS save to board scope so card-badges on Trello board can display it
-        if (typeof t.get === "function") {
-          t.get("board", "shared", "prio_card_scores")
-            .then((existing) => {
-              const map = existing && typeof existing === "object" ? { ...existing } : {};
-              const entry = {
-                score: computedScore,
-                framework: selectedFramework,
-                cardName: targetCard.name,
-                reach,
-                impact,
-                confidence,
-                effort,
-                iceImpact,
-                iceConfidence,
-                iceEffort,
-                eiImpact,
-                eiEffort,
-                quadrant: computedQuadrant,
-              };
-              if (targetCard.id) map[targetCard.id] = entry;
-              if (targetCard.name) {
-                map[targetCard.name] = entry;
-                map[targetCard.name.trim()] = entry;
-              }
-              return t.set("board", "shared", "prio_card_scores", map);
-            })
-            .catch((err) => {
-              console.warn("Failed to set board prio_card_scores:", err);
-            });
+          // 2. ALWAYS save to board scope so card-badges on Trello board can display it
+          if (typeof t.get === "function") {
+            const existing = await t.get("board", "shared", "prio_card_scores").catch(() => ({}));
+            const map = existing && typeof existing === "object" ? { ...existing } : {};
+            const entry = {
+              score: computedScore,
+              framework: selectedFramework,
+              cardName: targetCard.name,
+              reach,
+              impact,
+              confidence,
+              effort,
+              quadrant: computedQuadrant,
+            };
+            if (targetCard.id) map[targetCard.id] = entry;
+            if (targetCard.name) {
+              map[targetCard.name] = entry;
+              map[targetCard.name.trim()] = entry;
+              map[targetCard.name.toLowerCase()] = entry;
+            }
+            await t.set("board", "shared", "prio_card_scores", map).catch(() => {});
+          }
+        } catch (err) {
+          console.warn("Failed saving priority to Trello:", err);
         }
       }
 
-      // If modal was opened from a specific card in Trello, close it now so the user sees the badge immediately on the card!
+      // If modal was opened from a specific card in Trello, wait 150ms before closing
+      // so Trello has time to process the postMessage event and update card-badges
       if (openedFromCard && t && typeof t.closeModal === "function") {
-        t.closeModal();
+        setTimeout(() => {
+          t.closeModal();
+        }, 150);
         return;
       }
 
