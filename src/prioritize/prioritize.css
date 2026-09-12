@@ -505,28 +505,40 @@
   line-height: 1.4;
 }
 
-/* Choose Framework Screen View */
+/* ========================================================= */
+/* Choose Framework Screen View                              */
+/* ========================================================= */
+
 .prio-framework-view {
-  margin: 4px 18px 0 18px;
+  margin: 0;
+  padding: 16px 20px;
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
-  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .prio-framework-header-info {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--ds-border-subtle);
+}
+
+.prio-framework-header-titles {
+  display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .prio-framework-screen-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--ds-text-subtle);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--ds-text);
   text-transform: uppercase;
   letter-spacing: 0.8px;
   margin: 0;
@@ -534,23 +546,23 @@
 
 .prio-framework-card-subtitle {
   margin: 0;
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--ds-text-dim);
 }
 
 .prio-framework-card-subtitle strong {
-  color: var(--ds-text);
+  color: var(--ds-link);
   font-weight: 600;
 }
 
 .prio-framework-main-dropdown {
   width: 100%;
   background: var(--ds-surface);
-  border: 1.5px solid var(--ds-border);
+  border: 1px solid var(--ds-border);
   color: var(--ds-text);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
-  padding: 9px 12px;
+  padding: 8px 12px;
   border-radius: 6px;
   outline: none;
   cursor: pointer;
@@ -570,7 +582,7 @@
 
 .prio-framework-info-box {
   background: var(--ds-surface-subtle);
-  border: 1.5px solid var(--ds-border-subtle);
+  border: 1px solid var(--ds-border-subtle);
   border-radius: 6px;
   padding: 10px 14px;
   display: flex;
@@ -636,36 +648,13 @@
 }
 
 .prio-framework-action-row {
-  padding: 8px 18px;
+  padding: 10px 20px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
   gap: 10px;
-}
-
-.prio-text-input {
-  width: 100%;
-  background: var(--ds-surface-subtle);
-  border: 1px solid var(--ds-border);
-  color: var(--ds-text);
-  border-radius: 5px;
-  padding: 7px 10px;
-  font-size: 12.5px;
-  outline: none;
-  box-sizing: border-box;
-}
-
-.prio-text-input:focus {
-  border-color: var(--ds-border-focused);
-}
-
-.prio-dialog-foot {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 2px;
+  border-top: 1px solid var(--ds-border-subtle);
 }
 
 /* ========================================================= */
@@ -673,15 +662,14 @@
 /* ========================================================= */
 
 .prio-scoring-screen {
-  margin: 2px 18px 0 18px;
+  padding: 16px 20px 18px;
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: 8px;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .prio-scoring-header {
@@ -689,8 +677,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--ds-border-subtle);
+  padding-bottom: 12px;
+  border-bottom: 1px solid #222d42;
   flex-shrink: 0;
 }
 
@@ -700,11 +688,30 @@
   gap: 10px;
 }
 
+.prio-back-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all 0.12s ease;
+}
+
+.prio-back-btn:hover {
+  background: #222d42;
+  color: #ffffff;
+}
+
 .prio-scoring-icon-box {
   width: 32px;
   height: 32px;
-  border-radius: 7px;
-  background: linear-gradient(135deg, #2563EB, #1D4ED8);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
   box-shadow: 0 3px 10px rgba(37, 99, 235, 0.4);
   display: flex;
   align-items: center;
@@ -721,24 +728,24 @@
 
 .prio-scoring-title-text {
   margin: 0;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.8px;
-  color: var(--ds-text);
+  color: #ffffff;
   text-transform: uppercase;
 }
 
 .prio-scoring-subtitle {
   margin: 0;
-  font-size: 11px;
-  color: var(--ds-text-subtle);
+  font-size: 11.5px;
+  color: #94a3b8;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 .prio-scoring-target-tag {
-  color: var(--ds-link);
+  color: #60a5fa;
   font-weight: 600;
 }
 
@@ -746,38 +753,39 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--ds-surface);
-  border: 1px solid var(--ds-border);
+  background: #141c2e;
+  border: 1px solid #27354f;
   border-radius: 6px;
-  padding: 3px 8px;
+  padding: 4px 10px;
 }
 
 .prio-scoring-fw-label {
-  font-size: 11.5px;
-  color: var(--ds-text-subtle);
+  font-size: 12px;
+  color: #94a3b8;
   font-weight: 500;
 }
 
 .prio-scoring-fw-dropdown {
   background: transparent;
   border: none;
-  color: var(--ds-text);
-  font-size: 12px;
+  color: #ffffff;
+  font-size: 12.5px;
   font-weight: 700;
   outline: none;
   cursor: pointer;
-  padding: 2px 0;
+  padding: 1px 0;
 }
 
 .prio-scoring-fw-dropdown option {
-  background: var(--ds-surface);
-  color: var(--ds-text);
+  background: #141c2e;
+  color: #ffffff;
 }
 
 .prio-scoring-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 11px;
+  margin: 4px 0 8px;
 }
 
 .prio-scoring-factor-item {
@@ -790,35 +798,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 12.5px;
 }
 
 .prio-scoring-factor-name {
-  color: var(--ds-text);
-  font-weight: 600;
+  color: #cbd5e1;
+  font-weight: 500;
 }
 
 .prio-scoring-val-blue {
-  color: #579DFF;
+  color: #38bdf8;
   font-weight: 700;
-  font-size: 13.5px;
+  font-size: 14px;
   font-family: monospace;
 }
 
 .prio-scoring-val-orange {
-  color: #F59E0B;
+  color: #f59e0b;
   font-weight: 700;
-  font-size: 13.5px;
+  font-size: 14px;
   font-family: monospace;
 }
 
 .prio-scoring-val-white {
-  color: var(--ds-text);
+  color: #f8fafc;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 12.5px;
 }
 
-/* Custom Dual-color Sliders */
+/* Custom Dual-color Range Sliders matching reference */
 .prio-range-slider {
   -webkit-appearance: none;
   appearance: none;
@@ -827,7 +835,8 @@
   border-radius: 3px;
   outline: none;
   cursor: pointer;
-  background: #333C44;
+  background: #334155;
+  margin: 2px 0;
 }
 
 .prio-range-slider::-webkit-slider-thumb {
@@ -837,7 +846,7 @@
   height: 16px;
   border-radius: 50%;
   cursor: pointer;
-  border: 2px solid #1D2125;
+  border: 2px solid #0d1424;
   box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
   transition: transform 0.1s ease;
 }
@@ -847,16 +856,16 @@
 }
 
 .prio-slider-blue::-webkit-slider-thumb {
-  background: #579DFF;
-  box-shadow: 0 0 8px rgba(87, 157, 255, 0.6);
+  background: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
 }
 
 .prio-slider-orange::-webkit-slider-thumb {
-  background: #F59E0B;
+  background: #f59e0b;
   box-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
 }
 
-/* Segmented Pill Buttons */
+/* Segmented Pill Buttons matching reference */
 .prio-pills-row {
   display: flex;
   gap: 5px;
@@ -865,12 +874,12 @@
 
 .prio-pill-button {
   flex: 1;
-  background: var(--ds-surface);
-  border: 1px solid var(--ds-border);
-  color: var(--ds-text-subtle);
+  background: #172033;
+  border: 1px solid #27354f;
+  color: #94a3b8;
   font-size: 11.5px;
   font-weight: 500;
-  padding: 6px 3px;
+  padding: 6px 2px;
   border-radius: 5px;
   cursor: pointer;
   text-align: center;
@@ -879,25 +888,25 @@
 }
 
 .prio-pill-button:hover {
-  background: var(--ds-surface-hovered);
-  color: var(--ds-text);
-  border-color: #579DFF;
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #3b82f6;
 }
 
 .prio-pill-button.active {
-  background: #2563EB;
-  border-color: #3B82F6;
-  color: #FFFFFF;
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
 }
 
-/* Score Box matching user image */
+/* Score Box matching reference image */
 .prio-score-result-card {
-  background: var(--ds-surface-subtle);
-  border: 1px solid var(--ds-border-subtle);
+  background: #111827;
+  border: 1px solid #1f293d;
   border-radius: 8px;
-  padding: 12px 16px;
+  padding: 10px 14px;
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -908,13 +917,13 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  color: var(--ds-text-subtle);
+  color: #94a3b8;
 }
 
 .prio-score-result-value {
   font-size: 28px;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #ffffff;
   line-height: 1.1;
   letter-spacing: -0.5px;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -922,20 +931,20 @@
 
 .prio-score-result-formula {
   font-size: 10.5px;
-  color: var(--ds-text-dim);
-  margin-top: 2px;
+  color: #64748b;
+  margin-top: 1px;
 }
 
-/* Full width primary action button */
+/* Full-width primary action button matching reference image */
 .prio-btn-apply {
   width: 100%;
-  background: linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%);
-  border: 1px solid #3B82F6;
-  color: #FFFFFF;
-  font-size: 13px;
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+  border: 1px solid #3b82f6;
+  color: #ffffff;
+  font-size: 13.5px;
   font-weight: 600;
   padding: 11px 16px;
-  border-radius: 7px;
+  border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -946,7 +955,7 @@
 }
 
 .prio-btn-apply:hover {
-  background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
   box-shadow: 0 5px 16px rgba(37, 99, 235, 0.45);
   transform: translateY(-1px);
 }
@@ -955,13 +964,5 @@
   transform: translateY(0);
 }
 
-.prio-scoring-footer-bar {
-  padding: 6px 18px 10px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  gap: 10px;
-}
 
 

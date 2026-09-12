@@ -432,23 +432,25 @@ export default function PrioritizeModal({ t, onClose }) {
 
   return (
     <div className="prio-container">
-      {/* Top Header */}
-      <header className="prio-header">
-        <div className="prio-header-brand">
-          <div className="prio-brand-icon">
-            <RankIcon />
-          </div>
-          <div className="prio-brand-titles">
-            <div className="prio-title-line">
-              <h1 className="prio-title-text">Prioritize</h1>
-              <span className="prio-powerup-tag">Power-Up</span>
+      {/* Top Header - only displayed on main cards screen */}
+      {activeView === "cards" && (
+        <header className="prio-header">
+          <div className="prio-header-brand">
+            <div className="prio-brand-icon">
+              <RankIcon />
             </div>
-            <p className="prio-subtitle-text">
-              Score cards and automatically rank what your team should build first.
-            </p>
+            <div className="prio-brand-titles">
+              <div className="prio-title-line">
+                <h1 className="prio-title-text">Prioritize</h1>
+                <span className="prio-powerup-tag">Power-Up</span>
+              </div>
+              <p className="prio-subtitle-text">
+                Score cards and automatically rank what your team should build first.
+              </p>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      )}
 
       {/* ========================================================= */}
       {/* VIEW 1: CHOOSE FRAMEWORK SCREEN                           */}
@@ -543,6 +545,14 @@ export default function PrioritizeModal({ t, onClose }) {
             {/* Header matching image */}
             <div className="prio-scoring-header">
               <div className="prio-scoring-header-left">
+                <button
+                  type="button"
+                  className="prio-back-btn"
+                  onClick={() => setActiveView("choose-framework")}
+                  title="Back to Framework Selection"
+                >
+                  ←
+                </button>
                 <div className="prio-scoring-icon-box">
                   <SparkleStarIcon />
                 </div>
@@ -790,24 +800,6 @@ export default function PrioritizeModal({ t, onClose }) {
               </button>
             </div>
           </div>
-
-          {/* Bottom Back Row */}
-          <div className="prio-scoring-footer-bar">
-            <button
-              type="button"
-              className="prio-btn-secondary"
-              onClick={() => setActiveView("choose-framework")}
-            >
-              ← Back to Framework Selection
-            </button>
-            <button
-              type="button"
-              className="prio-quick-link"
-              onClick={handleCancelToCards}
-            >
-              Cancel
-            </button>
-          </div>
         </>
       )}
 
@@ -963,13 +955,15 @@ export default function PrioritizeModal({ t, onClose }) {
         </>
       )}
 
-      {/* Docked Footer */}
-      <footer className="prio-footer-bar">
-        <p className="prio-footer-tip">
-          <span>💡</span> Tip: You can also score cards individually by clicking Edit scores on any card.
-        </p>
-        <span className="prio-footer-brand">Task Prioritize Power-Up</span>
-      </footer>
+      {/* Docked Footer - only displayed on main cards screen */}
+      {activeView === "cards" && (
+        <footer className="prio-footer-bar">
+          <p className="prio-footer-tip">
+            <span>💡</span> Tip: You can also score cards individually by clicking Edit scores on any card.
+          </p>
+          <span className="prio-footer-brand">Task Prioritize Power-Up</span>
+        </footer>
+      )}
 
       {/* Add New Set Dialog */}
       {showAddSetDialog && (
