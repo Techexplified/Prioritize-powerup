@@ -236,9 +236,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  transition: background 0.12s ease;
+  padding: 12px 18px;
+  min-height: 48px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.15s ease;
+  box-sizing: border-box;
 }
 
 .prio-card-item:last-child {
@@ -246,13 +248,13 @@
 }
 
 .prio-card-item:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .prio-card-item-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   flex: 1;
   min-width: 0;
 }
@@ -274,10 +276,10 @@
 }
 
 .prio-checkbox-box {
-  width: 16px;
-  height: 16px;
-  border-radius: 3.5px;
-  border: 1.5px solid #576574;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  border: 1.5px solid #626F86;
   background: var(--ds-surface);
   display: flex;
   align-items: center;
@@ -296,59 +298,70 @@
 }
 
 .prio-check-svg {
-  width: 11px;
-  height: 11px;
+  width: 12px;
+  height: 12px;
   color: #091E42;
   stroke-width: 3;
 }
 
 .prio-card-name-text {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ds-text);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #F7F8F9;
+  line-height: 1.4;
+  letter-spacing: -0.1px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+
+.prio-card-name-text:hover {
+  color: #579DFF;
 }
 
 .prio-card-item.deselected .prio-card-name-text {
   color: var(--ds-text-dim);
+  font-weight: 500;
 }
 
 .prio-card-item-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   flex-shrink: 0;
 }
 
 .prio-rank-pill {
-  background: rgba(75, 206, 151, 0.12);
-  border: 1px solid rgba(75, 206, 151, 0.28);
+  background: rgba(75, 206, 151, 0.14);
+  border: 1px solid rgba(75, 206, 151, 0.32);
   color: var(--ds-success);
-  font-size: 10.5px;
-  font-weight: 600;
-  padding: 1px 6px;
-  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
   font-family: monospace;
+  letter-spacing: 0.2px;
 }
 
 .prio-score-link {
-  background: transparent;
-  border: 1px solid transparent;
+  background: rgba(87, 157, 255, 0.1);
+  border: 1px solid rgba(87, 157, 255, 0.25);
   color: var(--ds-link);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 12.5px;
+  font-weight: 600;
   cursor: pointer;
-  padding: 2px 6px;
-  border-radius: 4px;
-  transition: all 0.12s ease;
+  padding: 4px 12px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
 .prio-score-link:hover {
-  background: rgba(87, 157, 255, 0.1);
+  background: rgba(87, 157, 255, 0.22);
   color: var(--ds-link-hover);
-  border-color: rgba(87, 157, 255, 0.25);
+  border-color: rgba(87, 157, 255, 0.45);
+  transform: translateY(-1px);
 }
 
 /* Bottom Action Buttons */

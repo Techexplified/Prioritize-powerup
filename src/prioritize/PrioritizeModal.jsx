@@ -938,7 +938,13 @@ export default function PrioritizeModal({ t, onClose }) {
                           {card.selected && <CheckIcon className="prio-check-svg" />}
                         </div>
                       </label>
-                      <span className="prio-card-name-text">{card.name}</span>
+                      <span
+                        className="prio-card-name-text"
+                        onClick={() => handleOpenFrameworkSelect(card)}
+                        title="Click to edit scores"
+                      >
+                        {card.name}
+                      </span>
                     </div>
 
                     <div className="prio-card-item-right">
