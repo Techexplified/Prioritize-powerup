@@ -91,4 +91,46 @@ TrelloPowerUp.initialize({
       },
     ];
   },
+
+  // Display priority score badge directly on cards on the Trello board
+  "card-badges": async function (t) {
+    const score = await t.get("card", "shared", "priority_score");
+    const framework = await t.get("card", "shared", "priority_framework");
+    if (score !== undefined && score !== null && score !== "") {
+      const fwName = (framework || "rice").toUpperCase();
+      return [
+        {
+          text: `🏆 ${score} ${fwName}`,
+          color: Number(score) >= 400 ? "green" : Number(score) >= 200 ? "blue" : "yellow",
+        },
+      ];
+    }
+    return [];
+  },
+
+  // Display priority badge inside card detail view
+  "card-detail-badges": async function (t) {
+    const score = await t.get("card", "shared", "priority_score");
+    const framework = await t.get("card", "shared", "priority_framework");
+    if (score !== undefined && score !== null && score !== "") {
+      const fwName = (framework || "rice").toUpperCase();
+      return [
+        {
+          title: "Priority Score",
+          text: `🏆 ${score} ${fwName}`,
+          color: Number(score) >= 400 ? "green" : Number(score) >= 200 ? "blue" : "yellow",
+          callback: function (t) {
+            return t.modal({
+              title: "Prioritize",
+              url: "./prioritize.html",
+              accentColor: "#0F1626",
+              height: 600,
+              fullscreen: false,
+            });
+          },
+        },
+      ];
+    }
+    return [];
+  },
 });

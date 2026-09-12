@@ -160,12 +160,12 @@ const DEFAULT_SAMPLE_CARDS = [
   { id: "c1", name: "New checkout", framework: "rice", reach: 800, impact: 3, confidence: 0.8, effort: 4, score: 480, selected: true },
   { id: "c2", name: "Search improvement", framework: "rice", reach: 660, impact: 3, confidence: 0.8, effort: 4, score: 396, selected: true },
   { id: "c3", name: "Mobile redesign", framework: "rice", reach: 840, impact: 2, confidence: 0.8, effort: 4, score: 336, selected: true },
-  { id: "c4", name: "Email automation", framework: "ice", impact: 7, confidence: 8, effort: 5, score: 71, selected: true },
-  { id: "c5", name: "Dark mode theme", framework: "effort-impact", impact: 8, effort: 3, score: 65, quadrant: "🌟 Quick Win", selected: true },
+  { id: "c4", name: "Email automation", framework: "rice", reach: 700, impact: 3, confidence: 0.8, effort: 5, score: 336, selected: true },
+  { id: "c5", name: "Dark mode theme", framework: "rice", reach: 950, impact: 2, confidence: 0.8, effort: 3, score: 507, selected: true },
   { id: "c6", name: "Onboarding flow", framework: "rice", reach: 900, impact: 3, confidence: 0.8, effort: 5, score: 432, selected: true },
   { id: "c7", name: "Stripe billing upgrade", framework: "rice", reach: 1000, impact: 3, confidence: 0.9, effort: 6, score: 450, selected: true },
-  { id: "c8", name: "Performance optimization", framework: "ice", impact: 8, confidence: 7, effort: 4, score: 80, selected: true },
-  { id: "c9", name: "Multi-currency support", framework: "effort-impact", impact: 7, effort: 6, score: 68, quadrant: "🚀 Major Project", selected: true },
+  { id: "c8", name: "Performance optimization", framework: "rice", reach: 600, impact: 3, confidence: 0.8, effort: 4, score: 360, selected: true },
+  { id: "c9", name: "Multi-currency support", framework: "rice", reach: 750, impact: 2, confidence: 0.8, effort: 4, score: 300, selected: true },
 ];
 
 const INITIAL_SETS = [
@@ -208,7 +208,37 @@ export default function PrioritizeModal({ t, onClose }) {
 
   // Load real cards from Trello if available
   useEffect(() => {
-    if (!t || typeof t.cards !== "function") return;
+    if (!t) return;
+
+    // If opened directly from a card button or card badge
+    if (typeof t.card === "function") {
+      t.card("id", "name")
+        .then((currentCard) => {
+          if (currentCard && currentCard.id && currentCard.name) {
+            const cardObj = {
+              id: currentCard.id,
+              name: currentCard.name,
+              framework: "rice",
+              reach: 800,
+              impact: 3,
+              confidence: 0.8,
+              effort: 4,
+              score: 480,
+              selected: true,
+            };
+            setTargetCard(cardObj);
+            setSelectedFramework("rice");
+            setReach(800);
+            setImpact(3);
+            setConfidence(0.8);
+            setEffort(4);
+            setActiveView("score-card");
+          }
+        })
+        .catch(() => {});
+    }
+
+    if (typeof t.cards !== "function") return;
 
     const getLists = typeof t.lists === "function" ? t.lists("id", "name") : Promise.resolve([]);
     const getCards = t.cards("id", "name", "idList");
@@ -309,25 +339,25 @@ export default function PrioritizeModal({ t, onClose }) {
       return Math.round((r * imp * conf) / eff);
     }
     if (selectedFramework === "ice") {
-      const imp = Number(iceImpact) || 1;
-      const conf = Number(iceConfidence) || 1;
-      const eff = Math.max(1, Number(iceEffort) || 1);
-      return Math.round((imp * conf * 10) / eff);
+      const imp = Number(impact) || 1;
+      const conf = Number(confidence) || 1;
+      const eff = Math.max(0.5, Number(effort) || 1);
+      return Math.round((imp * conf * 100) / eff);
     }
     if (selectedFramework === "effort-impact") {
-      return Number(eiImpact) || 5;
+      return Number(impact) || 5;
     }
     return 0;
-  }, [selectedFramework, reach, impact, confidence, effort, iceImpact, iceConfidence, iceEffort, eiImpact]);
+  }, [selectedFramework, reach, impact, confidence, effort]);
 
   // Quadrant for Effort vs Impact
   const computedQuadrant = useMemo(() => {
     if (selectedFramework !== "effort-impact") return null;
-    if (eiImpact >= 5 && eiEffort <= 5) return "🌟 Quick Win";
-    if (eiImpact >= 5 && eiEffort > 5) return "🚀 Major Project";
-    if (eiImpact < 5 && eiEffort <= 5) return "⚡ Fill-in";
+    if (impact >= 1 && effort <= 5) return "🌟 Quick Win";
+    if (impact >= 1 && effort > 5) return "🚀 Major Project";
+    if (impact < 1 && effort <= 5) return "⚡ Fill-in";
     return "⏳ Thankless Task";
-  }, [selectedFramework, eiImpact, eiEffort]);
+  }, [selectedFramework, impact, effort]);
 
   // Impact label formatting for RICE
   const impactLabel = useMemo(() => {
@@ -586,9 +616,12 @@ export default function PrioritizeModal({ t, onClose }) {
               </div>
             </div>
 
+            {/* Divider line matching reference */}
+            <div className="prio-scoring-divider" />
+
             {/* Factor Controls */}
             <div className="prio-scoring-body">
-              {/* RICE SCORING (IMAGE EXACT) */}
+              {/* RICE SCORING (EXACT PHOTO FEATURES) */}
               {selectedFramework === "rice" && (
                 <>
                   {/* Reach */}
@@ -606,7 +639,7 @@ export default function PrioritizeModal({ t, onClose }) {
                       onChange={(e) => setReach(Number(e.target.value))}
                       className="prio-range-slider prio-slider-blue"
                       style={{
-                        background: `linear-gradient(to right, #2563EB 0%, #2563EB ${reachPercent}%, #333C44 ${reachPercent}%, #333C44 100%)`,
+                        background: `linear-gradient(to right, #2563EB 0%, #2563EB ${reachPercent}%, #CBD5E1 ${reachPercent}%, #CBD5E1 100%)`,
                       }}
                     />
                   </div>
@@ -683,51 +716,76 @@ export default function PrioritizeModal({ t, onClose }) {
                 </>
               )}
 
-              {/* ICE SCORING */}
+              {/* ICE SCORING (SAME RICH SEGMENTED PILLS & CONTROLS) */}
               {selectedFramework === "ice" && (
                 <>
+                  {/* Impact */}
                   <div className="prio-scoring-factor-item">
                     <div className="prio-scoring-factor-head">
-                      <span className="prio-scoring-factor-name">Impact (1 to 10)</span>
-                      <span className="prio-scoring-val-blue">{iceImpact}</span>
+                      <span className="prio-scoring-factor-name">Impact (per user)</span>
+                      <span className="prio-scoring-val-white">{impactLabel}</span>
                     </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="10"
-                      value={iceImpact}
-                      onChange={(e) => setIceImpact(Number(e.target.value))}
-                      className="prio-range-slider prio-slider-blue"
-                    />
+                    <div className="prio-pills-row">
+                      {[
+                        { val: 0.25, label: "0.25 Min" },
+                        { val: 0.5, label: "0.5 Low" },
+                        { val: 1, label: "1 Med" },
+                        { val: 2, label: "2 High" },
+                        { val: 3, label: "3 Massive" },
+                      ].map((item) => (
+                        <button
+                          key={item.val}
+                          type="button"
+                          className={`prio-pill-button ${impact === item.val ? "active" : ""}`}
+                          onClick={() => setImpact(item.val)}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
+                  {/* Confidence */}
                   <div className="prio-scoring-factor-item">
                     <div className="prio-scoring-factor-head">
-                      <span className="prio-scoring-factor-name">Confidence (1 to 10)</span>
-                      <span className="prio-scoring-val-blue">{iceConfidence}</span>
+                      <span className="prio-scoring-factor-name">Confidence</span>
+                      <span className="prio-scoring-val-white">{confidenceLabel}</span>
                     </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="10"
-                      value={iceConfidence}
-                      onChange={(e) => setIceConfidence(Number(e.target.value))}
-                      className="prio-range-slider prio-slider-blue"
-                    />
+                    <div className="prio-pills-row">
+                      {[
+                        { val: 0.5, label: "50% (Low)" },
+                        { val: 0.8, label: "80% (Medium)" },
+                        { val: 1.0, label: "100% (High)" },
+                      ].map((item) => (
+                        <button
+                          key={item.val}
+                          type="button"
+                          className={`prio-pill-button ${confidence === item.val ? "active" : ""}`}
+                          onClick={() => setConfidence(item.val)}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
+                  {/* Effort / Ease */}
                   <div className="prio-scoring-factor-item">
                     <div className="prio-scoring-factor-head">
-                      <span className="prio-scoring-factor-name">Effort / Ease (1 to 10)</span>
-                      <span className="prio-scoring-val-orange">{iceEffort}</span>
+                      <span className="prio-scoring-factor-name">Effort / Ease (person-months or sprints)</span>
+                      <span className="prio-scoring-val-orange">{effort}</span>
                     </div>
                     <input
                       type="range"
                       min="1"
                       max="10"
-                      value={iceEffort}
-                      onChange={(e) => setIceEffort(Number(e.target.value))}
+                      step="1"
+                      value={effort}
+                      onChange={(e) => setEffort(Number(e.target.value))}
                       className="prio-range-slider prio-slider-orange"
+                      style={{
+                        background: `linear-gradient(to right, #EA580C 0%, #EA580C ${effortPercent}%, #333C44 ${effortPercent}%, #333C44 100%)`,
+                      }}
                     />
                   </div>
                 </>
@@ -738,54 +796,57 @@ export default function PrioritizeModal({ t, onClose }) {
                 <>
                   <div className="prio-scoring-factor-item">
                     <div className="prio-scoring-factor-head">
-                      <span className="prio-scoring-factor-name">Impact (1 to 10)</span>
-                      <span className="prio-scoring-val-blue">{eiImpact}</span>
+                      <span className="prio-scoring-factor-name">Impact</span>
+                      <span className="prio-scoring-val-white">{impactLabel}</span>
                     </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="10"
-                      value={eiImpact}
-                      onChange={(e) => setEiImpact(Number(e.target.value))}
-                      className="prio-range-slider prio-slider-blue"
-                      style={{
-                        background: `linear-gradient(to right, #2563EB 0%, #2563EB ${eiImpactPercent}%, #333C44 ${eiImpactPercent}%, #333C44 100%)`,
-                      }}
-                    />
+                    <div className="prio-pills-row">
+                      {[
+                        { val: 0.25, label: "0.25 Min" },
+                        { val: 0.5, label: "0.5 Low" },
+                        { val: 1, label: "1 Med" },
+                        { val: 2, label: "2 High" },
+                        { val: 3, label: "3 Massive" },
+                      ].map((item) => (
+                        <button
+                          key={item.val}
+                          type="button"
+                          className={`prio-pill-button ${impact === item.val ? "active" : ""}`}
+                          onClick={() => setImpact(item.val)}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="prio-scoring-factor-item">
                     <div className="prio-scoring-factor-head">
-                      <span className="prio-scoring-factor-name">Effort (1 to 10)</span>
-                      <span className="prio-scoring-val-orange">{eiEffort}</span>
+                      <span className="prio-scoring-factor-name">Effort</span>
+                      <span className="prio-scoring-val-orange">{effort}</span>
                     </div>
                     <input
                       type="range"
                       min="1"
                       max="10"
-                      value={eiEffort}
-                      onChange={(e) => setEiEffort(Number(e.target.value))}
+                      step="1"
+                      value={effort}
+                      onChange={(e) => setEffort(Number(e.target.value))}
                       className="prio-range-slider prio-slider-orange"
                       style={{
-                        background: `linear-gradient(to right, #EA580C 0%, #EA580C ${eiEffortPercent}%, #333C44 ${eiEffortPercent}%, #333C44 100%)`,
+                        background: `linear-gradient(to right, #EA580C 0%, #EA580C ${effortPercent}%, #333C44 ${effortPercent}%, #333C44 100%)`,
                       }}
                     />
                   </div>
                 </>
               )}
 
-              {/* Result Score Card */}
+              {/* Result Score Card matching reference photo */}
               <div className="prio-score-result-card">
                 <span className="prio-score-result-label">
                   {currentFw.short} SCORE
                 </span>
                 <span className="prio-score-result-value">
                   {computedQuadrant ? computedQuadrant : computedScore}
-                </span>
-                <span className="prio-score-result-formula">
-                  {selectedFramework === "rice"
-                    ? `Formula: (${reach} × ${impact} × ${confidenceLabel}) ÷ ${effort} = ${computedScore}`
-                    : `Formula: ${currentFw.formulaText}`}
                 </span>
               </div>
 
