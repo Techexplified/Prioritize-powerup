@@ -94,14 +94,30 @@ TrelloPowerUp.initialize({
 
   // Display priority score badge directly on cards on the Trello board
   "card-badges": async function (t) {
-    const score = await t.get("card", "shared", "priority_score");
-    const framework = await t.get("card", "shared", "priority_framework");
+    let score = await t.get("card", "shared", "priority_score");
+    let framework = await t.get("card", "shared", "priority_framework");
+
+    // Also check board-level index if card-level scope wasn't populated
+    if (score === undefined || score === null || score === "") {
+      try {
+        const card = await t.card("id");
+        if (card && card.id) {
+          const boardScores = await t.get("board", "shared", "prio_card_scores");
+          if (boardScores && boardScores[card.id]) {
+            score = boardScores[card.id].score;
+            framework = boardScores[card.id].framework;
+          }
+        }
+      } catch (e) {}
+    }
+
     if (score !== undefined && score !== null && score !== "") {
       const fwName = (framework || "rice").toUpperCase();
+      const num = Number(score) || 0;
       return [
         {
           text: `🏆 ${score} ${fwName}`,
-          color: Number(score) >= 400 ? "green" : Number(score) >= 200 ? "blue" : "yellow",
+          color: num >= 350 ? "red" : num >= 200 ? "yellow" : "blue",
         },
       ];
     }
@@ -110,15 +126,30 @@ TrelloPowerUp.initialize({
 
   // Display priority badge inside card detail view
   "card-detail-badges": async function (t) {
-    const score = await t.get("card", "shared", "priority_score");
-    const framework = await t.get("card", "shared", "priority_framework");
+    let score = await t.get("card", "shared", "priority_score");
+    let framework = await t.get("card", "shared", "priority_framework");
+
+    if (score === undefined || score === null || score === "") {
+      try {
+        const card = await t.card("id");
+        if (card && card.id) {
+          const boardScores = await t.get("board", "shared", "prio_card_scores");
+          if (boardScores && boardScores[card.id]) {
+            score = boardScores[card.id].score;
+            framework = boardScores[card.id].framework;
+          }
+        }
+      } catch (e) {}
+    }
+
     if (score !== undefined && score !== null && score !== "") {
       const fwName = (framework || "rice").toUpperCase();
+      const num = Number(score) || 0;
       return [
         {
           title: "Priority Score",
           text: `🏆 ${score} ${fwName}`,
-          color: Number(score) >= 400 ? "green" : Number(score) >= 200 ? "blue" : "yellow",
+          color: num >= 350 ? "red" : num >= 200 ? "yellow" : "blue",
           callback: function (t) {
             return t.modal({
               title: "Prioritize",
