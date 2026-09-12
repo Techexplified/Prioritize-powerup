@@ -44,7 +44,57 @@ const SAMPLE_CARD_DEFAULTS = [
 
 async function resolveCardPriority(t) {
   try {
-    // 1. Direct card-level stored data
+    const [card, boardScores] = await Promise.all([
+      t.card("id", "name").catch(() => null),
+      t.get("board", "shared", "prio_card_scores").catch(() => null),
+    ]);
+
+    const rawCardName = (card && card.name) || "";
+    const cardName = rawCardName.trim().replace(/\s+/g, " ");
+    const cardId = (card && card.id) || "";
+
+    // 1. Board-level dictionary stored data (authoritative data from Prioritize Power-Up modal)
+    if (boardScores && typeof boardScores === "object") {
+      let entry =
+        (cardId ? boardScores[cardId] : null) ||
+        (cardName ? boardScores[cardName] : null) ||
+        (rawCardName ? boardScores[rawCardName] : null) ||
+        (cardName ? boardScores[cardName.toLowerCase()] : null);
+
+      if (!entry && cardName) {
+        const lowerName = cardName.toLowerCase();
+        const found = Object.entries(boardScores).find(([k]) => {
+          const lowerK = k.trim().replace(/\s+/g, " ").toLowerCase();
+          return (
+            lowerK === lowerName ||
+            (lowerName.length > 3 && lowerK.includes(lowerName)) ||
+            (lowerK.length > 3 && lowerName.includes(lowerK))
+          );
+        });
+        if (found) entry = found[1];
+      }
+
+      if (entry !== undefined && entry !== null) {
+        const score = typeof entry === "object" ? entry.score : entry;
+        const framework = (typeof entry === "object" && entry.framework) || "rice";
+        const quadrant = typeof entry === "object" ? entry.quadrant : null;
+
+        if (score !== undefined && score !== null && score !== "") {
+          // Sync directly onto card since we are in card context
+          t.set("card", "shared", "priority_score", score).catch(() => {});
+          t.set("card", "shared", "priority_framework", framework).catch(() => {});
+          if (quadrant) {
+            t.set("card", "shared", "priority_quadrant", quadrant).catch(() => {});
+          } else {
+            t.remove("card", "shared", "priority_quadrant").catch(() => {});
+          }
+
+          return { score, framework, quadrant };
+        }
+      }
+    }
+
+    // 2. Direct card-level stored data (fallback if not in board dictionary)
     const [cardScore, cardFw, cardQuad] = await Promise.all([
       t.get("card", "shared", "priority_score").catch(() => null),
       t.get("card", "shared", "priority_framework").catch(() => null),
@@ -57,47 +107,6 @@ async function resolveCardPriority(t) {
         framework: cardFw || "rice",
         quadrant: cardQuad,
       };
-    }
-
-    // 2. Board-level dictionary stored data
-    const [card, boardScores] = await Promise.all([
-      t.card("id", "name").catch(() => null),
-      t.get("board", "shared", "prio_card_scores").catch(() => null),
-    ]);
-
-    const cardName = ((card && card.name) || "").trim();
-    const cardId = (card && card.id) || "";
-
-    if (boardScores && typeof boardScores === "object") {
-      let entry =
-        boardScores[cardId] ||
-        boardScores[cardName] ||
-        (cardName ? boardScores[cardName.toLowerCase()] : null);
-
-      if (!entry && cardName) {
-        const found = Object.entries(boardScores).find(
-          ([k]) =>
-            k.toLowerCase() === cardName.toLowerCase() ||
-            cardName.toLowerCase().includes(k.toLowerCase()) ||
-            k.toLowerCase().includes(cardName.toLowerCase())
-        );
-        if (found) entry = found[1];
-      }
-
-      if (entry !== undefined && entry !== null) {
-        const score = typeof entry === "object" ? entry.score : entry;
-        const framework = (typeof entry === "object" && entry.framework) || "rice";
-        const quadrant = typeof entry === "object" ? entry.quadrant : null;
-
-        // Cache onto card
-        t.set("card", "shared", "priority_score", score).catch(() => {});
-        t.set("card", "shared", "priority_framework", framework).catch(() => {});
-        if (quadrant) {
-          t.set("card", "shared", "priority_quadrant", quadrant).catch(() => {});
-        }
-
-        return { score, framework, quadrant };
-      }
     }
 
     // 3. Fallback to sample card defaults matching the card name
@@ -148,6 +157,20 @@ function getBadgeConfig(priority) {
 
   const num = typeof score === "number" ? score : parseFloat(score) || 0;
 
+  // Render quadrant pill on card for Effort vs Impact if present
+  if (quadrant && (fw === "effort-impact" || fw === "effort vs impact")) {
+    let color = "blue";
+    if (quadrant.includes("Quick Win")) color = "green";
+    else if (quadrant.includes("Major Project")) color = "blue";
+    else if (quadrant.includes("Fill-in")) color = "yellow";
+    else if (quadrant.includes("Thankless")) color = "red";
+    return {
+      text: quadrant,
+      color,
+      refresh: 10,
+    };
+  }
+
   let icon = customIcon;
   let color = customColor;
 
@@ -155,6 +178,11 @@ function getBadgeConfig(priority) {
     if (fwUpper.includes("EFFORT") || fwUpper.includes("IMPACT")) {
       icon = icon || "⚡";
       color = color || "red";
+    } else if (fwUpper === "ICE") {
+      icon = icon || "🏆";
+      if (num >= 75) color = color || "red";
+      else if (num >= 40) color = color || "blue";
+      else color = color || "yellow";
     } else if (num >= 350) {
       icon = icon || "🏆";
       color = color || "red";
@@ -165,12 +193,12 @@ function getBadgeConfig(priority) {
       icon = icon || "🔴";
       color = color || "red";
     } else {
-      icon = icon || "⚡";
+      icon = icon || "🏆";
       color = color || "yellow";
     }
   }
 
-  const text = `${icon} ${score} ${fwUpper}`;
+  const text = `${icon || "🏆"} ${score} ${fwUpper}`;
   return { text, color, refresh: 10 };
 }
 

@@ -559,13 +559,19 @@ export default function PrioritizeModal({ t, onClose }) {
               impact,
               confidence,
               effort,
+              iceImpact,
+              iceConfidence,
+              iceEffort,
+              eiImpact,
+              eiEffort,
               quadrant: computedQuadrant,
+              updatedAt: Date.now(),
             };
             if (targetCard.id) map[targetCard.id] = entry;
             if (targetCard.name) {
               map[targetCard.name] = entry;
               map[targetCard.name.trim()] = entry;
-              map[targetCard.name.toLowerCase()] = entry;
+              map[targetCard.name.trim().toLowerCase()] = entry;
             }
             await t.set("board", "shared", "prio_card_scores", map).catch(() => {});
           }
@@ -735,8 +741,11 @@ export default function PrioritizeModal({ t, onClose }) {
               type="button"
               className="prio-btn-secondary"
               style={{ fontSize: "12px", padding: "6px 12px", whiteSpace: "nowrap" }}
-              onClick={() => t.closeModal()}
-              title="Close modal and view updated badges on board"
+              onClick={() => {
+                handleSyncAllToBoard();
+                setTimeout(() => t.closeModal(), 120);
+              }}
+              title="Save all scores and return to board"
             >
               Done (View Board)
             </button>
