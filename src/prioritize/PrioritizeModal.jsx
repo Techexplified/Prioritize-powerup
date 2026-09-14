@@ -1,38 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./prioritize.css";
 
-// Sparkle/Prioritize Icon
-function SparkleIcon(props) {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-    </svg>
-  );
-}
-
-// Glowing Sparkle Star Icon for Screen 1 Header
-function SparkleStarIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M12 2C12 7.5 7.5 12 2 12C7.5 12 12 16.5 12 22C12 16.5 16.5 12 22 12C16.5 12 12 7.5 12 2Z"
-        fill="#FFFFFF"
-      />
-      <circle cx="19" cy="5" r="1.5" fill="#93C5FD" />
-      <circle cx="5" cy="19" r="1" fill="#93C5FD" />
-    </svg>
-  );
-}
 
 // Floppy Disk / Save Icon matching Screen 1 Button
 function FloppyDiskIcon(props) {
@@ -854,8 +822,8 @@ export default function PrioritizeModal({ t, onClose }) {
                 >
                   ←
                 </button>
-                <div className="prio-scoring-icon-box">
-                  <SparkleStarIcon />
+                <div className="prio-brand-icon">
+                  <RankIcon />
                 </div>
                 <div className="prio-scoring-titles">
                   <h2 className="prio-scoring-title-text">PRIORITIZE</h2>

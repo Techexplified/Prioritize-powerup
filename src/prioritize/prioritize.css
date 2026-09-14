@@ -743,15 +743,15 @@
 }
 
 .prio-scoring-icon-box {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
-  box-shadow: 0 3px 10px rgba(37, 99, 235, 0.4);
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
+  color: var(--ds-primary);
   flex-shrink: 0;
 }
 

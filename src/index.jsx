@@ -80,7 +80,7 @@ function App() {
       {/* Navigation Tabs */}
       <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
         {[
-          { id: "prioritize-preview", label: "✨ Board Prioritize UI (Reference)" },
+          { id: "prioritize-preview", label: "Board Prioritize UI (Reference)" },
           { id: "overview", label: "Overview & Endpoints" },
           { id: "auth-preview", label: "Preview Auth Popup" },
           { id: "settings-preview", label: "Preview Settings Popup" },
