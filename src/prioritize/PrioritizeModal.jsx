@@ -260,6 +260,13 @@ export default function PrioritizeModal({ t, onClose }) {
     };
   const cards = activeSet.cards || [];
 
+  // Automatically request Trello container resize on view/content updates
+  useEffect(() => {
+    if (t && typeof t.sizeTo === "function") {
+      t.sizeTo("#root").catch(() => {});
+    }
+  }, [activeView, cards.length, sets.length]);
+
   // Load real cards and saved sets from Trello if available
   useEffect(() => {
     if (!t) return;
@@ -1862,7 +1869,13 @@ export default function PrioritizeModal({ t, onClose }) {
                 type="button"
                 className="prio-btn-secondary"
                 onClick={handleSyncAllToBoard}
-                title="Save and push all priority badges in this set to visible Trello board cards"
+                disabled={cards.length === 0}
+                style={cards.length === 0 ? { opacity: 0.45, cursor: "not-allowed" } : {}}
+                title={
+                  cards.length === 0
+                    ? "Add cards to enable sync"
+                    : "Save and push all priority badges in this set to visible Trello board cards"
+                }
               >
                 {syncSuccess ? "✓ Badges Synced to Board" : "⚡ Sync to Board Cards"}
               </button>
@@ -1871,7 +1884,13 @@ export default function PrioritizeModal({ t, onClose }) {
                 type="button"
                 className="prio-btn-primary"
                 onClick={handleToggleRank}
-                title="Rank cards from highest score to lowest"
+                disabled={cards.length === 0}
+                style={cards.length === 0 ? { opacity: 0.45, cursor: "not-allowed" } : {}}
+                title={
+                  cards.length === 0
+                    ? "Add cards to enable ranking"
+                    : "Rank cards from highest score to lowest"
+                }
               >
                 <RankIcon />
                 {isSortedByRank ? "Reset Ranking" : "Auto-Rank Cards"}
