@@ -1906,6 +1906,57 @@
   color: #738496;
 }
 
+/* Card Picker link buttons (Select All Visible / Clear Selection) */
+.prio-picker-link-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: #9FADBC;
+  cursor: pointer;
+  outline: none;
+  transition: color 0.12s ease;
+  line-height: 1;
+}
+
+.prio-picker-link-btn.primary {
+  color: #579DFF;
+}
+
+.prio-picker-link-btn:hover {
+  text-decoration: underline;
+}
+
+.prio-picker-link-btn.primary:hover {
+  color: #85B8FF;
+}
+
+.prio-picker-link-divider {
+  color: #38424D;
+  user-select: none;
+  font-size: 11px;
+}
+
+/* Global button reset */
+.prio-btn-text {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  padding: 0 !important;
+  transition: color 0.12s ease;
+}
+
+.prio-btn-text:hover {
+  text-decoration: underline;
+}
+
 .prio-picker-list-scroll {
   flex: 1;
   overflow-y: auto;

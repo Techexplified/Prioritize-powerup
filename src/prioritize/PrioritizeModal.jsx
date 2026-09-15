@@ -1621,28 +1621,10 @@ export default function PrioritizeModal({ t, onClose }) {
           {/* Controls & Filter Bar */}
           <div className="prio-controls-bar">
             <div className="prio-section-heading">
-              <button
-                type="button"
-                className="prio-back-to-sets-btn"
-                onClick={() => setActiveView("sets")}
-                title="Return to Sets Hub"
-                style={{ marginRight: "4px" }}
-              >
-                ← Back to Sets
-              </button>
               <span className="prio-heading-title">Cards in "{activeSet.name}"</span>
               <span className="prio-count-badge">
                 {cards.length} cards
               </span>
-              <button
-                type="button"
-                className="prio-btn-secondary"
-                style={{ fontSize: "11px", padding: "3px 8px", marginLeft: "6px", display: "inline-flex", alignItems: "center", gap: "3px" }}
-                onClick={handleOpenCardPicker}
-                title="Add or remove cards from this set"
-              >
-                <PlusIcon /> Add/Manage Cards
-              </button>
             </div>
 
             <div className="prio-controls-right">
@@ -1841,14 +1823,6 @@ export default function PrioritizeModal({ t, onClose }) {
           {/* Action Bar */}
           <div className="prio-action-bar">
             <div className="prio-action-group-left">
-              <button
-                type="button"
-                className="prio-back-to-sets-btn"
-                onClick={() => setActiveView("sets")}
-                title="Return to Sets Hub"
-              >
-                ← Back to Sets
-              </button>
               <button
                 type="button"
                 className="prio-btn-secondary"
@@ -2060,17 +2034,15 @@ export default function PrioritizeModal({ t, onClose }) {
               <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <button
                   type="button"
-                  className="prio-btn-text"
-                  style={{ fontSize: "12px", color: "#579DFF", padding: 0 }}
+                  className="prio-picker-link-btn primary"
                   onClick={() => handlePickerSelectAll(filteredPickerCards)}
                 >
                   Select All Visible
                 </button>
-                <span style={{ color: "#333C44" }}>|</span>
+                <span className="prio-picker-link-divider">|</span>
                 <button
                   type="button"
-                  className="prio-btn-text"
-                  style={{ fontSize: "12px", color: "#9FADBC", padding: 0 }}
+                  className="prio-picker-link-btn"
                   onClick={handlePickerClearAll}
                 >
                   Clear Selection
