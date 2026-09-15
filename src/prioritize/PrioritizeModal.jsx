@@ -186,22 +186,23 @@ const FRAMEWORKS = [
 
 // All cards initially start at score 0 until user scores them
 const DEFAULT_SAMPLE_CARDS = [
-  { id: "c1", name: "New checkout", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
-  { id: "c2", name: "Search improvement", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
-  { id: "c3", name: "Mobile redesign", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
-  { id: "c4", name: "Email automation", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
-  { id: "c5", name: "Dark mode theme", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
-  { id: "c6", name: "Onboarding flow", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
-  { id: "c7", name: "Stripe billing upgrade", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
-  { id: "c8", name: "Performance optimization", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
-  { id: "c9", name: "Multi-currency support", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c1", name: "New checkout", listName: "Product Backlog", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c2", name: "Search improvement", listName: "Product Backlog", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c3", name: "Mobile redesign", listName: "Growth Backlog", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c4", name: "Email automation", listName: "Growth Backlog", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c5", name: "Dark mode theme", listName: "UI Enhancements", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c6", name: "Onboarding flow", listName: "Product Backlog", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c7", name: "Stripe billing upgrade", listName: "Product Backlog", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c8", name: "Performance optimization", listName: "Tech Debt", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c9", name: "Multi-currency support", listName: "Growth Backlog", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
 ];
 
+// Sets start empty (0 cards) by default
 const INITIAL_SETS = [
   {
     id: "set-1",
     name: "Untitled Set",
-    cards: DEFAULT_SAMPLE_CARDS.map((c) => ({ ...c })),
+    cards: [],
   },
 ];
 
@@ -209,6 +210,7 @@ export default function PrioritizeModal({ t, onClose }) {
   const [sets, setSets] = useState(INITIAL_SETS);
   const [activeSetId, setActiveSetId] = useState("set-1");
   const [allBoardCards, setAllBoardCards] = useState(DEFAULT_SAMPLE_CARDS);
+  const [boardLists, setBoardLists] = useState([]);
 
   // Target card when editing scores
   const [targetCard, setTargetCard] = useState(null);
@@ -222,6 +224,12 @@ export default function PrioritizeModal({ t, onClose }) {
   const [newSetName, setNewSetName] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isSortedByRank, setIsSortedByRank] = useState(false);
+
+  // Card Picker Dialog state
+  const [showCardPicker, setShowCardPicker] = useState(false);
+  const [cardSearchQuery, setCardSearchQuery] = useState("");
+  const [selectedCardIdsForPicker, setSelectedCardIdsForPicker] = useState(new Set());
+  const [selectedListFilter, setSelectedListFilter] = useState("all");
 
   // Active selected framework
   const [selectedFramework, setSelectedFramework] = useState("rice");
@@ -371,6 +379,12 @@ export default function PrioritizeModal({ t, onClose }) {
           const finalCards = filteredCards.length > 0 ? filteredCards : trelloCards;
           const scoresMap = boardScores && typeof boardScores === "object" ? { ...boardScores } : {};
 
+          const listMap = {};
+          (trelloLists || []).forEach((l) => {
+            if (l && l.id) listMap[l.id] = l.name;
+          });
+          setBoardLists(trelloLists || []);
+
           // Map board cards. Initial score starts at 0 unless explicitly saved!
           const mappedCards = finalCards.map((c) => {
             const cardName = (c.name || "").trim();
@@ -394,6 +408,7 @@ export default function PrioritizeModal({ t, onClose }) {
             return {
               id: c.id,
               name: c.name,
+              listName: (c.idList && listMap[c.idList]) || "Backlog",
               framework: fw,
               reach: saved?.reach !== undefined ? Number(saved.reach) : 0,
               impact: saved?.impact !== undefined ? Number(saved.impact) : 0,
@@ -417,11 +432,11 @@ export default function PrioritizeModal({ t, onClose }) {
             setSets(savedSets);
             setActiveSetId(savedSets[0].id);
           } else {
-            // Otherwise start with a single "Untitled Set" holding the board cards
+            // New sets start empty (0 cards)
             const initialSet = {
               id: "set-1",
               name: "Untitled Set",
-              cards: mappedCards,
+              cards: [],
             };
             setSets([initialSet]);
             setActiveSetId("set-1");
@@ -444,24 +459,14 @@ export default function PrioritizeModal({ t, onClose }) {
     });
   }
 
-  // Create new independent set
+  // Create new independent set (starts empty with 0 cards)
   function handleCreateNewSet() {
     const newId = `set-${Date.now()}`;
     const newSetNumber = sets.length + 1;
-    const baseCards = allBoardCards.length > 0 ? allBoardCards : DEFAULT_SAMPLE_CARDS;
-    const freshCards = baseCards.map((c) => ({
-      ...c,
-      score: 0,
-      reach: 0,
-      impact: 0,
-      confidence: 0,
-      effort: 0,
-      selected: true,
-    }));
     const newSet = {
       id: newId,
       name: `Untitled Set ${newSetNumber}`,
-      cards: freshCards,
+      cards: [],
     };
     setSets((prev) => {
       const next = [...prev, newSet];
@@ -494,6 +499,93 @@ export default function PrioritizeModal({ t, onClose }) {
       return next;
     });
     setShowDeleteConfirm(false);
+  }
+
+  // Open Card Picker to add cards from board into active set
+  function handleOpenCardPicker() {
+    const currentCardIds = new Set((activeSet.cards || []).map((c) => c.id));
+    setSelectedCardIdsForPicker(currentCardIds);
+    setCardSearchQuery("");
+    setSelectedListFilter("all");
+    setShowCardPicker(true);
+  }
+
+  function handleTogglePickerCard(cardId) {
+    setSelectedCardIdsForPicker((prev) => {
+      const next = new Set(prev);
+      if (next.has(cardId)) next.delete(cardId);
+      else next.add(cardId);
+      return next;
+    });
+  }
+
+  function handlePickerSelectAll(visibleCards) {
+    setSelectedCardIdsForPicker((prev) => {
+      const next = new Set(prev);
+      visibleCards.forEach((c) => next.add(c.id));
+      return next;
+    });
+  }
+
+  function handlePickerClearAll() {
+    setSelectedCardIdsForPicker(new Set());
+  }
+
+  // Save selected cards from picker into active set
+  function handleSaveCardPicker() {
+    const basePool = allBoardCards.length > 0 ? allBoardCards : DEFAULT_SAMPLE_CARDS;
+    const existingMap = new Map((activeSet.cards || []).map((c) => [c.id, c]));
+
+    const updatedCards = [];
+    basePool.forEach((boardCard) => {
+      if (selectedCardIdsForPicker.has(boardCard.id)) {
+        if (existingMap.has(boardCard.id)) {
+          updatedCards.push(existingMap.get(boardCard.id));
+        } else {
+          updatedCards.push({
+            ...boardCard,
+            score: boardCard.score || 0,
+            reach: boardCard.reach || 0,
+            impact: boardCard.impact || 0,
+            confidence: boardCard.confidence || 0,
+            effort: boardCard.effort || 0,
+            selected: true,
+          });
+        }
+      }
+    });
+
+    setSets((prev) => {
+      const next = prev.map((s) => (s.id === activeSetId ? { ...s, cards: updatedCards } : s));
+      if (t && typeof t.set === "function") {
+        t.set("board", "shared", "prio_saved_sets", next).catch(() => {});
+      }
+      return next;
+    });
+
+    setShowCardPicker(false);
+    setActiveView("cards");
+    setAppliedToast(`Updated "${activeSet.name}" with ${updatedCards.length} cards`);
+    setTimeout(() => setAppliedToast(null), 3000);
+  }
+
+  // Remove individual card from active set
+  function handleRemoveCardFromSet(cardId) {
+    setSets((prevSets) => {
+      const next = prevSets.map((s) => {
+        if (s.id === activeSetId) {
+          return {
+            ...s,
+            cards: (s.cards || []).filter((c) => c.id !== cardId),
+          };
+        }
+        return s;
+      });
+      if (t && typeof t.set === "function") {
+        t.set("board", "shared", "prio_saved_sets", next).catch(() => {});
+      }
+      return next;
+    });
   }
 
   // Select all / clear within active set
@@ -788,6 +880,28 @@ export default function PrioritizeModal({ t, onClose }) {
   const scoredCount = cards.filter((c) => c.score && c.score > 0).length;
   const currentFw = FRAMEWORKS.find((f) => f.id === selectedFramework) || FRAMEWORKS[0];
 
+  const availablePool = allBoardCards.length > 0 ? allBoardCards : DEFAULT_SAMPLE_CARDS;
+  const pickerLists = useMemo(() => {
+    const listSet = new Set();
+    availablePool.forEach((c) => {
+      if (c.listName) listSet.add(c.listName);
+    });
+    return Array.from(listSet);
+  }, [availablePool]);
+
+  const filteredPickerCards = useMemo(() => {
+    return availablePool.filter((c) => {
+      if (selectedListFilter !== "all" && c.listName !== selectedListFilter) {
+        return false;
+      }
+      if (cardSearchQuery.trim()) {
+        const q = cardSearchQuery.toLowerCase();
+        return (c.name || "").toLowerCase().includes(q);
+      }
+      return true;
+    });
+  }, [availablePool, selectedListFilter, cardSearchQuery]);
+
   // Dynamic slider percentages
   const reachPercent = Math.min(100, Math.max(0, (reach / 2000) * 100));
   const effortPercent = Math.min(100, Math.max(0, ((effort - 1) / 9) * 100));
@@ -850,12 +964,9 @@ export default function PrioritizeModal({ t, onClose }) {
       {activeView === "sets" && (
         <div className="prio-start-view">
           <div className="prio-start-header">
-            <div className="prio-start-header-badge">
-              <span>🎯 Prioritization Sets</span>
-            </div>
-            <h2 className="prio-start-title">Prioritize Evaluation Hub</h2>
+            <h2 className="prio-start-title">Prioritize Evaluation Sets</h2>
             <p className="prio-start-subtitle">
-              Group cards into independent sets, customize scoring frameworks, and rank what your team should build first.
+              Organize cards into independent evaluation groups, customize scoring frameworks, and rank your team's top priorities.
             </p>
           </div>
 
@@ -902,9 +1013,9 @@ export default function PrioritizeModal({ t, onClose }) {
           {/* Active Set Hero Card */}
           <div className="prio-start-hero-card">
             <div className="prio-set-card-top">
-              <span className="prio-set-badge-tag">Current Evaluation Set</span>
+              <span className="prio-set-badge-tag">Current Set</span>
               <span className="prio-set-independent-pill">
-                ⚡ Performs Individually
+                <span className="prio-pulse-dot"></span> Performs Individually
               </span>
             </div>
 
@@ -924,9 +1035,6 @@ export default function PrioritizeModal({ t, onClose }) {
                   <PencilIcon />
                 </span>
               </div>
-              <p className="prio-start-title-hint">
-                Rename this set anytime. Cards and scores within this set are kept completely independent.
-              </p>
             </div>
 
             {/* Set Stats Summary */}
@@ -945,13 +1053,36 @@ export default function PrioritizeModal({ t, onClose }) {
               </div>
             </div>
 
-            {/* THE TWO OPTIONS REQUESTED BY USER */}
+            {/* The Main Action Options */}
             <div className="prio-start-actions">
+              {/* If cards are already added, direct shortcut to cards evaluation view */}
+              {cards.length > 0 && (
+                <button
+                  type="button"
+                  className="prio-btn-action-hero prio-btn-hero-active-cards"
+                  onClick={() => setActiveView("cards")}
+                >
+                  <div className="prio-btn-hero-icon active-icon">
+                    <RankIcon />
+                  </div>
+                  <div className="prio-btn-hero-text-block">
+                    <div className="prio-btn-hero-title-row">
+                      <strong className="prio-btn-hero-title">Prioritize & Rank Cards</strong>
+                      <span className="prio-btn-hero-count-chip">{cards.length} cards</span>
+                    </div>
+                    <span className="prio-btn-hero-desc">
+                      View scores, adjust factors, and auto-rank cards in {activeSet.name}
+                    </span>
+                  </div>
+                  <span className="prio-btn-hero-arrow">→</span>
+                </button>
+              )}
+
               {/* Option 1: Add cards to this set */}
               <button
                 type="button"
                 className="prio-btn-action-hero primary"
-                onClick={() => setActiveView("cards")}
+                onClick={handleOpenCardPicker}
               >
                 <div className="prio-btn-hero-icon">
                   <CardsIcon />
@@ -959,7 +1090,9 @@ export default function PrioritizeModal({ t, onClose }) {
                 <div className="prio-btn-hero-text-block">
                   <strong className="prio-btn-hero-title">Add cards to this set</strong>
                   <span className="prio-btn-hero-desc">
-                    Select cards from your board and prioritize them for {activeSet.name}
+                    {cards.length === 0
+                      ? `Select cards from your Trello board to evaluate in ${activeSet.name}`
+                      : `Manage or select additional cards from your board`}
                   </span>
                 </div>
                 <span className="prio-btn-hero-arrow">→</span>
@@ -977,7 +1110,7 @@ export default function PrioritizeModal({ t, onClose }) {
                 <div className="prio-btn-hero-text-block">
                   <strong className="prio-btn-hero-title">Create new set</strong>
                   <span className="prio-btn-hero-desc">
-                    Start another evaluation set that will calculate and rank individually
+                    Start a new evaluation set that calculates and ranks independently
                   </span>
                 </div>
                 <span className="prio-btn-hero-arrow">+</span>
@@ -988,7 +1121,7 @@ export default function PrioritizeModal({ t, onClose }) {
           <div className="prio-start-info-footer">
             <span>💡</span>
             <span>
-              All cards start at an initial score of <strong>0</strong> until you choose to score them. Each set has its own independent ranking and scoring.
+              All cards start at an initial score of <strong>0</strong> until scored. Each set maintains its own independent ranking.
             </span>
           </div>
         </div>
@@ -1431,26 +1564,39 @@ export default function PrioritizeModal({ t, onClose }) {
               </button>
               <span className="prio-heading-title">Cards in "{activeSet.name}"</span>
               <span className="prio-count-badge">
-                {selectedCount} of {cards.length}
+                {cards.length} cards
               </span>
+              <button
+                type="button"
+                className="prio-btn-secondary"
+                style={{ fontSize: "11px", padding: "3px 8px", marginLeft: "6px", display: "inline-flex", alignItems: "center", gap: "3px" }}
+                onClick={handleOpenCardPicker}
+                title="Add or remove cards from this set"
+              >
+                <PlusIcon /> Add/Manage Cards
+              </button>
             </div>
 
             <div className="prio-controls-right">
-              <button
-                type="button"
-                className="prio-quick-link"
-                onClick={handleSelectAll}
-              >
-                Select all
-              </button>
-              <span className="prio-dot-divider">·</span>
-              <button
-                type="button"
-                className="prio-quick-link"
-                onClick={handleClearAll}
-              >
-                Clear
-              </button>
+              {cards.length > 0 && (
+                <>
+                  <button
+                    type="button"
+                    className="prio-quick-link"
+                    onClick={handleSelectAll}
+                  >
+                    Select all
+                  </button>
+                  <span className="prio-dot-divider">·</span>
+                  <button
+                    type="button"
+                    className="prio-quick-link"
+                    onClick={handleClearAll}
+                  >
+                    Clear
+                  </button>
+                </>
+              )}
 
               {sets.length > 1 && (
                 <>
@@ -1463,7 +1609,7 @@ export default function PrioritizeModal({ t, onClose }) {
                   >
                     {sets.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.name}
+                        {s.name} ({ (s.cards || []).length })
                       </option>
                     ))}
                   </select>
@@ -1489,7 +1635,7 @@ export default function PrioritizeModal({ t, onClose }) {
               }}
             >
               <span>
-                ✓ Priority score saved for <strong>{appliedToast}</strong>! Badge is now active on your Trello board.
+                ✓ {appliedToast}
               </span>
               <button
                 type="button"
@@ -1508,86 +1654,121 @@ export default function PrioritizeModal({ t, onClose }) {
             </div>
           )}
 
-          {/* Cards List Box */}
-          <div className="prio-list-container">
-            <div className="prio-card-scroll-area">
-              {cards.map((card, idx) => {
-                const isHighPriority = card.score >= 350;
-                const isZero = !card.score || card.score === 0;
-
-                return (
-                  <div
-                    key={card.id}
-                    className={`prio-card-item ${card.selected ? "selected" : "deselected"}`}
-                  >
-                    <div className="prio-card-item-left">
-                      <label className="prio-checkbox-container">
-                        <input
-                          type="checkbox"
-                          className="prio-native-checkbox"
-                          checked={Boolean(card.selected)}
-                          onChange={() => handleToggleCard(card.id)}
-                        />
-                        <div className="prio-checkbox-box">
-                          {card.selected && <CheckIcon className="prio-check-svg" />}
-                        </div>
-                      </label>
-                      <span
-                        className="prio-card-name-text"
-                        onClick={() => handleOpenFrameworkSelect(card)}
-                        title="Click to edit scores"
-                      >
-                        {card.name}
-                      </span>
-                    </div>
-
-                    <div className="prio-card-item-right">
-                      <span
-                        className={`prio-rank-pill ${isZero ? "unscored" : ""}`}
-                        title={
-                          !isZero
-                            ? `Prioritization Score: ${card.score} (${(card.framework || "RICE").toUpperCase()})`
-                            : "Initial score: 0 (Click 'Edit scores' to score this card)"
-                        }
-                        style={
-                          !isZero
-                            ? isHighPriority
-                              ? {
-                                  background: "rgba(248, 113, 104, 0.16)",
-                                  borderColor: "rgba(248, 113, 104, 0.4)",
-                                  color: "#FCA5A5",
-                                }
-                              : card.score >= 100
-                              ? {
-                                  background: "rgba(87, 157, 255, 0.14)",
-                                  borderColor: "rgba(87, 157, 255, 0.35)",
-                                  color: "#579DFF",
-                                }
-                              : {}
-                            : {}
-                        }
-                      >
-                        {isSortedByRank && !isZero ? `#${idx + 1} · ` : ""}
-                        {!isZero
-                          ? card.quadrant
-                            ? card.quadrant
-                            : `🏆 ${card.score} ${(card.framework || "RICE").toUpperCase()}`
-                          : `0 ${(card.framework || "RICE").toUpperCase()}`}
-                      </span>
-
-                      <button
-                        type="button"
-                        className="prio-score-link"
-                        onClick={() => handleOpenFrameworkSelect(card)}
-                      >
-                        Edit scores
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+          {/* If Set has 0 cards, show clean Empty State */}
+          {cards.length === 0 ? (
+            <div className="prio-empty-set-state">
+              <div className="prio-empty-icon-wrap">
+                <CardsIcon />
+              </div>
+              <h3 className="prio-empty-title">No cards in "{activeSet.name}" yet</h3>
+              <p className="prio-empty-desc">
+                Select cards from your Trello board to evaluate and prioritize within this set.
+              </p>
+              <button
+                type="button"
+                className="prio-btn-primary prio-btn-large"
+                style={{ width: "auto", padding: "10px 24px", display: "inline-flex", alignItems: "center", gap: "8px" }}
+                onClick={handleOpenCardPicker}
+              >
+                <PlusIcon /> Add Cards from Board
+              </button>
             </div>
-          </div>
+          ) : (
+            /* Cards List Box */
+            <div className="prio-list-container">
+              <div className="prio-card-scroll-area">
+                {cards.map((card, idx) => {
+                  const isHighPriority = card.score >= 350;
+                  const isZero = !card.score || card.score === 0;
+
+                  return (
+                    <div
+                      key={card.id}
+                      className={`prio-card-item ${card.selected ? "selected" : "deselected"}`}
+                    >
+                      <div className="prio-card-item-left">
+                        <label className="prio-checkbox-container">
+                          <input
+                            type="checkbox"
+                            className="prio-native-checkbox"
+                            checked={Boolean(card.selected)}
+                            onChange={() => handleToggleCard(card.id)}
+                          />
+                          <div className="prio-checkbox-box">
+                            {card.selected && <CheckIcon className="prio-check-svg" />}
+                          </div>
+                        </label>
+                        <span
+                          className="prio-card-name-text"
+                          onClick={() => handleOpenFrameworkSelect(card)}
+                          title="Click to edit scores"
+                        >
+                          {card.name}
+                        </span>
+                        {card.listName && (
+                          <span className="prio-picker-list-tag" style={{ marginLeft: "6px" }}>
+                            {card.listName}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="prio-card-item-right">
+                        <span
+                          className={`prio-rank-pill ${isZero ? "unscored" : ""}`}
+                          title={
+                            !isZero
+                              ? `Prioritization Score: ${card.score} (${(card.framework || "RICE").toUpperCase()})`
+                              : "Initial score: 0 (Click 'Edit scores' to score this card)"
+                          }
+                          style={
+                            !isZero
+                              ? isHighPriority
+                                ? {
+                                    background: "rgba(248, 113, 104, 0.16)",
+                                    borderColor: "rgba(248, 113, 104, 0.4)",
+                                    color: "#FCA5A5",
+                                  }
+                                : card.score >= 100
+                                ? {
+                                    background: "rgba(87, 157, 255, 0.14)",
+                                    borderColor: "rgba(87, 157, 255, 0.35)",
+                                    color: "#579DFF",
+                                  }
+                                : {}
+                              : {}
+                          }
+                        >
+                          {isSortedByRank && !isZero ? `#${idx + 1} · ` : ""}
+                          {!isZero
+                            ? card.quadrant
+                              ? card.quadrant
+                              : `🏆 ${card.score} ${(card.framework || "RICE").toUpperCase()}`
+                            : `0 ${(card.framework || "RICE").toUpperCase()}`}
+                        </span>
+
+                        <button
+                          type="button"
+                          className="prio-score-link"
+                          onClick={() => handleOpenFrameworkSelect(card)}
+                        >
+                          Edit scores
+                        </button>
+
+                        <button
+                          type="button"
+                          className="prio-card-remove-link"
+                          onClick={() => handleRemoveCardFromSet(card.id)}
+                          title="Remove card from this set"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Action Bar */}
           <div className="prio-action-bar">
@@ -1603,10 +1784,19 @@ export default function PrioritizeModal({ t, onClose }) {
               <button
                 type="button"
                 className="prio-btn-secondary"
+                onClick={handleOpenCardPicker}
+                title="Add cards from your board to this set"
+              >
+                <PlusIcon />
+                Add Cards
+              </button>
+              <button
+                type="button"
+                className="prio-btn-secondary"
                 onClick={handleCreateNewSet}
                 title="Create a new evaluation set"
               >
-                <PlusIcon />
+                <FolderPlusIcon />
                 New Set
               </button>
               {sets.length > 1 && (
@@ -1731,6 +1921,135 @@ export default function PrioritizeModal({ t, onClose }) {
               >
                 Delete Set
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Card Picker Dialog */}
+      {showCardPicker && (
+        <div className="prio-overlay" onClick={() => setShowCardPicker(false)}>
+          <div
+            className="prio-card-picker-dialog"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="prio-card-picker-header">
+              <div className="prio-picker-title-row">
+                <h3 className="prio-picker-title">Add Cards to {activeSet.name}</h3>
+                <button
+                  type="button"
+                  className="prio-btn-text"
+                  onClick={() => setShowCardPicker(false)}
+                  style={{ fontSize: "16px", padding: "2px 8px", color: "#9FADBC" }}
+                >
+                  ✕
+                </button>
+              </div>
+              <p className="prio-picker-subtitle">
+                Select cards from your Trello board to evaluate in this set.
+              </p>
+              <div className="prio-picker-search-bar">
+                <input
+                  type="text"
+                  className="prio-picker-search-input"
+                  placeholder="Search cards on board..."
+                  value={cardSearchQuery}
+                  onChange={(e) => setCardSearchQuery(e.target.value)}
+                  autoFocus
+                />
+                <select
+                  className="prio-picker-list-filter"
+                  value={selectedListFilter}
+                  onChange={(e) => setSelectedListFilter(e.target.value)}
+                >
+                  <option value="all">All Lists</option>
+                  {pickerLists.map((ln) => (
+                    <option key={ln} value={ln}>
+                      {ln}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="prio-picker-controls-row">
+              <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+                <button
+                  type="button"
+                  className="prio-btn-text"
+                  style={{ fontSize: "12px", color: "#579DFF", padding: 0 }}
+                  onClick={() => handlePickerSelectAll(filteredPickerCards)}
+                >
+                  Select All Visible
+                </button>
+                <span style={{ color: "#333C44" }}>|</span>
+                <button
+                  type="button"
+                  className="prio-btn-text"
+                  style={{ fontSize: "12px", color: "#9FADBC", padding: 0 }}
+                  onClick={handlePickerClearAll}
+                >
+                  Clear Selection
+                </button>
+              </div>
+              <span>
+                {selectedCardIdsForPicker.size} of {availablePool.length} selected
+              </span>
+            </div>
+
+            <div className="prio-picker-list-scroll">
+              {filteredPickerCards.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "30px 10px", color: "#738496" }}>
+                  No cards match your search or filter.
+                </div>
+              ) : (
+                filteredPickerCards.map((c) => {
+                  const isChecked = selectedCardIdsForPicker.has(c.id);
+                  return (
+                    <div
+                      key={c.id}
+                      className={`prio-picker-card-item ${isChecked ? "selected" : ""}`}
+                      onClick={() => handleTogglePickerCard(c.id)}
+                    >
+                      <div className="prio-picker-card-left">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleTogglePickerCard(c.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ cursor: "pointer", accentColor: "#579DFF" }}
+                        />
+                        <span className="prio-picker-card-title">{c.name}</span>
+                      </div>
+                      {c.listName && (
+                        <span className="prio-picker-list-tag">{c.listName}</span>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="prio-card-picker-footer">
+              <span className="prio-picker-footer-count">
+                Selected: <strong>{selectedCardIdsForPicker.size}</strong> cards
+              </span>
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  type="button"
+                  className="prio-btn-secondary"
+                  onClick={() => setShowCardPicker(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  className="prio-btn-primary"
+                  onClick={handleSaveCardPicker}
+                >
+                  Save & Add to Set
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -28,6 +28,34 @@
   --ds-danger-hover: rgba(248, 113, 104, 0.22);
 }
 
+/* Custom Sleek Dark-Mode Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #38424D transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333C44;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #454F59;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* Full iframe container */
 .prio-container {
   width: 100%;
@@ -1088,26 +1116,26 @@
 }
 
 /* ========================================================= */
-/* STARTING UI / SETS MANAGEMENT VIEW                        */
+/* STARTING UI / SETS MANAGEMENT VIEW (CLEAN & PROFESSIONAL)  */
 /* ========================================================= */
 
 .prio-start-view {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 20px;
-  max-width: 640px;
+  padding: 24px 20px 32px;
+  max-width: 580px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
-  animation: prioFadeIn 0.25s ease-out;
+  animation: prioFadeIn 0.2s ease-out;
   overflow-y: auto;
 }
 
 @keyframes prioFadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -1117,93 +1145,83 @@
 
 .prio-start-header {
   text-align: center;
-  margin-bottom: 20px;
-}
-
-.prio-start-header-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  background: rgba(87, 157, 255, 0.12);
-  border: 1px solid rgba(87, 157, 255, 0.28);
-  color: #579DFF;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 8px;
+  margin-bottom: 18px;
 }
 
 .prio-start-title {
   margin: 0 0 6px;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 20px;
+  font-weight: 600;
   color: #F7F8F9;
-  letter-spacing: -0.3px;
+  letter-spacing: -0.2px;
 }
 
 .prio-start-subtitle {
   margin: 0;
-  font-size: 13.5px;
+  font-size: 13px;
   color: #9FADBC;
-  max-width: 480px;
-  line-height: 1.5;
+  max-width: 440px;
+  line-height: 1.45;
 }
 
 /* Multi-Set Tabs Bar */
 .prio-start-tabs-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
-  margin-bottom: 16px;
-  overflow-x: auto;
-  padding-bottom: 4px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.prio-start-tabs-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .prio-start-tab {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: #22272B;
-  border: 1px solid #333C44;
+  gap: 6px;
+  background: #181C20;
+  border: 1px solid #282E33;
   color: #9FADBC;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12.5px;
-  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
   white-space: nowrap;
 }
 
 .prio-start-tab:hover {
-  background: #2C333A;
-  border-color: #454F59;
+  background: #22272B;
+  border-color: #38424D;
   color: #F7F8F9;
 }
 
 .prio-start-tab.active {
-  background: rgba(87, 157, 255, 0.16);
+  background: #22272B;
   border-color: #579DFF;
   color: #579DFF;
-  box-shadow: 0 0 10px rgba(87, 157, 255, 0.15);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .prio-start-tab-delete {
   background: transparent;
   border: none;
-  color: #9FADBC;
+  color: #738496;
   cursor: pointer;
   padding: 0 2px;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1;
-  border-radius: 50%;
+  border-radius: 3px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.12s ease;
 }
 
 .prio-start-tab-delete:hover {
@@ -1215,21 +1233,20 @@
   align-items: center;
   gap: 4px;
   background: transparent;
-  border: 1px dashed #454F59;
+  border: 1px dashed #38424D;
   color: #9FADBC;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 6px;
+  font-size: 11.5px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
+  transition: all 0.12s ease;
 }
 
 .prio-start-tab-add:hover {
   border-color: #579DFF;
   color: #579DFF;
-  background: rgba(87, 157, 255, 0.08);
+  background: rgba(87, 157, 255, 0.06);
 }
 
 /* The Active Set Hero Card */
@@ -1237,49 +1254,48 @@
   width: 100%;
   background: #22272B;
   border: 1px solid #333C44;
-  border-radius: 12px;
-  padding: 22px;
+  border-top: 2px solid #579DFF;
+  border-radius: 10px;
+  padding: 20px;
   box-sizing: border-box;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.24);
   position: relative;
-  overflow: hidden;
-}
-
-.prio-start-hero-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #579DFF 0%, #85B8FF 50%, #4BCE97 100%);
 }
 
 .prio-set-card-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .prio-set-badge-tag {
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 10.5px;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   color: #579DFF;
-  background: rgba(87, 157, 255, 0.12);
-  padding: 2px 8px;
+  background: rgba(87, 157, 255, 0.1);
+  padding: 2px 7px;
   border-radius: 4px;
-  border: 1px solid rgba(87, 157, 255, 0.25);
+  border: 1px solid rgba(87, 157, 255, 0.2);
 }
 
 .prio-set-independent-pill {
-  font-size: 11.5px;
-  color: #9FADBC;
+  font-size: 11px;
+  color: #738496;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+}
+
+.prio-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4BCE97;
+  display: inline-block;
+  box-shadow: 0 0 6px rgba(75, 206, 151, 0.5);
 }
 
 /* Editable Set Title Input */
@@ -1290,11 +1306,11 @@
 
 .prio-start-title-label {
   display: block;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #9FADBC;
+  color: #738496;
   margin-bottom: 6px;
 }
 
@@ -1307,28 +1323,28 @@
 
 .prio-start-title-input {
   width: 100%;
-  background: #161A1D;
+  background: #181C20;
   border: 1px solid #333C44;
-  border-radius: 8px;
-  padding: 10px 42px 10px 14px;
-  font-size: 18px;
-  font-weight: 700;
+  border-radius: 6px;
+  padding: 9px 38px 9px 12px;
+  font-size: 15px;
+  font-weight: 600;
   color: #F7F8F9;
   box-sizing: border-box;
   outline: none;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
   font-family: inherit;
 }
 
 .prio-start-title-input:hover {
   border-color: #454F59;
-  background: #191E22;
+  background: #1A1F23;
 }
 
 .prio-start-title-input:focus {
   border-color: #579DFF;
-  box-shadow: 0 0 0 2px rgba(87, 157, 255, 0.25);
-  background: #161A1D;
+  box-shadow: 0 0 0 2px rgba(87, 157, 255, 0.2);
+  background: #181C20;
 }
 
 .prio-start-title-input::placeholder {
@@ -1337,47 +1353,42 @@
 
 .prio-start-edit-icon {
   position: absolute;
-  right: 14px;
+  right: 12px;
   color: #738496;
   pointer-events: none;
-  font-size: 14px;
-}
-
-.prio-start-title-hint {
-  margin: 5px 0 0;
-  font-size: 11.5px;
-  color: #738496;
+  display: flex;
+  align-items: center;
 }
 
 /* Set Stats Summary Row */
 .prio-set-stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 18px;
 }
 
 .prio-stat-box {
-  background: #161A1D;
-  border: 1px solid #2C333A;
-  border-radius: 8px;
-  padding: 10px 12px;
+  background: #181C20;
+  border: 1px solid #282E33;
+  border-radius: 6px;
+  padding: 9px 12px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .prio-stat-box-label {
-  font-size: 11px;
-  color: #9FADBC;
+  font-size: 10px;
+  color: #738496;
   text-transform: uppercase;
   font-weight: 600;
   letter-spacing: 0.4px;
 }
 
 .prio-stat-box-val {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: #F7F8F9;
 }
 
@@ -1385,90 +1396,147 @@
   color: #579DFF;
 }
 
-/* The Two Main Action Options */
+/* Action Cards */
 .prio-start-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 6px;
+  gap: 8px;
 }
 
 .prio-btn-action-hero {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
-  border-radius: 9px;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
   cursor: pointer;
   text-align: left;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
   width: 100%;
   box-sizing: border-box;
+  font-family: inherit;
 }
 
+/* Primary Action: Add cards to this set */
 .prio-btn-action-hero.primary {
-  background: linear-gradient(180deg, #579DFF 0%, #388BFF 100%);
-  border: 1px solid #579DFF;
-  color: #091E42;
-  box-shadow: 0 3px 12px rgba(87, 157, 255, 0.35);
+  background: #181C20;
+  border: 1px solid #38424D;
+  color: #F7F8F9;
 }
 
 .prio-btn-action-hero.primary:hover {
-  background: linear-gradient(180deg, #85B8FF 0%, #579DFF 100%);
-  box-shadow: 0 6px 18px rgba(87, 157, 255, 0.45);
+  background: #20262B;
+  border-color: #579DFF;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
   transform: translateY(-1px);
 }
 
+.prio-btn-action-hero.primary .prio-btn-hero-icon {
+  background: rgba(87, 157, 255, 0.12);
+  color: #579DFF;
+  border: 1px solid rgba(87, 157, 255, 0.22);
+}
+
 .prio-btn-action-hero.primary .prio-btn-hero-title {
-  color: #091E42;
-  font-weight: 700;
+  color: #F7F8F9;
+  font-weight: 600;
 }
 
 .prio-btn-action-hero.primary .prio-btn-hero-desc {
-  color: rgba(9, 30, 66, 0.85);
+  color: #9FADBC;
 }
 
+.prio-btn-action-hero.primary .prio-btn-hero-arrow {
+  color: #579DFF;
+}
+
+/* Secondary Action: Create new set */
 .prio-btn-action-hero.secondary {
-  background: #161A1D;
-  border: 1px solid #333C44;
+  background: #181C20;
+  border: 1px solid #282E33;
   color: #F7F8F9;
 }
 
 .prio-btn-action-hero.secondary:hover {
-  background: #22272B;
-  border-color: #579DFF;
-  color: #F7F8F9;
+  background: #20262B;
+  border-color: #454F59;
   transform: translateY(-1px);
+}
+
+.prio-btn-action-hero.secondary .prio-btn-hero-icon {
+  background: rgba(255, 255, 255, 0.04);
+  color: #9FADBC;
+  border: 1px solid #333C44;
 }
 
 .prio-btn-action-hero.secondary .prio-btn-hero-title {
   color: #F7F8F9;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .prio-btn-action-hero.secondary .prio-btn-hero-desc {
+  color: #738496;
+}
+
+.prio-btn-action-hero.secondary .prio-btn-hero-arrow {
+  color: #738496;
+}
+
+/* Shortcut to Cards View when cards are populated */
+.prio-btn-action-hero.prio-btn-hero-active-cards {
+  background: rgba(87, 157, 255, 0.07);
+  border: 1px solid rgba(87, 157, 255, 0.3);
+}
+
+.prio-btn-action-hero.prio-btn-hero-active-cards:hover {
+  background: rgba(87, 157, 255, 0.13);
+  border-color: #579DFF;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(87, 157, 255, 0.12);
+}
+
+.prio-btn-action-hero.prio-btn-hero-active-cards .active-icon {
+  background: #579DFF;
+  color: #091E42;
+  border: 1px solid #579DFF;
+}
+
+.prio-btn-action-hero.prio-btn-hero-active-cards .prio-btn-hero-title {
+  color: #579DFF;
+  font-weight: 600;
+}
+
+.prio-btn-action-hero.prio-btn-hero-active-cards .prio-btn-hero-desc {
   color: #9FADBC;
+}
+
+.prio-btn-action-hero.prio-btn-hero-active-cards .prio-btn-hero-arrow {
+  color: #579DFF;
+}
+
+.prio-btn-hero-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prio-btn-hero-count-chip {
+  font-size: 11px;
+  font-weight: 600;
+  color: #579DFF;
+  background: rgba(87, 157, 255, 0.14);
+  padding: 1px 6px;
+  border-radius: 4px;
 }
 
 .prio-btn-hero-icon {
   width: 34px;
   height: 34px;
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-}
-
-.prio-btn-action-hero.primary .prio-btn-hero-icon {
-  background: rgba(9, 30, 66, 0.15);
-  color: #091E42;
-}
-
-.prio-btn-action-hero.secondary .prio-btn-hero-icon {
-  background: #22272B;
-  color: #579DFF;
-  border: 1px solid #333C44;
 }
 
 .prio-btn-hero-text-block {
@@ -1479,70 +1547,312 @@
 }
 
 .prio-btn-hero-title {
-  font-size: 15px;
+  font-size: 13.5px;
   line-height: 1.2;
 }
 
 .prio-btn-hero-desc {
-  font-size: 12px;
-  line-height: 1.3;
+  font-size: 11.5px;
+  line-height: 1.35;
 }
 
 .prio-btn-hero-arrow {
-  font-size: 18px;
-  font-weight: bold;
-  opacity: 0.8;
-  transition: transform 0.15s ease;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.85;
+  transition: transform 0.12s ease;
 }
 
 .prio-btn-action-hero:hover .prio-btn-hero-arrow {
-  transform: translateX(3px);
+  transform: translateX(2px);
   opacity: 1;
 }
 
-/* Info footer in Starting Screen */
+/* Info tip footer in Starting Screen */
 .prio-start-info-footer {
-  margin-top: 18px;
+  margin-top: 14px;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
-  color: #9FADBC;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid #2C333A;
-  border-radius: 8px;
-  padding: 8px 14px;
+  font-size: 11.5px;
+  color: #738496;
+  background: transparent;
+  border: 1px solid #282E33;
+  border-radius: 6px;
+  padding: 7px 12px;
   width: 100%;
   box-sizing: border-box;
+}
+
+.prio-start-info-footer strong {
+  color: #9FADBC;
 }
 
 /* Back to Sets Navigation Button in Header & Action Bar */
 .prio-back-to-sets-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   background: #22272B;
   border: 1px solid #333C44;
   color: #579DFF;
   font-size: 12px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 6px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.12s ease;
   white-space: nowrap;
 }
 
 .prio-back-to-sets-btn:hover {
-  background: #2C333A;
+  background: #282E33;
   border-color: #579DFF;
   color: #85B8FF;
 }
 
 /* Unscored Pill styling */
 .prio-rank-pill.unscored {
-  background: rgba(148, 163, 184, 0.1) !important;
-  border-color: rgba(148, 163, 184, 0.25) !important;
+  background: rgba(148, 163, 184, 0.08) !important;
+  border-color: rgba(148, 163, 184, 0.2) !important;
   color: #94A3B8 !important;
   font-weight: 500;
+}
+
+/* ========================================================= */
+/* EMPTY STATE FOR SETS WITH 0 CARDS                         */
+/* ========================================================= */
+
+.prio-empty-set-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 38px 20px;
+  background: #181C20;
+  border: 1px dashed #333C44;
+  border-radius: 8px;
+  margin: 16px 18px;
+}
+
+.prio-empty-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: rgba(87, 157, 255, 0.1);
+  border: 1px solid rgba(87, 157, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #579DFF;
+  margin-bottom: 12px;
+}
+
+.prio-empty-title {
+  margin: 0 0 4px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #F7F8F9;
+}
+
+.prio-empty-desc {
+  margin: 0 0 16px;
+  font-size: 12.5px;
+  color: #9FADBC;
+  max-width: 340px;
+  line-height: 1.45;
+}
+
+/* ========================================================= */
+/* CARD PICKER MODAL (SELECT BOARD CARDS FOR A SET)          */
+/* ========================================================= */
+
+.prio-card-picker-dialog {
+  width: 92%;
+  max-width: 580px;
+  max-height: 82vh;
+  background: #22272B;
+  border: 1px solid #333C44;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  animation: prioFadeIn 0.18s ease-out;
+}
+
+.prio-card-picker-header {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid #2C333A;
+  background: #1D2125;
+}
+
+.prio-picker-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.prio-picker-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #F7F8F9;
+}
+
+.prio-picker-subtitle {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: #9FADBC;
+}
+
+.prio-picker-search-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.prio-picker-search-input {
+  flex: 1;
+  background: #161A1D;
+  border: 1px solid #333C44;
+  border-radius: 6px;
+  padding: 7px 11px;
+  font-size: 12.5px;
+  color: #F7F8F9;
+  outline: none;
+  transition: all 0.12s ease;
+}
+
+.prio-picker-search-input:focus {
+  border-color: #579DFF;
+  box-shadow: 0 0 0 2px rgba(87, 157, 255, 0.2);
+}
+
+.prio-picker-list-filter {
+  background: #161A1D;
+  border: 1px solid #333C44;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  color: #9FADBC;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.prio-picker-list-filter:focus {
+  border-color: #579DFF;
+}
+
+.prio-picker-controls-row {
+  padding: 7px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #181C20;
+  border-bottom: 1px solid #282E33;
+  font-size: 11.5px;
+  color: #738496;
+}
+
+.prio-picker-list-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 12px;
+  max-height: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.prio-picker-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: #1D2125;
+  border: 1px solid #282E33;
+  transition: all 0.12s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.prio-picker-card-item:hover {
+  background: #22272B;
+  border-color: #38424D;
+}
+
+.prio-picker-card-item.selected {
+  background: rgba(87, 157, 255, 0.08);
+  border-color: rgba(87, 157, 255, 0.32);
+}
+
+.prio-picker-card-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+}
+
+.prio-picker-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #F7F8F9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prio-picker-list-tag {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #9FADBC;
+  background: #181C20;
+  border: 1px solid #2C333A;
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.prio-card-picker-footer {
+  padding: 10px 18px;
+  background: #1D2125;
+  border-top: 1px solid #2C333A;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.prio-picker-footer-count {
+  font-size: 12px;
+  color: #9FADBC;
+}
+
+.prio-picker-footer-count strong {
+  color: #579DFF;
+}
+
+/* Remove button from set item */
+.prio-card-remove-link {
+  background: transparent;
+  border: none;
+  color: #738496;
+  cursor: pointer;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+}
+
+.prio-card-remove-link:hover {
+  color: #F87168;
+  background: rgba(248, 113, 104, 0.12);
 }
