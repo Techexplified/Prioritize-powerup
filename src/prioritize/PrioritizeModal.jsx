@@ -970,45 +970,43 @@ export default function PrioritizeModal({ t, onClose }) {
             </p>
           </div>
 
-          {/* If multiple sets exist, show horizontal tabs to switch or add */}
-          {sets.length > 1 && (
-            <div className="prio-start-tabs-wrapper">
-              {sets.map((s) => (
-                <div
-                  key={s.id}
-                  className={`prio-start-tab ${s.id === activeSetId ? "active" : ""}`}
-                  onClick={() => setActiveSetId(s.id)}
-                >
-                  <span>📁 {s.name || "Untitled Set"}</span>
-                  <span style={{ fontSize: "11px", opacity: 0.8 }}>
-                    ({(s.cards || []).length})
-                  </span>
-                  {sets.length > 1 && (
-                    <button
-                      type="button"
-                      className="prio-start-tab-delete"
-                      title="Delete this set"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveSetId(s.id);
-                        setShowDeleteConfirm(true);
-                      }}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-              <button
-                type="button"
-                className="prio-start-tab-add"
-                onClick={handleCreateNewSet}
-                title="Create a new independent set"
+          {/* Evaluation Sets Tabs Bar */}
+          <div className="prio-start-tabs-wrapper">
+            {sets.map((s) => (
+              <div
+                key={s.id}
+                className={`prio-start-tab ${s.id === activeSetId ? "active" : ""}`}
+                onClick={() => setActiveSetId(s.id)}
               >
-                <PlusIcon /> New Set
-              </button>
-            </div>
-          )}
+                <span>📁 {s.name || "Untitled Set"}</span>
+                <span style={{ fontSize: "11px", opacity: 0.8 }}>
+                  ({(s.cards || []).length})
+                </span>
+                {sets.length > 1 && (
+                  <button
+                    type="button"
+                    className="prio-start-tab-delete"
+                    title="Delete this set"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveSetId(s.id);
+                      setShowDeleteConfirm(true);
+                    }}
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              className="prio-start-tab-add"
+              onClick={handleCreateNewSet}
+              title="Create a new independent set"
+            >
+              <PlusIcon /> New Set
+            </button>
+          </div>
 
           {/* Active Set Hero Card */}
           <div className="prio-start-hero-card">
@@ -1049,72 +1047,98 @@ export default function PrioritizeModal({ t, onClose }) {
               </div>
               <div className="prio-stat-box">
                 <span className="prio-stat-box-label">Initial Score</span>
-                <span className="prio-stat-box-val" style={{ color: "#9FADBC" }}>0 (Zero)</span>
+                <span className="prio-stat-box-val">0 (Zero)</span>
               </div>
             </div>
 
-            {/* The Main Action Options */}
-            <div className="prio-start-actions">
-              {/* If cards are already added, direct shortcut to cards evaluation view */}
-              {cards.length > 0 && (
-                <button
-                  type="button"
-                  className="prio-btn-action-hero prio-btn-hero-active-cards"
-                  onClick={() => setActiveView("cards")}
-                >
-                  <div className="prio-btn-hero-icon active-icon">
-                    <RankIcon />
-                  </div>
-                  <div className="prio-btn-hero-text-block">
-                    <div className="prio-btn-hero-title-row">
-                      <strong className="prio-btn-hero-title">Prioritize & Rank Cards</strong>
-                      <span className="prio-btn-hero-count-chip">{cards.length} cards</span>
-                    </div>
-                    <span className="prio-btn-hero-desc">
-                      View scores, adjust factors, and auto-rank cards in {activeSet.name}
-                    </span>
-                  </div>
-                  <span className="prio-btn-hero-arrow">→</span>
-                </button>
-              )}
-
-              {/* Option 1: Add cards to this set */}
+            {/* If the active set already has cards, direct shortcut to score & rank */}
+            {cards.length > 0 && (
               <button
                 type="button"
-                className="prio-btn-action-hero primary"
-                onClick={handleOpenCardPicker}
+                className="prio-btn-start-score"
+                onClick={() => setActiveView("cards")}
+                style={{ marginBottom: "12px" }}
               >
                 <div className="prio-btn-hero-icon">
-                  <CardsIcon />
+                  <RankIcon />
                 </div>
                 <div className="prio-btn-hero-text-block">
-                  <strong className="prio-btn-hero-title">Add cards to this set</strong>
+                  <strong className="prio-btn-hero-title">
+                    Prioritize &amp; Rank {activeSet.name} ({cards.length} cards)
+                  </strong>
                   <span className="prio-btn-hero-desc">
-                    {cards.length === 0
-                      ? `Select cards from your Trello board to evaluate in ${activeSet.name}`
-                      : `Manage or select additional cards from your board`}
+                    Open matrix view to evaluate factors and calculate scores
                   </span>
                 </div>
                 <span className="prio-btn-hero-arrow">→</span>
               </button>
+            )}
 
-              {/* Option 2: Create new set */}
-              <button
-                type="button"
-                className="prio-btn-action-hero secondary"
-                onClick={handleCreateNewSet}
+            {/* 2-Column Action Cards */}
+            <div className="prio-start-actions-grid">
+              {/* Option 1: Add cards to this set */}
+              <div
+                className="prio-action-card primary"
+                onClick={handleOpenCardPicker}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleOpenCardPicker();
+                  }
+                }}
               >
-                <div className="prio-btn-hero-icon">
-                  <FolderPlusIcon />
+                <div className="prio-action-card-header">
+                  <div className="prio-action-card-icon primary">
+                    <CardsIcon />
+                  </div>
+                  <span className="prio-action-card-badge primary">Option 1</span>
                 </div>
-                <div className="prio-btn-hero-text-block">
-                  <strong className="prio-btn-hero-title">Create new set</strong>
-                  <span className="prio-btn-hero-desc">
-                    Start a new evaluation set that calculates and ranks independently
+                <div className="prio-action-card-body">
+                  <h3 className="prio-action-card-title">Add cards to this set</h3>
+                  <p className="prio-action-card-desc">
+                    {cards.length === 0
+                      ? `Select cards from your Trello board to evaluate in ${activeSet.name}`
+                      : `Manage or select additional cards from your board`}
+                  </p>
+                </div>
+                <div className="prio-action-card-footer">
+                  <span className="prio-action-cta-btn primary">
+                    Select Cards from Board →
                   </span>
                 </div>
-                <span className="prio-btn-hero-arrow">+</span>
-              </button>
+              </div>
+
+              {/* Option 2: Create new set */}
+              <div
+                className="prio-action-card secondary"
+                onClick={handleCreateNewSet}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    handleCreateNewSet();
+                  }
+                }}
+              >
+                <div className="prio-action-card-header">
+                  <div className="prio-action-card-icon secondary">
+                    <FolderPlusIcon />
+                  </div>
+                  <span className="prio-action-card-badge secondary">Option 2</span>
+                </div>
+                <div className="prio-action-card-body">
+                  <h3 className="prio-action-card-title">Create new set</h3>
+                  <p className="prio-action-card-desc">
+                    Start a new evaluation set that calculates and ranks independently
+                  </p>
+                </div>
+                <div className="prio-action-card-footer">
+                  <span className="prio-action-cta-btn secondary">
+                    + Create New Set
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
