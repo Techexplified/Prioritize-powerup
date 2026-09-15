@@ -80,16 +80,19 @@ async function resolveCardPriority(t) {
         const quadrant = typeof entry === "object" ? entry.quadrant : null;
 
         if (score !== undefined && score !== null && score !== "") {
-          // Sync directly onto card since we are in card context
-          t.set("card", "shared", "priority_score", score).catch(() => {});
-          t.set("card", "shared", "priority_framework", framework).catch(() => {});
-          if (quadrant) {
-            t.set("card", "shared", "priority_quadrant", quadrant).catch(() => {});
-          } else {
-            t.remove("card", "shared", "priority_quadrant").catch(() => {});
-          }
+          const numScore = Number(score) || 0;
+          if (numScore > 0) {
+            // Sync directly onto card since we are in card context
+            t.set("card", "shared", "priority_score", score).catch(() => {});
+            t.set("card", "shared", "priority_framework", framework).catch(() => {});
+            if (quadrant) {
+              t.set("card", "shared", "priority_quadrant", quadrant).catch(() => {});
+            } else {
+              t.remove("card", "shared", "priority_quadrant").catch(() => {});
+            }
 
-          return { score, framework, quadrant };
+            return { score, framework, quadrant };
+          }
         }
       }
     }
@@ -102,43 +105,14 @@ async function resolveCardPriority(t) {
     ]);
 
     if (cardScore !== undefined && cardScore !== null && cardScore !== "") {
-      return {
-        score: cardScore,
-        framework: cardFw || "rice",
-        quadrant: cardQuad,
-      };
-    }
-
-    // 3. Fallback to sample card defaults matching the card name
-    if (cardName) {
-      const lower = cardName.toLowerCase();
-      // Ignore count/stat cards from list limit / Cardlytics
-      const isCardlytics = /^[0-9]+$/.test(cardName) || lower.includes("assigned to me");
-      if (isCardlytics) return null;
-
-      const match = SAMPLE_CARD_DEFAULTS.find((sample) => lower.includes(sample.match));
-      if (match) {
+      const numScore = Number(cardScore) || 0;
+      if (numScore > 0) {
         return {
-          score: match.score,
-          framework: match.framework,
-          icon: match.icon,
-          color: match.color,
+          score: cardScore,
+          framework: cardFw || "rice",
+          quadrant: cardQuad,
         };
       }
-
-      // 4. Default priority for any other board card
-      let hash = 0;
-      for (let i = 0; i < cardName.length; i++) {
-        hash = (hash << 5) - hash + cardName.charCodeAt(i);
-        hash |= 0;
-      }
-      const defaultScore = Math.max(120, 200 + (Math.abs(hash) % 280));
-      return {
-        score: defaultScore,
-        framework: "RICE",
-        icon: defaultScore >= 350 ? "🏆" : "🎯",
-        color: defaultScore >= 350 ? "red" : "blue",
-      };
     }
   } catch (e) {
     console.warn("Could not resolve card priority:", e);

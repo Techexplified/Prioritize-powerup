@@ -100,6 +100,66 @@ function TrashIcon(props) {
   );
 }
 
+// Pencil / Edit Icon for set rename
+function PencilIcon(props) {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+    </svg>
+  );
+}
+
+// Folder Plus Icon for creating new sets
+function FolderPlusIcon(props) {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+      <line x1="12" y1="11" x2="12" y2="17" />
+      <line x1="9" y1="14" x2="15" y2="14" />
+    </svg>
+  );
+}
+
+// Cards / Layers Icon for adding cards to set
+function CardsIcon(props) {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <rect x="2" y="7" width="16" height="13" rx="2" />
+      <path d="M6 3h14a2 2 0 0 1 2 2v12" />
+    </svg>
+  );
+}
+
 const FRAMEWORKS = [
   {
     id: "rice",
@@ -124,27 +184,31 @@ const FRAMEWORKS = [
   },
 ];
 
+// All cards initially start at score 0 until user scores them
 const DEFAULT_SAMPLE_CARDS = [
-  { id: "c1", name: "New checkout", framework: "rice", reach: 800, impact: 3, confidence: 0.8, effort: 4, score: 480, selected: true },
-  { id: "c2", name: "Search improvement", framework: "rice", reach: 660, impact: 3, confidence: 0.8, effort: 4, score: 396, selected: true },
-  { id: "c3", name: "Mobile redesign", framework: "rice", reach: 840, impact: 2, confidence: 0.8, effort: 4, score: 336, selected: true },
-  { id: "c4", name: "Email automation", framework: "rice", reach: 700, impact: 3, confidence: 0.8, effort: 5, score: 336, selected: true },
-  { id: "c5", name: "Dark mode theme", framework: "rice", reach: 950, impact: 2, confidence: 0.8, effort: 3, score: 507, selected: true },
-  { id: "c6", name: "Onboarding flow", framework: "rice", reach: 900, impact: 3, confidence: 0.8, effort: 5, score: 432, selected: true },
-  { id: "c7", name: "Stripe billing upgrade", framework: "rice", reach: 1000, impact: 3, confidence: 0.9, effort: 6, score: 450, selected: true },
-  { id: "c8", name: "Performance optimization", framework: "rice", reach: 600, impact: 3, confidence: 0.8, effort: 4, score: 360, selected: true },
-  { id: "c9", name: "Multi-currency support", framework: "rice", reach: 750, impact: 2, confidence: 0.8, effort: 4, score: 300, selected: true },
+  { id: "c1", name: "New checkout", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c2", name: "Search improvement", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c3", name: "Mobile redesign", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c4", name: "Email automation", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c5", name: "Dark mode theme", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c6", name: "Onboarding flow", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c7", name: "Stripe billing upgrade", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c8", name: "Performance optimization", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
+  { id: "c9", name: "Multi-currency support", framework: "rice", reach: 0, impact: 0, confidence: 0, effort: 0, score: 0, selected: true },
 ];
 
 const INITIAL_SETS = [
-  { id: "set-1", name: "Product Roadmap" },
-  { id: "set-2", name: "Growth Initiatives" },
+  {
+    id: "set-1",
+    name: "Untitled Set",
+    cards: DEFAULT_SAMPLE_CARDS.map((c) => ({ ...c })),
+  },
 ];
 
 export default function PrioritizeModal({ t, onClose }) {
   const [sets, setSets] = useState(INITIAL_SETS);
   const [activeSetId, setActiveSetId] = useState("set-1");
-  const [cards, setCards] = useState(DEFAULT_SAMPLE_CARDS);
+  const [allBoardCards, setAllBoardCards] = useState(DEFAULT_SAMPLE_CARDS);
 
   // Target card when editing scores
   const [targetCard, setTargetCard] = useState(null);
@@ -152,8 +216,8 @@ export default function PrioritizeModal({ t, onClose }) {
   const [appliedToast, setAppliedToast] = useState(null);
   const [syncSuccess, setSyncSuccess] = useState(false);
 
-  // Dialogs & Views: "cards" | "choose-framework" | "score-card"
-  const [activeView, setActiveView] = useState("cards");
+  // Dialogs & Views: "sets" (Starting UI) | "cards" | "choose-framework" | "score-card"
+  const [activeView, setActiveView] = useState("sets");
   const [showAddSetDialog, setShowAddSetDialog] = useState(false);
   const [newSetName, setNewSetName] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -162,22 +226,32 @@ export default function PrioritizeModal({ t, onClose }) {
   // Active selected framework
   const [selectedFramework, setSelectedFramework] = useState("rice");
 
-  // RICE factor states
-  const [reach, setReach] = useState(800);
-  const [impact, setImpact] = useState(3);
+  // RICE factor states (sensible defaults for interactive sliders)
+  const [reach, setReach] = useState(500);
+  const [impact, setImpact] = useState(2);
   const [confidence, setConfidence] = useState(0.8);
-  const [effort, setEffort] = useState(4);
+  const [effort, setEffort] = useState(3);
 
   // ICE factor states
-  const [iceImpact, setIceImpact] = useState(8);
-  const [iceConfidence, setIceConfidence] = useState(8);
-  const [iceEffort, setIceEffort] = useState(4);
+  const [iceImpact, setIceImpact] = useState(7);
+  const [iceConfidence, setIceConfidence] = useState(7);
+  const [iceEffort, setIceEffort] = useState(3);
 
   // Effort vs Impact factor states
-  const [eiImpact, setEiImpact] = useState(8);
+  const [eiImpact, setEiImpact] = useState(7);
   const [eiEffort, setEiEffort] = useState(3);
 
-  // Load real cards from Trello if available
+  // Active set & cards reference
+  const activeSet =
+    sets.find((s) => s.id === activeSetId) ||
+    sets[0] || {
+      id: "set-1",
+      name: "Untitled Set",
+      cards: [],
+    };
+  const cards = activeSet.cards || [];
+
+  // Load real cards and saved sets from Trello if available
   useEffect(() => {
     if (!t) return;
 
@@ -202,12 +276,13 @@ export default function PrioritizeModal({ t, onClose }) {
                   bScores[currentCard.name] ||
                   bScores[(currentCard.name || "").trim()]);
 
+              // Default initial score is 0 if not previously set
               const score =
                 cScore !== null && cScore !== undefined
-                  ? cScore
+                  ? Number(cScore)
                   : bEntry?.score !== undefined
-                  ? bEntry.score
-                  : 480;
+                  ? Number(bEntry.score)
+                  : 0;
 
               const fw = cFw || bEntry?.framework || "rice";
               const savedReach =
@@ -215,14 +290,14 @@ export default function PrioritizeModal({ t, onClose }) {
                   ? Number(cReach)
                   : bEntry?.reach !== undefined
                   ? Number(bEntry.reach)
-                  : 800;
+                  : 500;
 
               const savedImpact =
                 cImpact !== null && cImpact !== undefined
                   ? Number(cImpact)
                   : bEntry?.impact !== undefined
                   ? Number(bEntry.impact)
-                  : 3;
+                  : 2;
 
               const savedConf =
                 cConf !== null && cConf !== undefined
@@ -236,7 +311,7 @@ export default function PrioritizeModal({ t, onClose }) {
                   ? Number(cEffort)
                   : bEntry?.effort !== undefined
                   ? Number(bEntry.effort)
-                  : 4;
+                  : 3;
 
               const cardObj = {
                 id: currentCard.id,
@@ -246,7 +321,7 @@ export default function PrioritizeModal({ t, onClose }) {
                 impact: savedImpact,
                 confidence: savedConf,
                 effort: savedEffort,
-                score: Number(score) || score,
+                score: score,
                 selected: true,
               };
 
@@ -271,9 +346,13 @@ export default function PrioritizeModal({ t, onClose }) {
       typeof t.get === "function"
         ? t.get("board", "shared", "prio_card_scores").catch(() => null)
         : Promise.resolve(null);
+    const getSavedSets =
+      typeof t.get === "function"
+        ? t.get("board", "shared", "prio_saved_sets").catch(() => null)
+        : Promise.resolve(null);
 
-    Promise.all([getCards, getLists, getBoardScores])
-      .then(([trelloCards, trelloLists, boardScores]) => {
+    Promise.all([getCards, getLists, getBoardScores, getSavedSets])
+      .then(([trelloCards, trelloLists, boardScores, savedSets]) => {
         if (trelloCards && trelloCards.length > 0) {
           const cardlyticsListIds = new Set(
             (trelloLists || [])
@@ -292,7 +371,8 @@ export default function PrioritizeModal({ t, onClose }) {
           const finalCards = filteredCards.length > 0 ? filteredCards : trelloCards;
           const scoresMap = boardScores && typeof boardScores === "object" ? { ...boardScores } : {};
 
-          const mappedCards = finalCards.map((c, i) => {
+          // Map board cards. Initial score starts at 0 unless explicitly saved!
+          const mappedCards = finalCards.map((c) => {
             const cardName = (c.name || "").trim();
             let saved =
               scoresMap[c.id] ||
@@ -308,73 +388,43 @@ export default function PrioritizeModal({ t, onClose }) {
               if (found) saved = found[1];
             }
 
-            // Fallback default from SAMPLE_CARD_DEFAULTS if not saved
-            if (!saved && cardName) {
-              const lower = cardName.toLowerCase();
-              const match = [
-                { match: "checkout", score: 480, framework: "rice", reach: 800, impact: 3, confidence: 0.8, effort: 4 },
-                { match: "search improvement", score: 396, framework: "rice", reach: 660, impact: 3, confidence: 0.8, effort: 4 },
-                { match: "mobile redesign", score: 336, framework: "rice", reach: 840, impact: 2, confidence: 0.8, effort: 4 },
-                { match: "export to csv", score: 8.5, framework: "effort-impact", reach: 700, impact: 3, confidence: 0.8, effort: 5 },
-                { match: "social login", score: 100, framework: "rice", reach: 500, impact: 2, confidence: 0.8, effort: 4 },
-                { match: "stripe webhook", score: 19.5, framework: "rice", reach: 600, impact: 3, confidence: 0.8, effort: 4 },
-                { match: "upgrade node", score: 200, framework: "rice", reach: 500, impact: 2, confidence: 0.8, effort: 4 },
-                { match: "email automation", score: 336, framework: "rice", reach: 700, impact: 3, confidence: 0.8, effort: 5 },
-                { match: "dark mode", score: 507, framework: "rice", reach: 950, impact: 2, confidence: 0.8, effort: 3 },
-                { match: "onboarding flow", score: 432, framework: "rice", reach: 900, impact: 3, confidence: 0.8, effort: 5 },
-                { match: "stripe billing", score: 450, framework: "rice", reach: 1000, impact: 3, confidence: 0.9, effort: 6 },
-                { match: "performance", score: 360, framework: "rice", reach: 600, impact: 3, confidence: 0.8, effort: 4 },
-                { match: "multi-currency", score: 300, framework: "rice", reach: 750, impact: 2, confidence: 0.8, effort: 4 },
-              ].find((s) => lower.includes(s.match));
-
-              if (match) {
-                saved = match;
-              }
-            }
-
-            const score = saved?.score !== undefined ? saved.score : Math.max(50, 480 - i * 30);
+            const score = saved?.score !== undefined ? Number(saved.score) : 0;
             const fw = saved?.framework || "rice";
 
             return {
               id: c.id,
               name: c.name,
               framework: fw,
-              reach: saved?.reach !== undefined ? saved.reach : 800,
-              impact: saved?.impact !== undefined ? saved.impact : 3,
-              confidence: saved?.confidence !== undefined ? saved.confidence : 0.8,
-              effort: saved?.effort !== undefined ? saved.effort : 4,
-              iceImpact: saved?.iceImpact || 8,
-              iceConfidence: saved?.iceConfidence || 8,
-              iceEffort: saved?.iceEffort || 4,
-              eiImpact: saved?.eiImpact || 8,
-              eiEffort: saved?.eiEffort || 3,
+              reach: saved?.reach !== undefined ? Number(saved.reach) : 0,
+              impact: saved?.impact !== undefined ? Number(saved.impact) : 0,
+              confidence: saved?.confidence !== undefined ? Number(saved.confidence) : 0,
+              effort: saved?.effort !== undefined ? Number(saved.effort) : 0,
+              iceImpact: saved?.iceImpact || 0,
+              iceConfidence: saved?.iceConfidence || 0,
+              iceEffort: saved?.iceEffort || 0,
+              eiImpact: saved?.eiImpact || 0,
+              eiEffort: saved?.eiEffort || 0,
               score: score,
               quadrant: saved?.quadrant,
               selected: true,
             };
           });
 
-          setCards(mappedCards);
+          setAllBoardCards(mappedCards);
 
-          // Seed board dictionary with loaded scores so board badges immediately have data
-          if (t && typeof t.set === "function") {
-            mappedCards.forEach((mc) => {
-              if (mc.id && !scoresMap[mc.id]) {
-                scoresMap[mc.id] = {
-                  score: mc.score,
-                  framework: mc.framework,
-                  cardName: mc.name,
-                  reach: mc.reach,
-                  impact: mc.impact,
-                  confidence: mc.confidence,
-                  effort: mc.effort,
-                };
-              }
-              if (mc.name && !scoresMap[mc.name]) {
-                scoresMap[mc.name] = scoresMap[mc.id];
-              }
-            });
-            t.set("board", "shared", "prio_card_scores", scoresMap).catch(() => {});
+          // If sets were previously saved on the board, restore them
+          if (Array.isArray(savedSets) && savedSets.length > 0) {
+            setSets(savedSets);
+            setActiveSetId(savedSets[0].id);
+          } else {
+            // Otherwise start with a single "Untitled Set" holding the board cards
+            const initialSet = {
+              id: "set-1",
+              name: "Untitled Set",
+              cards: mappedCards,
+            };
+            setSets([initialSet]);
+            setActiveSetId("set-1");
           }
         }
       })
@@ -383,19 +433,103 @@ export default function PrioritizeModal({ t, onClose }) {
       });
   }, [t]);
 
-  // Select all / clear
+  // Rename set
+  function handleRenameSet(setId, newName) {
+    setSets((prev) => {
+      const next = prev.map((s) => (s.id === setId ? { ...s, name: newName } : s));
+      if (t && typeof t.set === "function") {
+        t.set("board", "shared", "prio_saved_sets", next).catch(() => {});
+      }
+      return next;
+    });
+  }
+
+  // Create new independent set
+  function handleCreateNewSet() {
+    const newId = `set-${Date.now()}`;
+    const newSetNumber = sets.length + 1;
+    const baseCards = allBoardCards.length > 0 ? allBoardCards : DEFAULT_SAMPLE_CARDS;
+    const freshCards = baseCards.map((c) => ({
+      ...c,
+      score: 0,
+      reach: 0,
+      impact: 0,
+      confidence: 0,
+      effort: 0,
+      selected: true,
+    }));
+    const newSet = {
+      id: newId,
+      name: `Untitled Set ${newSetNumber}`,
+      cards: freshCards,
+    };
+    setSets((prev) => {
+      const next = [...prev, newSet];
+      if (t && typeof t.set === "function") {
+        t.set("board", "shared", "prio_saved_sets", next).catch(() => {});
+      }
+      return next;
+    });
+    setActiveSetId(newId);
+    setAppliedToast(`Created new set: Untitled Set ${newSetNumber}`);
+    setTimeout(() => setAppliedToast(null), 3000);
+  }
+
+  // Delete set
+  function handleDeleteSet(setId) {
+    if (sets.length <= 1) {
+      alert("At least one evaluation set must be retained.");
+      setShowDeleteConfirm(false);
+      return;
+    }
+    const targetId = setId || activeSetId;
+    setSets((prev) => {
+      const next = prev.filter((s) => s.id !== targetId);
+      if (activeSetId === targetId && next.length > 0) {
+        setActiveSetId(next[0].id);
+      }
+      if (t && typeof t.set === "function") {
+        t.set("board", "shared", "prio_saved_sets", next).catch(() => {});
+      }
+      return next;
+    });
+    setShowDeleteConfirm(false);
+  }
+
+  // Select all / clear within active set
   function handleSelectAll() {
-    setCards((prev) => prev.map((c) => ({ ...c, selected: true })));
+    setSets((prev) =>
+      prev.map((s) =>
+        s.id === activeSetId
+          ? { ...s, cards: (s.cards || []).map((c) => ({ ...c, selected: true })) }
+          : s
+      )
+    );
   }
 
   function handleClearAll() {
-    setCards((prev) => prev.map((c) => ({ ...c, selected: false })));
+    setSets((prev) =>
+      prev.map((s) =>
+        s.id === activeSetId
+          ? { ...s, cards: (s.cards || []).map((c) => ({ ...c, selected: false })) }
+          : s
+      )
+    );
   }
 
-  // Toggle card
+  // Toggle card within active set
   function handleToggleCard(cardId) {
-    setCards((prev) =>
-      prev.map((c) => (c.id === cardId ? { ...c, selected: !c.selected } : c))
+    setSets((prev) =>
+      prev.map((s) =>
+        s.id === activeSetId
+          ? {
+              ...s,
+              cards: (s.cards || []).map((c) =>
+                c.id === cardId ? { ...c, selected: !c.selected } : c
+              ),
+            }
+          : s
+      )
     );
   }
 
@@ -405,21 +539,22 @@ export default function PrioritizeModal({ t, onClose }) {
     const fw = card?.framework || "rice";
     setSelectedFramework(fw);
 
-    // Initialize factor states from card
-    setReach(card?.reach !== undefined ? card.reach : 800);
-    setImpact(card?.impact !== undefined ? card.impact : 3);
-    setConfidence(card?.confidence !== undefined ? card.confidence : 0.8);
-    setEffort(card?.effort !== undefined ? card.effort : 4);
-    setIceImpact(card?.iceImpact || 8);
-    setIceConfidence(card?.iceConfidence || 8);
-    setIceEffort(card?.iceEffort || 4);
-    setEiImpact(card?.eiImpact || 8);
-    setEiEffort(card?.eiEffort || 3);
+    // Initialize factor states from card; if card was 0 / unscored, provide sensible defaults so user can slide
+    const hasExistingScore = card?.score && card.score > 0;
+    setReach(card?.reach && card.reach > 0 ? card.reach : (hasExistingScore ? 800 : 500));
+    setImpact(card?.impact && card.impact > 0 ? card.impact : (hasExistingScore ? 3 : 2));
+    setConfidence(card?.confidence && card.confidence > 0 ? card.confidence : (hasExistingScore ? 0.8 : 0.8));
+    setEffort(card?.effort && card.effort > 0 ? card.effort : (hasExistingScore ? 4 : 3));
+    setIceImpact(card?.iceImpact && card.iceImpact > 0 ? card.iceImpact : 7);
+    setIceConfidence(card?.iceConfidence && card.iceConfidence > 0 ? card.iceConfidence : 7);
+    setIceEffort(card?.iceEffort && card.iceEffort > 0 ? card.iceEffort : 3);
+    setEiImpact(card?.eiImpact && card.eiImpact > 0 ? card.eiImpact : 7);
+    setEiEffort(card?.eiEffort && card.eiEffort > 0 ? card.eiEffort : 3);
 
     setActiveView("choose-framework");
   }
 
-  // Proceed from framework selection to score editing screen (Screen 1)
+  // Proceed from framework selection to score editing screen
   function handleProceedToScore() {
     setActiveView("score-card");
   }
@@ -493,9 +628,24 @@ export default function PrioritizeModal({ t, onClose }) {
         quadrant: computedQuadrant,
       };
 
-      setCards((prev) =>
-        prev.map((c) => (c.id === targetCard.id ? updatedCard : c))
-      );
+      // Update strictly within the active set
+      setSets((prevSets) => {
+        const next = prevSets.map((s) => {
+          if (s.id === activeSetId) {
+            return {
+              ...s,
+              cards: (s.cards || []).map((c) =>
+                c.id === targetCard.id ? updatedCard : c
+              ),
+            };
+          }
+          return s;
+        });
+        if (t && typeof t.set === "function") {
+          t.set("board", "shared", "prio_saved_sets", next).catch(() => {});
+        }
+        return next;
+      });
 
       // Save to Trello shared data
       if (t && typeof t.set === "function") {
@@ -549,7 +699,6 @@ export default function PrioritizeModal({ t, onClose }) {
       }
 
       // If modal was opened from a specific card in Trello, wait 150ms before closing
-      // so Trello has time to process the postMessage event and update card-badges
       if (openedFromCard && t && typeof t.closeModal === "function") {
         setTimeout(() => {
           t.closeModal();
@@ -567,7 +716,7 @@ export default function PrioritizeModal({ t, onClose }) {
     setTargetCard(null);
   }
 
-  // Sync all cards' scores to the Trello board
+  // Sync all cards' scores in this set to the Trello board
   function handleSyncAllToBoard() {
     if (t && typeof t.set === "function" && typeof t.get === "function") {
       t.get("board", "shared", "prio_card_scores")
@@ -607,76 +756,36 @@ export default function PrioritizeModal({ t, onClose }) {
     }
   }
 
-  // Create new set
-  function handleCreateSet(e) {
-    e.preventDefault();
-    if (!newSetName.trim()) return;
-    const newSet = {
-      id: `set-${Date.now()}`,
-      name: newSetName.trim(),
-    };
-    setSets((prev) => [...prev, newSet]);
-    setActiveSetId(newSet.id);
-    setNewSetName("");
-    setShowAddSetDialog(false);
-  }
-
-  // Delete set
-  function handleDeleteSet() {
-    if (sets.length <= 1) {
-      alert("At least one evaluation set must be retained.");
-      setShowDeleteConfirm(false);
-      return;
-    }
-    const filtered = sets.filter((s) => s.id !== activeSetId);
-    setSets(filtered);
-    setActiveSetId(filtered[0].id);
-    setShowDeleteConfirm(false);
-  }
-
-  // Auto-Rank cards
+  // Auto-Rank cards within active set
   function handleToggleRank() {
-    if (isSortedByRank) {
-      setCards(DEFAULT_SAMPLE_CARDS);
-      setIsSortedByRank(false);
-    } else {
-      const sorted = [...cards].sort((a, b) => (b.score || 0) - (a.score || 0));
-      setCards(sorted);
-      setIsSortedByRank(true);
-
-      // Save ranked scores to board so board cards reflect them
-      if (t && typeof t.set === "function" && typeof t.get === "function") {
-        t.get("board", "shared", "prio_card_scores")
-          .then((existing) => {
-            const map = existing && typeof existing === "object" ? { ...existing } : {};
-            sorted.forEach((c) => {
-              if (c.score !== undefined) {
-                const entry = {
-                  score: c.score,
-                  framework: c.framework || "rice",
-                  cardName: c.name,
-                  reach: c.reach,
-                  impact: c.impact,
-                  confidence: c.confidence,
-                  effort: c.effort,
-                  quadrant: c.quadrant,
-                };
-                if (c.id) map[c.id] = entry;
-                if (c.name) {
-                  map[c.name] = entry;
-                  map[c.name.trim()] = entry;
-                }
-              }
-            });
-            return t.set("board", "shared", "prio_card_scores", map);
-          })
-          .catch(() => {});
+    setSets((prevSets) => {
+      const next = prevSets.map((s) => {
+        if (s.id === activeSetId) {
+          const currentCards = s.cards || [];
+          if (isSortedByRank) {
+            return {
+              ...s,
+              cards: [...currentCards].sort((a, b) => (a.id > b.id ? 1 : -1)),
+            };
+          } else {
+            return {
+              ...s,
+              cards: [...currentCards].sort((a, b) => (b.score || 0) - (a.score || 0)),
+            };
+          }
+        }
+        return s;
+      });
+      if (t && typeof t.set === "function") {
+        t.set("board", "shared", "prio_saved_sets", next).catch(() => {});
       }
-    }
+      return next;
+    });
+    setIsSortedByRank(!isSortedByRank);
   }
 
   const selectedCount = cards.filter((c) => c.selected).length;
-  const activeSet = sets.find((s) => s.id === activeSetId) || sets[0];
+  const scoredCount = cards.filter((c) => c.score && c.score > 0).length;
   const currentFw = FRAMEWORKS.find((f) => f.id === selectedFramework) || FRAMEWORKS[0];
 
   // Dynamic slider percentages
@@ -687,8 +796,8 @@ export default function PrioritizeModal({ t, onClose }) {
 
   return (
     <div className="prio-container">
-      {/* Top Header - only displayed on main cards screen */}
-      {activeView === "cards" && (
+      {/* Top Header - displayed on Starting UI & cards screen */}
+      {activeView !== "choose-framework" && activeView !== "score-card" && (
         <header className="prio-header">
           <div className="prio-header-brand">
             <div className="prio-brand-icon">
@@ -700,25 +809,189 @@ export default function PrioritizeModal({ t, onClose }) {
                 <span className="prio-powerup-tag">Power-Up</span>
               </div>
               <p className="prio-subtitle-text">
-                Score cards and automatically rank what your team should build first.
+                {activeView === "sets"
+                  ? "Manage evaluation sets and prioritize cards individually."
+                  : `Evaluation Set: ${activeSet.name}`}
               </p>
             </div>
           </div>
-          {t && typeof t.closeModal === "function" && (
-            <button
-              type="button"
-              className="prio-btn-secondary"
-              style={{ fontSize: "12px", padding: "6px 12px", whiteSpace: "nowrap" }}
-              onClick={() => {
-                handleSyncAllToBoard();
-                setTimeout(() => t.closeModal(), 120);
-              }}
-              title="Save all scores and return to board"
-            >
-              Done (View Board)
-            </button>
-          )}
+          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+            {activeView === "cards" && (
+              <button
+                type="button"
+                className="prio-back-to-sets-btn"
+                onClick={() => setActiveView("sets")}
+                title="Return to Sets Hub"
+              >
+                ← Back to Sets
+              </button>
+            )}
+            {t && typeof t.closeModal === "function" && (
+              <button
+                type="button"
+                className="prio-btn-secondary"
+                style={{ fontSize: "12px", padding: "6px 12px", whiteSpace: "nowrap" }}
+                onClick={() => {
+                  handleSyncAllToBoard();
+                  setTimeout(() => t.closeModal(), 120);
+                }}
+                title="Save all scores and return to board"
+              >
+                Done (View Board)
+              </button>
+            )}
+          </div>
         </header>
+      )}
+
+      {/* ========================================================= */}
+      {/* VIEW 0: STARTING UI (SETS HUB)                            */}
+      {/* ========================================================= */}
+      {activeView === "sets" && (
+        <div className="prio-start-view">
+          <div className="prio-start-header">
+            <div className="prio-start-header-badge">
+              <span>🎯 Prioritization Sets</span>
+            </div>
+            <h2 className="prio-start-title">Prioritize Evaluation Hub</h2>
+            <p className="prio-start-subtitle">
+              Group cards into independent sets, customize scoring frameworks, and rank what your team should build first.
+            </p>
+          </div>
+
+          {/* If multiple sets exist, show horizontal tabs to switch or add */}
+          {sets.length > 1 && (
+            <div className="prio-start-tabs-wrapper">
+              {sets.map((s) => (
+                <div
+                  key={s.id}
+                  className={`prio-start-tab ${s.id === activeSetId ? "active" : ""}`}
+                  onClick={() => setActiveSetId(s.id)}
+                >
+                  <span>📁 {s.name || "Untitled Set"}</span>
+                  <span style={{ fontSize: "11px", opacity: 0.8 }}>
+                    ({(s.cards || []).length})
+                  </span>
+                  {sets.length > 1 && (
+                    <button
+                      type="button"
+                      className="prio-start-tab-delete"
+                      title="Delete this set"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveSetId(s.id);
+                        setShowDeleteConfirm(true);
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                className="prio-start-tab-add"
+                onClick={handleCreateNewSet}
+                title="Create a new independent set"
+              >
+                <PlusIcon /> New Set
+              </button>
+            </div>
+          )}
+
+          {/* Active Set Hero Card */}
+          <div className="prio-start-hero-card">
+            <div className="prio-set-card-top">
+              <span className="prio-set-badge-tag">Current Evaluation Set</span>
+              <span className="prio-set-independent-pill">
+                ⚡ Performs Individually
+              </span>
+            </div>
+
+            {/* Editable Set Name Field */}
+            <div className="prio-start-title-container">
+              <label className="prio-start-title-label">Set Name</label>
+              <div className="prio-start-title-box">
+                <input
+                  type="text"
+                  className="prio-start-title-input"
+                  value={activeSet.name}
+                  onChange={(e) => handleRenameSet(activeSet.id, e.target.value)}
+                  placeholder="Untitled Set"
+                  title="Click to rename this set"
+                />
+                <span className="prio-start-edit-icon" title="Editable title">
+                  <PencilIcon />
+                </span>
+              </div>
+              <p className="prio-start-title-hint">
+                Rename this set anytime. Cards and scores within this set are kept completely independent.
+              </p>
+            </div>
+
+            {/* Set Stats Summary */}
+            <div className="prio-set-stats-row">
+              <div className="prio-stat-box">
+                <span className="prio-stat-box-label">Total Cards</span>
+                <span className="prio-stat-box-val">{cards.length}</span>
+              </div>
+              <div className="prio-stat-box">
+                <span className="prio-stat-box-label">Scored</span>
+                <span className="prio-stat-box-val highlight">{scoredCount}</span>
+              </div>
+              <div className="prio-stat-box">
+                <span className="prio-stat-box-label">Initial Score</span>
+                <span className="prio-stat-box-val" style={{ color: "#9FADBC" }}>0 (Zero)</span>
+              </div>
+            </div>
+
+            {/* THE TWO OPTIONS REQUESTED BY USER */}
+            <div className="prio-start-actions">
+              {/* Option 1: Add cards to this set */}
+              <button
+                type="button"
+                className="prio-btn-action-hero primary"
+                onClick={() => setActiveView("cards")}
+              >
+                <div className="prio-btn-hero-icon">
+                  <CardsIcon />
+                </div>
+                <div className="prio-btn-hero-text-block">
+                  <strong className="prio-btn-hero-title">Add cards to this set</strong>
+                  <span className="prio-btn-hero-desc">
+                    Select cards from your board and prioritize them for {activeSet.name}
+                  </span>
+                </div>
+                <span className="prio-btn-hero-arrow">→</span>
+              </button>
+
+              {/* Option 2: Create new set */}
+              <button
+                type="button"
+                className="prio-btn-action-hero secondary"
+                onClick={handleCreateNewSet}
+              >
+                <div className="prio-btn-hero-icon">
+                  <FolderPlusIcon />
+                </div>
+                <div className="prio-btn-hero-text-block">
+                  <strong className="prio-btn-hero-title">Create new set</strong>
+                  <span className="prio-btn-hero-desc">
+                    Start another evaluation set that will calculate and rank individually
+                  </span>
+                </div>
+                <span className="prio-btn-hero-arrow">+</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="prio-start-info-footer">
+            <span>💡</span>
+            <span>
+              All cards start at an initial score of <strong>0</strong> until you choose to score them. Each set has its own independent ranking and scoring.
+            </span>
+          </div>
+        </div>
       )}
 
       {/* ========================================================= */}
@@ -1147,7 +1420,16 @@ export default function PrioritizeModal({ t, onClose }) {
           {/* Controls & Filter Bar */}
           <div className="prio-controls-bar">
             <div className="prio-section-heading">
-              <span className="prio-heading-title">Cards to prioritize</span>
+              <button
+                type="button"
+                className="prio-back-to-sets-btn"
+                onClick={() => setActiveView("sets")}
+                title="Return to Sets Hub"
+                style={{ marginRight: "4px" }}
+              >
+                ← Back to Sets
+              </button>
+              <span className="prio-heading-title">Cards in "{activeSet.name}"</span>
               <span className="prio-count-badge">
                 {selectedCount} of {cards.length}
               </span>
@@ -1177,6 +1459,7 @@ export default function PrioritizeModal({ t, onClose }) {
                     value={activeSetId}
                     onChange={(e) => setActiveSetId(e.target.value)}
                     className="prio-set-selector"
+                    title="Switch active set"
                   >
                     {sets.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -1229,8 +1512,8 @@ export default function PrioritizeModal({ t, onClose }) {
           <div className="prio-list-container">
             <div className="prio-card-scroll-area">
               {cards.map((card, idx) => {
-                const isRICE = (card.framework || "rice").toLowerCase() === "rice";
                 const isHighPriority = card.score >= 350;
+                const isZero = !card.score || card.score === 0;
 
                 return (
                   <div
@@ -1259,12 +1542,16 @@ export default function PrioritizeModal({ t, onClose }) {
                     </div>
 
                     <div className="prio-card-item-right">
-                      {card.score !== undefined && (
-                        <span
-                          className="prio-rank-pill"
-                          title={`Prioritization Score (${(card.framework || "RICE").toUpperCase()})`}
-                          style={
-                            isHighPriority
+                      <span
+                        className={`prio-rank-pill ${isZero ? "unscored" : ""}`}
+                        title={
+                          !isZero
+                            ? `Prioritization Score: ${card.score} (${(card.framework || "RICE").toUpperCase()})`
+                            : "Initial score: 0 (Click 'Edit scores' to score this card)"
+                        }
+                        style={
+                          !isZero
+                            ? isHighPriority
                               ? {
                                   background: "rgba(248, 113, 104, 0.16)",
                                   borderColor: "rgba(248, 113, 104, 0.4)",
@@ -1277,14 +1564,16 @@ export default function PrioritizeModal({ t, onClose }) {
                                   color: "#579DFF",
                                 }
                               : {}
-                          }
-                        >
-                          {isSortedByRank ? `#${idx + 1} · ` : ""}
-                          {card.quadrant
+                            : {}
+                        }
+                      >
+                        {isSortedByRank && !isZero ? `#${idx + 1} · ` : ""}
+                        {!isZero
+                          ? card.quadrant
                             ? card.quadrant
-                            : `🏆 ${card.score} ${(card.framework || "RICE").toUpperCase()}`}
-                        </span>
-                      )}
+                            : `🏆 ${card.score} ${(card.framework || "RICE").toUpperCase()}`
+                          : `0 ${(card.framework || "RICE").toUpperCase()}`}
+                      </span>
 
                       <button
                         type="button"
@@ -1305,20 +1594,32 @@ export default function PrioritizeModal({ t, onClose }) {
             <div className="prio-action-group-left">
               <button
                 type="button"
-                className="prio-btn-secondary"
-                onClick={() => setShowAddSetDialog(true)}
+                className="prio-back-to-sets-btn"
+                onClick={() => setActiveView("sets")}
+                title="Return to Sets Hub"
               >
-                <PlusIcon />
-                Add New Set
+                ← Back to Sets
               </button>
               <button
                 type="button"
-                className="prio-btn-danger-subtle"
-                onClick={() => setShowDeleteConfirm(true)}
+                className="prio-btn-secondary"
+                onClick={handleCreateNewSet}
+                title="Create a new evaluation set"
               >
-                <TrashIcon />
-                Delete Set
+                <PlusIcon />
+                New Set
               </button>
+              {sets.length > 1 && (
+                <button
+                  type="button"
+                  className="prio-btn-danger-subtle"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  title="Delete current set"
+                >
+                  <TrashIcon />
+                  Delete Set
+                </button>
+              )}
             </div>
 
             <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
@@ -1326,7 +1627,7 @@ export default function PrioritizeModal({ t, onClose }) {
                 type="button"
                 className="prio-btn-secondary"
                 onClick={handleSyncAllToBoard}
-                title="Save and push all priority badges to visible Trello board cards"
+                title="Save and push all priority badges in this set to visible Trello board cards"
               >
                 {syncSuccess ? "✓ Badges Synced to Board" : "⚡ Sync to Board Cards"}
               </button>
@@ -1335,6 +1636,7 @@ export default function PrioritizeModal({ t, onClose }) {
                 type="button"
                 className="prio-btn-primary"
                 onClick={handleToggleRank}
+                title="Rank cards from highest score to lowest"
               >
                 <RankIcon />
                 {isSortedByRank ? "Reset Ranking" : "Auto-Rank Cards"}
