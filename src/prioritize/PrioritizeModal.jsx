@@ -1182,7 +1182,7 @@ export default function PrioritizeModal({ t, onClose }) {
                       <div className="prio-ready-content">
                         <div className="prio-ready-title-row">
                           <h3 className="prio-ready-title">
-                            Prioritize &amp; Rank {activeSet.name}
+                            Show All Cards &amp; Scores ({activeSet.name})
                           </h3>
                           <span className="prio-ready-badge">
                             {cards.length} {cards.length === 1 ? "card" : "cards"} loaded
