@@ -898,6 +898,12 @@ export default function PrioritizeModal({ t, onClose }) {
   const scoredCount = cards.filter((c) => c.score && c.score > 0).length;
   const currentFw = FRAMEWORKS.find((f) => f.id === selectedFramework) || FRAMEWORKS[0];
 
+  const topThreeCards = useMemo(() => {
+    return [...cards]
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, 3);
+  }, [cards]);
+
   const availablePool = allBoardCards.length > 0 ? allBoardCards : DEFAULT_SAMPLE_CARDS;
   const pickerLists = useMemo(() => {
     const listSet = new Set();
@@ -1069,62 +1075,149 @@ export default function PrioritizeModal({ t, onClose }) {
               </div>
             </div>
 
-            {/* If cards already exist in the set: Focused Ready Banner + Quick Actions */}
+            {/* If cards already exist in the set: Top 3 Priorities + Focused Ready Banner + Quick Actions */}
             {cards.length > 0 ? (
-              <div className="prio-start-ready-section">
-                <div
-                  className="prio-start-ready-banner"
-                  onClick={() => setActiveView("cards")}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      setActiveView("cards");
-                    }
-                  }}
-                >
-                  <div className="prio-ready-left">
-                    <div className="prio-ready-icon-wrap">
-                      <RankIcon />
+              <>
+                {/* Top Priorities Preview (Top 3 Cards) */}
+                <div className="prio-top3-preview-section">
+                  <div className="prio-top3-header">
+                    <div className="prio-top3-header-left">
+                      <span className="prio-top3-title">Top Priorities</span>
+                      <span className="prio-top3-badge">
+                        Top {Math.min(3, cards.length)} of {cards.length}
+                      </span>
                     </div>
-                    <div className="prio-ready-content">
-                      <div className="prio-ready-title-row">
-                        <h3 className="prio-ready-title">
-                          Prioritize &amp; Rank {activeSet.name}
-                        </h3>
-                        <span className="prio-ready-badge">
-                          {cards.length} {cards.length === 1 ? "card" : "cards"} loaded
-                        </span>
-                      </div>
-                      <p className="prio-ready-desc">
-                        Open matrix view to evaluate factors, auto-calculate scores, and sync priority badges.
-                      </p>
-                    </div>
+                    <button
+                      type="button"
+                      className="prio-top3-show-all-btn"
+                      onClick={() => setActiveView("cards")}
+                      title="View all cards in this set"
+                    >
+                      Show all cards ({cards.length}) →
+                    </button>
                   </div>
-                  <button type="button" className="prio-ready-cta-btn">
-                    Open Priority Matrix →
-                  </button>
+
+                  <div className="prio-top3-list">
+                    {topThreeCards.map((card, idx) => {
+                      const isHighPriority = card.score >= 350;
+                      const isZero = !card.score || card.score === 0;
+
+                      return (
+                        <div key={card.id} className="prio-top3-item">
+                          <div className="prio-top3-item-left">
+                            <span
+                              className={`prio-rank-pill ${isZero ? "unscored" : ""}`}
+                              style={
+                                !isZero
+                                  ? isHighPriority
+                                    ? {
+                                        background: "rgba(248, 113, 104, 0.16)",
+                                        borderColor: "rgba(248, 113, 104, 0.4)",
+                                        color: "#FCA5A5",
+                                      }
+                                    : card.score >= 100
+                                    ? {
+                                        background: "rgba(87, 157, 255, 0.14)",
+                                        borderColor: "rgba(87, 157, 255, 0.35)",
+                                        color: "#579DFF",
+                                      }
+                                    : {}
+                                  : {}
+                              }
+                            >
+                              {`#${idx + 1} · `}
+                              {!isZero
+                                ? card.quadrant
+                                  ? card.quadrant
+                                  : `🏆 ${card.score} ${(card.framework || "RICE").toUpperCase()}`
+                                : `0 ${(card.framework || "RICE").toUpperCase()}`}
+                            </span>
+
+                            <span
+                              className="prio-top3-card-name"
+                              onClick={() => handleOpenFrameworkSelect(card)}
+                              title="Click to edit scores"
+                            >
+                              {card.name}
+                            </span>
+
+                            {card.listName && (
+                              <span className="prio-picker-list-tag" style={{ marginLeft: "4px" }}>
+                                {card.listName}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="prio-top3-item-right">
+                            <button
+                              type="button"
+                              className="prio-score-link"
+                              onClick={() => handleOpenFrameworkSelect(card)}
+                            >
+                              Edit scores
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <div className="prio-start-secondary-bar">
-                  <button
-                    type="button"
-                    className="prio-btn-quick-action"
-                    onClick={handleOpenCardPicker}
-                    title="Add or remove cards from board in this set"
+                <div className="prio-start-ready-section">
+                  <div
+                    className="prio-start-ready-banner"
+                    onClick={() => setActiveView("cards")}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        setActiveView("cards");
+                      }
+                    }}
                   >
-                    <CardsIcon /> Manage Cards in Set ({cards.length})
-                  </button>
-                  <button
-                    type="button"
-                    className="prio-btn-quick-action"
-                    onClick={handleCreateNewSet}
-                    title="Start a new evaluation set that calculates independently"
-                  >
-                    <FolderPlusIcon /> Create New Set
-                  </button>
+                    <div className="prio-ready-left">
+                      <div className="prio-ready-icon-wrap">
+                        <RankIcon />
+                      </div>
+                      <div className="prio-ready-content">
+                        <div className="prio-ready-title-row">
+                          <h3 className="prio-ready-title">
+                            Prioritize &amp; Rank {activeSet.name}
+                          </h3>
+                          <span className="prio-ready-badge">
+                            {cards.length} {cards.length === 1 ? "card" : "cards"} loaded
+                          </span>
+                        </div>
+                        <p className="prio-ready-desc">
+                          Open matrix view to evaluate factors, auto-calculate scores, and sync priority badges.
+                        </p>
+                      </div>
+                    </div>
+                    <button type="button" className="prio-ready-cta-btn">
+                      Open Priority Matrix →
+                    </button>
+                  </div>
+
+                  <div className="prio-start-secondary-bar">
+                    <button
+                      type="button"
+                      className="prio-btn-quick-action"
+                      onClick={handleOpenCardPicker}
+                      title="Add or remove cards from board in this set"
+                    >
+                      <CardsIcon /> Manage Cards in Set ({cards.length})
+                    </button>
+                    <button
+                      type="button"
+                      className="prio-btn-quick-action"
+                      onClick={handleCreateNewSet}
+                      title="Start a new evaluation set that calculates independently"
+                    >
+                      <FolderPlusIcon /> Create New Set
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </>
             ) : (
               /* If set is empty (0 cards): Show the 2 clear starting options */
               <div className="prio-start-actions-grid">

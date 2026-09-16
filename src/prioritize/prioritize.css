@@ -1576,6 +1576,124 @@
   color: #F7F8F9;
 }
 
+/* ========================================================= */
+/* TOP 3 CARDS PREVIEW (START / SETS SCREEN)                 */
+/* ========================================================= */
+.prio-top3-preview-section {
+  background: #1D2125;
+  border: 1px solid #333C44;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.prio-top3-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.prio-top3-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.prio-top3-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #F7F8F9;
+  letter-spacing: 0.2px;
+}
+
+.prio-top3-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: #8C9BAB;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.prio-top3-show-all-btn {
+  background: transparent;
+  border: none;
+  color: #579DFF;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.prio-top3-show-all-btn:hover {
+  color: #85B8FF;
+  background: rgba(87, 157, 255, 0.1);
+  text-decoration: underline;
+}
+
+.prio-top3-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.prio-top3-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s ease;
+}
+
+.prio-top3-item:last-child {
+  border-bottom: none;
+}
+
+.prio-top3-item:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.prio-top3-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.prio-top3-card-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #DEE4EA;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: color 0.12s ease;
+}
+
+.prio-top3-card-name:hover {
+  color: #579DFF;
+  text-decoration: underline;
+}
+
+.prio-top3-item-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
 /* Ready Section (when cards > 0 in active set) */
 .prio-start-ready-section {
   display: flex;
