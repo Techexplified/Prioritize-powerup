@@ -179,8 +179,12 @@ function getBadgeConfig(priority) {
 TrelloPowerUp.initialize({
   // Check member authorization status
   "authorization-status": async function (t) {
-    const authed = await isAuthorized(t);
-    return { authorized: authed };
+    try {
+      const authed = await isAuthorized(t);
+      return { authorized: authed };
+    } catch (e) {
+      return { authorized: false };
+    }
   },
 
   // Invoked by Trello when authorization is requested
@@ -190,6 +194,24 @@ TrelloPowerUp.initialize({
       url: "./auth.html",
       height: 260,
     });
+  },
+
+  // Invoked immediately when member enables the Power-Up on this board
+  "on-enable": async function (t) {
+    try {
+      const authed = await isAuthorized(t);
+      if (!authed) {
+        return t.modal({
+          title: "Authorize Prioritize",
+          url: "./auth.html",
+          accentColor: "#1D2125",
+          height: 380,
+          fullscreen: false,
+        });
+      }
+    } catch (e) {
+      console.warn("on-enable auth check error:", e);
+    }
   },
 
   // Invoked when user clicks gear icon / Settings in Trello's Power-Up menu

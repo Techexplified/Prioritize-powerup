@@ -77,7 +77,10 @@ export default function AuthPopup({ t }) {
         </p>
         <button
           type="button"
-          onClick={() => t.closePopup()}
+          onClick={() => {
+            if (t && typeof t.closePopup === "function") t.closePopup();
+            if (t && typeof t.closeModal === "function") t.closeModal();
+          }}
           style={successStyles.button}
         >
           Continue
