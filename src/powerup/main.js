@@ -177,9 +177,19 @@ function getBadgeConfig(priority) {
 }
 
 TrelloPowerUp.initialize({
-  // Always authorized so Trello never blocks capabilities
-  "authorization-status": function (t) {
-    return { authorized: true };
+  // Check member authorization status
+  "authorization-status": async function (t) {
+    const authed = await isAuthorized(t);
+    return { authorized: authed };
+  },
+
+  // Invoked by Trello when authorization is requested
+  "show-authorization": function (t) {
+    return t.popup({
+      title: "Authorize Prioritize",
+      url: "./auth.html",
+      height: 260,
+    });
   },
 
   // Invoked when user clicks gear icon / Settings in Trello's Power-Up menu
@@ -197,7 +207,15 @@ TrelloPowerUp.initialize({
       {
         icon: { dark: ICON_DARK, light: ICON_LIGHT },
         text: "Prioritize",
-        callback: function (t) {
+        callback: async function (t) {
+          const authed = await isAuthorized(t);
+          if (!authed) {
+            return t.popup({
+              title: "Authorize Prioritize",
+              url: "./auth.html",
+              height: 260,
+            });
+          }
           return t.modal({
             title: "Prioritize",
             url: "./prioritize.html",
@@ -216,7 +234,15 @@ TrelloPowerUp.initialize({
       {
         icon: ICON_DARK,
         text: "Prioritize",
-        callback: function (t) {
+        callback: async function (t) {
+          const authed = await isAuthorized(t);
+          if (!authed) {
+            return t.popup({
+              title: "Authorize Prioritize",
+              url: "./auth.html",
+              height: 260,
+            });
+          }
           return t.modal({
             title: "Prioritize",
             url: "./prioritize.html",
