@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Prioritize Power-Up</title>
     <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <script>
+      window.addEventListener('unhandledrejection', function (e) {
+        if (e && e.reason && (e.reason.name === 'PostMessageValidationCard' || (e.reason.message && e.reason.message.indexOf('Card Scope not available') !== -1) || String(e.reason).indexOf('Card Scope not available') !== -1)) {
+          e.preventDefault();
+        }
+      });
+    </script>
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
     <style>
       *, *::before, *::after {

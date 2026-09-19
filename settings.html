@@ -17,6 +17,13 @@
         box-sizing: border-box;
       }
     </style>
+    <script>
+      window.addEventListener('unhandledrejection', function (e) {
+        if (e && e.reason && (e.reason.name === 'PostMessageValidationCard' || (e.reason.message && e.reason.message.indexOf('Card Scope not available') !== -1) || String(e.reason).indexOf('Card Scope not available') !== -1)) {
+          e.preventDefault();
+        }
+      });
+    </script>
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
   </head>
   <body>

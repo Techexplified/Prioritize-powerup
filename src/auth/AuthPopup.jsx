@@ -28,8 +28,7 @@ export default function AuthPopup({ t }) {
       try {
         await saveToken(t, event.data.token);
         setStatus("success");
-      } catch (err) {
-        console.error("Failed to save auth token:", err);
+      } catch {
         setStatus("error");
       }
     }

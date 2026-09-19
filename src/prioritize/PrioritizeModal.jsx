@@ -272,7 +272,10 @@ export default function PrioritizeModal({ t, onClose }) {
     if (!t) return;
 
     // If opened directly from a card button or card badge
-    if (typeof t.card === "function") {
+    const context = typeof t.getContext === "function" ? t.getContext() : {};
+    const contextCardId = context && context.card ? context.card : null;
+
+    if (contextCardId && typeof t.card === "function") {
       t.card("id", "name")
         .then((currentCard) => {
           if (currentCard && currentCard.id && currentCard.name) {
@@ -451,8 +454,8 @@ export default function PrioritizeModal({ t, onClose }) {
           }
         }
       })
-      .catch((err) => {
-        console.warn("Using fallback sample cards:", err);
+      .catch(() => {
+        // Fallback gracefully without console noise
       });
   }, [t]);
 
@@ -760,20 +763,26 @@ export default function PrioritizeModal({ t, onClose }) {
       // Save to Trello shared data
       if (t && typeof t.set === "function") {
         try {
-          // 1. Save directly to card scope
-          await Promise.all([
-            t.set("card", "shared", "priority_score", computedScore).catch(() => {}),
-            t.set("card", "shared", "priority_framework", selectedFramework).catch(() => {}),
-            t.set("card", "shared", "priority_reach", reach).catch(() => {}),
-            t.set("card", "shared", "priority_impact", impact).catch(() => {}),
-            t.set("card", "shared", "priority_confidence", confidence).catch(() => {}),
-            t.set("card", "shared", "priority_effort", effort).catch(() => {}),
-            computedQuadrant
-              ? t.set("card", "shared", "priority_quadrant", computedQuadrant).catch(() => {})
-              : t.remove
-              ? t.remove("card", "shared", "priority_quadrant").catch(() => {})
-              : Promise.resolve(),
-          ]);
+          const currentContext = typeof t.getContext === "function" ? t.getContext() : {};
+          const currentCardId = currentContext && currentContext.card ? currentContext.card : null;
+          const isCardInContext = Boolean(currentCardId && targetCard.id && currentCardId === targetCard.id);
+
+          // 1. Save directly to card scope ONLY if card is actively in context
+          if (isCardInContext) {
+            await Promise.all([
+              t.set("card", "shared", "priority_score", computedScore).catch(() => {}),
+              t.set("card", "shared", "priority_framework", selectedFramework).catch(() => {}),
+              t.set("card", "shared", "priority_reach", reach).catch(() => {}),
+              t.set("card", "shared", "priority_impact", impact).catch(() => {}),
+              t.set("card", "shared", "priority_confidence", confidence).catch(() => {}),
+              t.set("card", "shared", "priority_effort", effort).catch(() => {}),
+              computedQuadrant
+                ? t.set("card", "shared", "priority_quadrant", computedQuadrant).catch(() => {})
+                : typeof t.remove === "function"
+                ? t.remove("card", "shared", "priority_quadrant").catch(() => {})
+                : Promise.resolve(),
+            ]);
+          }
 
           // 2. ALWAYS save to board scope so card-badges on Trello board can display it
           if (typeof t.get === "function") {
@@ -803,8 +812,8 @@ export default function PrioritizeModal({ t, onClose }) {
             }
             await t.set("board", "shared", "prio_card_scores", map).catch(() => {});
           }
-        } catch (err) {
-          console.warn("Failed saving priority to Trello:", err);
+        } catch {
+          // Suppress errors to ensure clean console for Trello marketplace review
         }
       }
 

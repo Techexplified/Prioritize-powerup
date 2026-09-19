@@ -15,12 +15,10 @@ const t = typeof window.TrelloPowerUp !== "undefined" && window.TrelloPowerUp.if
         localStorage.removeItem(`mock_${scope}_${key}`);
         return Promise.resolve();
       },
+      getContext: () => ({ board: "mock-board-id" }),
       sizeTo: () => Promise.resolve(),
       closePopup: () => window.close(),
-      popup: (opts) => {
-        console.log("Mock popup:", opts);
-        return Promise.resolve();
-      },
+      popup: () => Promise.resolve(),
     };
 
 ReactDOM.createRoot(document.getElementById("root")).render(
