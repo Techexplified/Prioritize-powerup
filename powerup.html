@@ -4,11 +4,47 @@
     <meta charset="utf-8" />
     <title>Prioritize Power-Up</title>
     <script>
-      window.addEventListener('unhandledrejection', function (e) {
-        if (e && e.reason && (e.reason.name === 'PostMessageValidationCard' || (e.reason.message && e.reason.message.indexOf('Card Scope not available') !== -1) || String(e.reason).indexOf('Card Scope not available') !== -1)) {
-          e.preventDefault();
-        }
-      });
+      (function () {
+        window.addEventListener('unhandledrejection', function (e) {
+          if (
+            e &&
+            e.reason &&
+            (e.reason.name === 'PostMessageValidationCard' ||
+              (e.reason.message && e.reason.message.indexOf('Card Scope not available') !== -1) ||
+              String(e.reason).indexOf('Card Scope not available') !== -1)
+          ) {
+            e.preventDefault();
+          }
+        });
+
+        var origWarn = console.warn;
+        console.warn = function () {
+          var first = arguments[0];
+          if (
+            first &&
+            (first.gateName === 'platform-dst-motion-theme-default' ||
+              (first.msg && String(first.msg).indexOf('feature gate') !== -1) ||
+              (typeof first === 'string' && first.indexOf('feature gate') !== -1))
+          ) {
+            return;
+          }
+          return origWarn.apply(console, arguments);
+        };
+
+        var origError = console.error;
+        console.error = function () {
+          var first = arguments[0];
+          if (
+            first &&
+            (first.gateName === 'platform-dst-motion-theme-default' ||
+              (first.msg && String(first.msg).indexOf('feature gate') !== -1) ||
+              (typeof first === 'string' && first.indexOf('feature gate') !== -1))
+          ) {
+            return;
+          }
+          return origError.apply(console, arguments);
+        };
+      })();
     </script>
     <script src="https://p.trellocdn.com/power-up.min.js"></script>
   </head>
